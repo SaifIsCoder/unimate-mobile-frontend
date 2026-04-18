@@ -1,188 +1,188 @@
-# 🎓 UniMate – Student Productivity SaaS
+# 🎓 UniMate – Student Management App
 
-UniMate is a mobile-first SaaS platform designed to help university students manage their academic life efficiently — from schedules and tasks to grades and announcements — all in one place.
+### (Final Year Project – University of Sargodha)
+
+UniMate is a mobile application developed as a Final Year Project (FYP) for the **University of Sargodha**, designed to help students manage their academic activities in one unified system.
 
 ---
 
-## 🚀 Overview
+## 📌 Problem Statement
 
-Students often struggle with fragmented systems:
+Students at the University of Sargodha currently rely on multiple disconnected sources:
 
-* LMS for assignments
 * Notice boards for announcements
-* Separate portals for grades
+* LMS/teachers for assignments
+* Manual tracking for schedules and grades
 
-UniMate unifies everything into a **single, clean, and actionable interface**.
+This leads to:
+
+* Missed deadlines
+* Poor organization
+* Lack of a centralized system
 
 ---
 
-## ✨ Core Features
+## 🎯 Objective
+
+To build a **centralized mobile application** that allows students to:
+
+* Track daily schedules
+* Manage academic tasks (assignments, quizzes, deadlines)
+* View grades and GPA
+* Stay updated with announcements and events
+
+---
+
+## ✨ Features
 
 ### 🏠 Home Dashboard
 
-* Daily class overview (Today-focused banner)
-* Attendance & GPA snapshot
-* Tasks preview (assignments, quizzes, deadlines)
-* Upcoming event highlights
+* Daily overview of classes
+* GPA and attendance snapshot
+* Upcoming tasks and events
 * Latest announcements
 
 ---
 
-### 📅 Schedule
+### 📅 Schedule Management
 
-* Weekly view with day selection
+* Weekly class schedule
+* Day-wise navigation
 * “Now” and “Next” class indicators
-* Clean timeline of daily classes
 
 ---
 
-### ✅ Tasks (Assignments + Quizzes + Deadlines)
+### ✅ Tasks Management
 
-* Unified task system
-* Categorized by type (Assignment, Quiz, Deadline)
-* Designed for action-first workflow
+* Unified system for:
+
+  * Assignments
+  * Quizzes
+  * Deadlines
+* Action-oriented interface
 
 ---
 
-### 🎉 Events
+### 📊 Grades System
 
-* University and departmental events
-* Quick access to upcoming activities
+* Semester-wise results
+* Subject-level breakdown
+* GPA per semester
+* CGPA (planned via backend)
 
 ---
 
 ### 📢 Announcements
 
-* Important notices, rules, and updates
-* Optional media support (images for events)
-* Filter by type (Important, Event, Notice)
+* Departmental notices
+* Academic rules and updates
+* Event-related information
 
 ---
 
-### 📊 Grades
+### 🎉 Events
 
-* Semester-wise breakdown
-* GPA per semester
-* Drill-down into subjects
-* CGPA (planned via backend)
+* University and department events
+* Upcoming activities tracking
 
 ---
 
-### 👤 Profile
+### 👤 Student Profile
 
-* Academic + personal information
-* Clean structured layout
-
----
-
-## 🧠 Product Philosophy
-
-UniMate is built around two core principles:
-
-### 1. Information vs Action
-
-* **Updates** → what you should know
-* **Tasks** → what you should do
-
-### 2. Today-Focused UX
-
-* Prioritize what matters *now*
-* Reduce clutter
-* Improve decision speed
+* Academic and personal details
+* Structured information layout
 
 ---
 
-## 🏗️ Tech Stack
+## 🧠 System Design Approach
+
+The application is designed using a **student-centric approach**:
+
+* Focus on *daily usability*
+* Clear separation between:
+
+  * **Updates (information)**
+  * **Tasks (actions)**
+
+---
+
+## 🏗️ Technology Stack
 
 ### Frontend
 
 * React Native (Expo)
 * React Navigation
-* Context API (state management)
+* Context API
 
 ### Backend (Planned)
 
 * Node.js + Express
 * MongoDB
-* REST API
 
 ---
 
 ## 📁 Project Structure
 
-```
-/screens        → App screens (Home, Schedule, Tasks, etc.)
+```id="p93xq1"
+/screens        → Application screens
 /components     → Reusable UI components
-/context        → Global state (UserContext)
-/data           → Mock data (temporary)
-/theme          → Colors, fonts, spacing
-/navigation     → App navigation setup
+/context        → State management
+/data           → Mock data (for development)
+/theme          → Styling system
+/navigation     → Navigation setup
 ```
 
 ---
 
-## 🔄 Data Architecture (Simplified)
+## 🔄 Data Structure (Example)
 
-Grades are structured by semester:
+Grades are organized by semester:
 
-```
+```id="c2k8s9"
 Semester
   ├── GPA
   ├── Total Credits
-  └── Subjects (grades)
-```
-
-CGPA will be calculated on the backend:
-
-```
-CGPA = Σ (semester GPA × credits) / total credits
+  └── Subjects (Grades)
 ```
 
 ---
 
-## 🔐 Authentication Flow
+## 🔐 Authentication
 
-* Login-based access
-* Protected routes via navigation stack
+* Login-based access system
+* User session managed via Context API
 
 ---
 
 ## 📦 Current Status
 
-* UI: ✅ Completed (core screens)
-* Navigation: ✅ Structured
-* Data: ⚠️ Mock (frontend)
-* Backend: ⏳ In progress
+* UI Design: ✅ Completed
+* Navigation: ✅ Implemented
+* Data Handling: ⚠️ Mock data
+* Backend Integration: ⏳ In progress
 
 ---
 
-## 🛠️ Future Improvements
+## 🚧 Future Enhancements
 
-* Backend integration (API-driven data)
-* CGPA auto-calculation
-* Task prioritization (Today / Upcoming / Overdue)
-* Push notifications
-* Offline support
-* Analytics dashboard
+* Backend integration (API-based system)
+* Automatic CGPA calculation
+* Notifications system
+* Data synchronization
 
 ---
 
-## 🎯 Target Users
+## 🎓 Academic Context
 
-* University students
-* Department-level deployments
-* Academic institutions
+This project is developed as a **Final Year Project (FYP)** for:
 
----
-
-## 📌 Vision
-
-To become a **central academic operating system** for students — replacing scattered tools with one intelligent platform.
+> **University of Sargodha**
+> Department of Computer Science
 
 ---
 
-## 👨‍💻 Author
+## 👨‍💻 Developer
 
-Developed as part of a full-stack SaaS project.
+Developed by a final year student as part of undergraduate degree requirements.
 
 ---
