@@ -7,10 +7,10 @@ module.exports = {
     slug: "unimate",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/icon.png",
+    icon: "./assets/images/icon.png",
     userInterfaceStyle: "light",
     splash: {
-      image: "./assets/splash-icon.png",
+      image: "./assets/images/splash-icon.png",
       resizeMode: "contain",
       backgroundColor: "#ffffff"
     },
@@ -28,6 +28,9 @@ module.exports = {
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff"
+      },
+      notification: {
+        icon: "./assets/images/notification-icon.png"
       },
       edgeToEdgeEnabled: true,
       runtimeVersion: "1.0.0"
