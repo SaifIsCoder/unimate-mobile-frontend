@@ -1,81 +1,188 @@
-# uniMate - Campus Companion
+# 🎓 UniMate – Student Productivity SaaS
 
-A React Native mobile application built with Expo for managing campus life, including assignments, events, schedules, and notifications.
+UniMate is a mobile-first SaaS platform designed to help university students manage their academic life efficiently — from schedules and tasks to grades and announcements — all in one place.
 
-## Features
+---
 
-- 🔐 User Authentication (Supabase Auth)
-- 📚 Assignments Management
-- 📅 Events & Schedule
-- 🔔 Notifications
-- 👤 User Profile
-- 📱 Cross-platform (iOS, Android, Web)
+## 🚀 Overview
 
-## Prerequisites
+Students often struggle with fragmented systems:
 
-- Node.js (v14 or higher)
-- npm or yarn
-- Expo CLI (`npm install -g expo-cli`)
-- Supabase project setup
+* LMS for assignments
+* Notice boards for announcements
+* Separate portals for grades
 
-## Installation
+UniMate unifies everything into a **single, clean, and actionable interface**.
 
-1. Clone the repository
-```bash
-git clone <repository-url>
-cd client
+---
+
+## ✨ Core Features
+
+### 🏠 Home Dashboard
+
+* Daily class overview (Today-focused banner)
+* Attendance & GPA snapshot
+* Tasks preview (assignments, quizzes, deadlines)
+* Upcoming event highlights
+* Latest announcements
+
+---
+
+### 📅 Schedule
+
+* Weekly view with day selection
+* “Now” and “Next” class indicators
+* Clean timeline of daily classes
+
+---
+
+### ✅ Tasks (Assignments + Quizzes + Deadlines)
+
+* Unified task system
+* Categorized by type (Assignment, Quiz, Deadline)
+* Designed for action-first workflow
+
+---
+
+### 🎉 Events
+
+* University and departmental events
+* Quick access to upcoming activities
+
+---
+
+### 📢 Announcements
+
+* Important notices, rules, and updates
+* Optional media support (images for events)
+* Filter by type (Important, Event, Notice)
+
+---
+
+### 📊 Grades
+
+* Semester-wise breakdown
+* GPA per semester
+* Drill-down into subjects
+* CGPA (planned via backend)
+
+---
+
+### 👤 Profile
+
+* Academic + personal information
+* Clean structured layout
+
+---
+
+## 🧠 Product Philosophy
+
+UniMate is built around two core principles:
+
+### 1. Information vs Action
+
+* **Updates** → what you should know
+* **Tasks** → what you should do
+
+### 2. Today-Focused UX
+
+* Prioritize what matters *now*
+* Reduce clutter
+* Improve decision speed
+
+---
+
+## 🏗️ Tech Stack
+
+### Frontend
+
+* React Native (Expo)
+* React Navigation
+* Context API (state management)
+
+### Backend (Planned)
+
+* Node.js + Express
+* MongoDB
+* REST API
+
+---
+
+## 📁 Project Structure
+
+```
+/screens        → App screens (Home, Schedule, Tasks, etc.)
+/components     → Reusable UI components
+/context        → Global state (UserContext)
+/data           → Mock data (temporary)
+/theme          → Colors, fonts, spacing
+/navigation     → App navigation setup
 ```
 
-2. Install dependencies
-```bash
-npm install
-```
+---
 
-3. Set up environment variables
-   - Copy `.env.example` to `.env`
-   - Add your Supabase credentials to `.env`:
-     ```
-     SUPABASE_URL=your_supabase_url
-     SUPABASE_ANON_KEY=your_supabase_anon_key
-     ```
+## 🔄 Data Architecture (Simplified)
 
-## Running the App
-
-```bash
-# Start Expo development server
-npm start
-
-# Run on Android
-npm run android
-
-# Run on iOS
-npm run ios
-
-# Run on Web
-npm run web
-```
-
-## Project Structure
+Grades are structured by semester:
 
 ```
-src/
-├── components/     # Reusable UI components
-├── config/        # Supabase and API configuration
-├── constants/     # App constants (colors, routes, etc.)
-├── context/       # React Context providers
-├── screens/       # Screen components
-├── services/      # Business logic and API services
-└── scripts/       # Utility scripts (data seeding, etc.)
+Semester
+  ├── GPA
+  ├── Total Credits
+  └── Subjects (grades)
 ```
 
-## Tech Stack
+CGPA will be calculated on the backend:
 
-- **Framework**: React Native (Expo)
-- **Navigation**: React Navigation
-- **Backend**: Supabase (Auth, Database), Custom API (/api/v1)
-- **State Management**: React Context
-- **Notifications**: Expo Notifications
+```
+CGPA = Σ (semester GPA × credits) / total credits
+```
 
-## License
+---
 
-Private
+## 🔐 Authentication Flow
+
+* Login-based access
+* Protected routes via navigation stack
+
+---
+
+## 📦 Current Status
+
+* UI: ✅ Completed (core screens)
+* Navigation: ✅ Structured
+* Data: ⚠️ Mock (frontend)
+* Backend: ⏳ In progress
+
+---
+
+## 🛠️ Future Improvements
+
+* Backend integration (API-driven data)
+* CGPA auto-calculation
+* Task prioritization (Today / Upcoming / Overdue)
+* Push notifications
+* Offline support
+* Analytics dashboard
+
+---
+
+## 🎯 Target Users
+
+* University students
+* Department-level deployments
+* Academic institutions
+
+---
+
+## 📌 Vision
+
+To become a **central academic operating system** for students — replacing scattered tools with one intelligent platform.
+
+---
+
+## 👨‍💻 Author
+
+Developed as part of a full-stack SaaS project.
+
+---

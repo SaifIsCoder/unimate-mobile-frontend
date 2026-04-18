@@ -31,6 +31,10 @@ local.properties
 *.keystore
 !debug.keystore
 .zip
+# Android build
+android/.gradle/
+android/app/build/
+android/build/
 
 # node.js
 node_modules/
