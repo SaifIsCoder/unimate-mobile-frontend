@@ -19,7 +19,6 @@ export const ROUTES = {
   HOME: 'Home',
   SCHEDULE: 'Schedule',
   ASSIGNMENTS: 'Assignments',
-  EVENTS: 'Events',
   PROFILE: 'Profile',
   
   // Stack Routes (accessible from tabs)

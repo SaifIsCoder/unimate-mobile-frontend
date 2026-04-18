@@ -1,5 +1,3 @@
-// ─── SCHEDULE SCREEN ──────────────────────────────────────────────────────────
-
 import React, { useState } from 'react';
 import {
   View,
@@ -10,29 +8,52 @@ import {
   StyleSheet,
 } from 'react-native';
 import { COLORS, RADIUS, FONT, ACCENT } from '../theme/theme';
-import { StatusBarRow, Avatar } from '../components/SharedComponents';
+import { Avatar } from '../components/SharedComponents';
 import { CLASSES, WEEK_DAYS } from '../data/mockData';
 import Entypo from '@expo/vector-icons/Entypo';
-// ── Day Chip ──────────────────────────────────────────────────────────────────
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+// ── Day Chip ─────────────────────────────────────────────────────────────
 const DayChip = ({ day, active, onPress }) => (
   <TouchableOpacity
     style={[styles.dayChip, active && styles.dayChipActive]}
     onPress={onPress}
     activeOpacity={0.7}
   >
-    <Text style={[styles.dayName, active && styles.dayTextActive]}>{day.name}</Text>
-    <Text style={[styles.dayNum, active && styles.dayTextActive]}>{day.num}</Text>
+    <Text style={[styles.dayName, active && styles.dayTextActive]}>
+      {day.name}
+    </Text>
+    <Text style={[styles.dayNum, active && styles.dayTextActive]}>
+      {day.num}
+    </Text>
   </TouchableOpacity>
 );
 
-// ── Class Card ────────────────────────────────────────────────────────────────
-const ClassCard = ({ item }) => {
+// ── Class Card ───────────────────────────────────────────────────────────
+const ClassCard = ({ item, index }) => {
   const accentColor = ACCENT[item.accent] || ACCENT.purple;
+
+  const status =
+    index === 0 ? 'now' : index === 1 ? 'next' : null;
+
   return (
-    <View style={[styles.classCard, { borderLeftColor: accentColor.border }]}>
+    <View
+      style={[
+        styles.classCard,
+        { borderLeftColor: accentColor.border },
+        status === 'now' && styles.nowCard,
+      ]}
+    >
+      {status && (
+        <Text style={styles.statusBadge}>
+          {status === 'now' ? 'Now' : 'Next'}
+        </Text>
+      )}
+
       <Text style={styles.classTime}>🕘 {item.time}</Text>
       <Text style={styles.className}>{item.name}</Text>
       <Text style={styles.classCode}>{item.code}</Text>
+
       <View style={styles.classMeta}>
         <Text style={styles.classMetaText}>📍 {item.room}</Text>
         <Text style={styles.classMetaText}>👤 {item.teacher}</Text>
@@ -41,119 +62,243 @@ const ClassCard = ({ item }) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ── MAIN SCREEN ──────────────────────────────────────────────────────────
 export default function ScheduleScreen() {
-  const [selectedDay, setSelectedDay] = useState(3); // Thu index
+  const [selectedDay, setSelectedDay] = useState(3);
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.screen}>
-      {/* <StatusBarRow /> */}
+    <View style={[styles.screen, { paddingTop: insets.top + 16, paddingBottom: 40 }]}>
 
-      {/* ── Page Header ── */}
+      {/* ── Header ── */}
       <View style={styles.header}>
         <Text style={styles.pageTitle}>Schedule</Text>
         <Avatar label="S" size={36} />
       </View>
+      <View style={styles.monthNavContainer}>
 
-      {/* ── Month Navigation ── */}
-      <View style={styles.monthNav}>
-        <TouchableOpacity style={styles.monthBtn} activeOpacity={0.7}>
-          <Text style={styles.monthBtnText}><Entypo name="chevron-left" size={23} color="black" /></Text>
-        </TouchableOpacity>
-        <Text style={styles.monthLabel}>April 2026</Text>
-        <TouchableOpacity style={styles.monthBtn} activeOpacity={0.7}>
-          <Text style={styles.monthBtnText}><Entypo name="chevron-right" size={23} color="black" /></Text>
-        </TouchableOpacity>
+        {/* ── Month Navigation ── */}
+        <View style={styles.monthNav}>
+          <TouchableOpacity style={styles.monthBtn}>
+            <Entypo name="chevron-left" size={22} color={COLORS.textPrimary} />
+          </TouchableOpacity>
+
+          <Text style={styles.monthLabel}>April 2026</Text>
+
+          <TouchableOpacity style={styles.monthBtn}>
+            <Entypo name="chevron-right" size={22} color={COLORS.textPrimary} />
+          </TouchableOpacity>
+        </View>
+
+        {/* ── Week Strip ── */}
+        <ScrollView
+          // style={styles.weekStripContainer}
+          horizontal
+          style={{ height: 60, flexGrow: 0 }}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.weekStrip}
+        >
+          {WEEK_DAYS.map((day, i) => (
+            <DayChip
+              key={i}
+              day={day}
+              active={selectedDay === i}
+              onPress={() => setSelectedDay(i)}
+            />
+          ))}
+        </ScrollView>
       </View>
+      {/* ── Date Heading ── */}
+      <Text style={styles.dateHeading}>
+        Thursday, April 16, 2026
+      </Text>
 
-      {/* ── Week Strip ── */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.weekStrip}
-      >
-        {/* {WEEK_DAYS.map((day, i) => (
-          <DayChip
-            key={i}
-            day={day}
-            active={selectedDay === i}
-            onPress={() => setSelectedDay(i)}
-          />
-        ))} */}
-      </ScrollView>
-
-      <Text style={styles.dateHeading}>Thursday, April 16, 2026</Text>
-
-      {/* ── Class List ── */}
-      <FlatList
-        data={CLASSES}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ClassCard item={item} />}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 16 }}
-      />
+      {/* ── Class List / Empty State ── */}
+      {CLASSES.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyTitle}>No classes today</Text>
+          <Text style={styles.emptySub}>
+            You have time to relax or plan ahead
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={CLASSES}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item, index }) => (
+            <ClassCard item={item} index={index} />
+          )}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        />
+      )}
     </View>
   );
 }
 
+// ── STYLES ───────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: COLORS.bg, paddingVertical: 16 },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  screen: {
+    flex: 1,
+    backgroundColor: COLORS.bg,
+    paddingVertical: 16,
+  },
+
+ header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
-  pageTitle: { fontSize: 22, fontWeight: FONT.bold, color: COLORS.textPrimary },
+  pageTitle: {
+    fontSize: 22,
+    fontWeight: FONT.bold,
+    color: COLORS.textPrimary,
+  },
+
+  monthNavContainer: {
+    backgroundColor: "white",
+    margin: 20,
+    borderRadius: 10,
+    paddingTop: 10
+  },
   monthNav: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    marginBottom: 6,
+    marginBottom: 8,
   },
-  monthLabel: { fontSize: 14, fontWeight: FONT.semiBold, color: COLORS.textPrimary },
-  monthBtn: {
-    width: 32, height: 32, borderRadius: 8,
-    backgroundColor: COLORS.card,
-    borderWidth: 1, borderColor: COLORS.border,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  monthBtnText: { fontSize: 14, color: COLORS.textSecondary },
 
-  weekStrip: { paddingHorizontal: 16, gap: 4 },
-  dayChip: {
-    alignItems: 'center', paddingVertical: 6, paddingHorizontal: 8,
-    borderRadius: RADIUS.sm, minWidth: 38, height: 45,
+  monthLabel: {
+    fontSize: 14,
+    fontWeight: FONT.semiBold,
+    color: COLORS.textPrimary,
   },
-  dayChipActive: { backgroundColor: COLORS.primary },
-  dayName: { fontSize: 9, color: COLORS.textTertiary, fontWeight: FONT.medium, marginBottom: 2 },
-  dayNum: { fontSize: 14, fontWeight: FONT.semiBold, color: COLORS.textSecondary },
-  dayTextActive: { color: '#fff' },
+
+  monthBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    backgroundColor: COLORS.card,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  weekStrip: {
+    paddingHorizontal: 16,
+    gap: 6,
+  },
+
+  dayChip: {
+    alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: RADIUS.sm,
+    minWidth: 42,
+    height: 45,
+  },
+
+  dayChipActive: {
+    backgroundColor: COLORS.primary,
+  },
+
+  dayName: {
+    fontSize: 9,
+    color: COLORS.textTertiary,
+    marginBottom: 2,
+  },
+
+  dayNum: {
+    fontSize: 14,
+    fontWeight: FONT.semiBold,
+    color: COLORS.textSecondary,
+  },
+
+  dayTextActive: {
+    color: '#fff',
+  },
 
   dateHeading: {
-    fontSize: 12, color: COLORS.textSecondary,
-    paddingHorizontal: 16, paddingBottom: 8, fontWeight: FONT.medium,
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+    fontWeight: FONT.medium,
   },
 
   classCard: {
-    marginHorizontal: 16, marginBottom: 10,
+    marginHorizontal: 16,
+    marginBottom: 10,
     backgroundColor: COLORS.card,
-    borderRadius: RADIUS.lg, padding: 14,
-    borderWidth: 1, borderColor: COLORS.border,
+    borderRadius: RADIUS.lg,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: COLORS.border,
     borderLeftWidth: 3,
-    // iOS shadow
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    // Android
     elevation: 2,
   },
-  classTime: { fontSize: 10, color: COLORS.textTertiary, fontWeight: FONT.medium, marginBottom: 4 },
-  className: { fontSize: 14, fontWeight: FONT.bold, color: COLORS.textPrimary, marginBottom: 2 },
-  classCode: { fontSize: 10, color: COLORS.textTertiary, marginBottom: 8 },
-  classMeta: { flexDirection: 'row', justifyContent: 'space-between' },
-  classMetaText: { fontSize: 10, color: COLORS.textSecondary },
+
+  nowCard: {
+    borderColor: COLORS.primary,
+    borderWidth: 1.5,
+  },
+
+  statusBadge: {
+    position: 'absolute',
+    top: 10,
+    right: 12,
+    fontSize: 10,
+    fontWeight: FONT.bold,
+    color: COLORS.primary,
+  },
+
+  classTime: {
+    fontSize: 10,
+    color: COLORS.textTertiary,
+    marginBottom: 4,
+  },
+
+  className: {
+    fontSize: 14,
+    fontWeight: FONT.bold,
+    color: COLORS.textPrimary,
+    marginBottom: 2,
+  },
+
+  classCode: {
+    fontSize: 10,
+    color: COLORS.textTertiary,
+    marginBottom: 8,
+  },
+
+  classMeta: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  classMetaText: {
+    fontSize: 10,
+    color: COLORS.textSecondary,
+  },
+
+  emptyState: {
+    alignItems: 'center',
+    marginTop: 40,
+  },
+
+  emptyTitle: {
+    fontSize: 14,
+    fontWeight: FONT.bold,
+    color: COLORS.textPrimary,
+  },
+
+  emptySub: {
+    fontSize: 11,
+    color: COLORS.textSecondary,
+    marginTop: 4,
+  },
 });

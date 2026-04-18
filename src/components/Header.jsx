@@ -10,7 +10,6 @@ const screenNameMap = {
   Home: "Home",
   Schedule: "Schedule",
   Assignments: "Assignments",
-  Events: "Events",
   Notifications: "Notifications",
 };
 

@@ -14,8 +14,14 @@ module.exports = {
       resizeMode: "contain",
       backgroundColor: "#ffffff"
     },
+    updates: {
+      url: "https://u.expo.dev/29a82f6e-bf38-4d3a-8352-219df914953d"
+    },
     ios: {
-      supportsTablet: true
+      supportsTablet: true,
+      runtimeVersion: {
+        policy: "appVersion"
+      }
     },
     android: {
       package: "com.saif.unimate",
@@ -23,7 +29,8 @@ module.exports = {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff"
       },
-      edgeToEdgeEnabled: true
+      edgeToEdgeEnabled: true,
+      runtimeVersion: "1.0.0"
     },
     web: {
       favicon: "./assets/favicon.png"

@@ -1,6 +1,6 @@
 // ─── ASSIGNMENTS SCREEN ───────────────────────────────────────────────────────
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,18 +8,23 @@ import {
   ScrollView,
   FlatList,
   StyleSheet,
-} from 'react-native';
-import { COLORS, RADIUS, FONT, ACCENT } from '../theme/theme';
-import { StatusBarRow, Avatar, FilterPill } from '../components/SharedComponents';
-import { ASSIGNMENTS } from '../data/mockData';
-const FILTERS = ['All', 'Pending', 'Submitted', 'Overdue'];
+} from "react-native";
+import { COLORS, RADIUS, FONT, ACCENT } from "../theme/theme";
+import {
+  StatusBarRow,
+  Avatar,
+  FilterPill,
+} from "../components/SharedComponents";
+import { ASSIGNMENTS } from "../data/mockData";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+const FILTERS = ["All", "Pending", "Submitted", "Overdue"];
 
 // ── Status Badge ──────────────────────────────────────────────────────────────
 const Badge = ({ status }) => {
   const map = {
-    submitted: { bg: COLORS.green2,  text: COLORS.green,  label: '✓ Submitted' },
-    pending:   { bg: COLORS.blue2,   text: COLORS.blue,   label: '⏳ Pending'   },
-    overdue:   { bg: COLORS.red2,    text: COLORS.red,    label: '⚠ Overdue'   },
+    submitted: { bg: COLORS.green2, text: COLORS.green, label: "✓ Submitted" },
+    pending: { bg: COLORS.blue2, text: COLORS.blue, label: "⏳ Pending" },
+    overdue: { bg: COLORS.red2, text: COLORS.red, label: "⚠ Overdue" },
   };
   const cfg = map[status] || map.pending;
   return (
@@ -32,12 +37,14 @@ const Badge = ({ status }) => {
 // ── Assignment Card ───────────────────────────────────────────────────────────
 const AssignmentCard = ({ item }) => {
   const accentColor = ACCENT[item.accent] || ACCENT.purple;
-  const isSubmitted = item.status === 'submitted';
+  const isSubmitted = item.status === "submitted";
 
   return (
     <View style={[styles.asgnCard, { borderLeftColor: accentColor.border }]}>
       <View style={styles.asgnHeader}>
-        <Text style={styles.asgnTitle} numberOfLines={2}>{item.title}</Text>
+        <Text style={styles.asgnTitle} numberOfLines={2}>
+          {item.title}
+        </Text>
         <Badge status={item.status} />
       </View>
       <Text style={styles.asgnMeta}>📄 {item.course}</Text>
@@ -73,26 +80,27 @@ const AssignmentCard = ({ item }) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-export default function AssignmentsScreen() {
-  const [activeFilter, setActiveFilter] = useState('All');
+export default function TasksScreen() {
+  const [activeFilter, setActiveFilter] = useState("All");
+  const insets = useSafeAreaInsets();
 
   const filtered = ASSIGNMENTS.filter((a) => {
-    if (activeFilter === 'All') return true;
+    if (activeFilter === "All") return true;
     return a.status === activeFilter.toLowerCase();
   });
 
-  const total     = ASSIGNMENTS.length;
-  const pending   = ASSIGNMENTS.filter((a) => a.status === 'pending').length;
-  const overdue   = ASSIGNMENTS.filter((a) => a.status === 'overdue').length;
-  const submitted = ASSIGNMENTS.filter((a) => a.status === 'submitted').length;
+  const total = ASSIGNMENTS.length;
+  const pending = ASSIGNMENTS.filter((a) => a.status === "pending").length;
+  const overdue = ASSIGNMENTS.filter((a) => a.status === "overdue").length;
+  const submitted = ASSIGNMENTS.filter((a) => a.status === "submitted").length;
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { paddingTop: insets.top + 16, paddingBottom: 40 }]}>
       {/* <StatusBarRow /> */}
 
       {/* ── Header ── */}
       <View style={styles.header}>
-        <Text style={styles.pageTitle}>Assignments</Text>
+        <Text style={styles.pageTitle}>Tasks</Text>
         <Avatar label="S" size={36} />
       </View>
 
@@ -103,11 +111,7 @@ export default function AssignmentsScreen() {
       </TouchableOpacity>
 
       {/* ── Filter Pills ── */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filterBar}
-      >
+      <View style={styles.filterBar}>
         {FILTERS.map((f) => (
           <FilterPill
             key={f}
@@ -116,15 +120,15 @@ export default function AssignmentsScreen() {
             onPress={() => setActiveFilter(f)}
           />
         ))}
-      </ScrollView>
+      </View>
 
       {/* ── Summary Strip ── */}
       <View style={styles.summaryStrip}>
         {[
-          { num: total,     color: COLORS.primary, lbl: 'Total'   },
-          { num: pending,   color: COLORS.orange,  lbl: 'Pending' },
-          { num: overdue,   color: COLORS.red,     lbl: 'Overdue' },
-          { num: submitted, color: COLORS.green,   lbl: 'Done'    },
+          { num: total, color: COLORS.primary, lbl: "Total" },
+          { num: pending, color: COLORS.orange, lbl: "Pending" },
+          { num: overdue, color: COLORS.red, lbl: "Overdue" },
+          { num: submitted, color: COLORS.green, lbl: "Done" },
         ].map((s) => (
           <View key={s.lbl} style={styles.sumItem}>
             <Text style={[styles.sumNum, { color: s.color }]}>{s.num}</Text>
@@ -151,79 +155,130 @@ export default function AssignmentsScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: COLORS.bg, paddingVertical: 16 },
   header: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'center', paddingHorizontal: 16, paddingVertical: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
   pageTitle: { fontSize: 22, fontWeight: FONT.bold, color: COLORS.textPrimary },
 
   courseSelect: {
-    marginHorizontal: 16, marginBottom: 10,
+    marginHorizontal: 16,
+    marginBottom: 10,
+    marginTop: 20,
     backgroundColor: COLORS.card,
-    borderWidth: 1, borderColor: COLORS.border,
-    borderRadius: RADIUS.md, paddingVertical: 10, paddingHorizontal: 14,
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: RADIUS.md,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  courseSelectText:  { fontSize: 13, color: COLORS.textSecondary },
+  courseSelectText: { fontSize: 13, color: COLORS.textSecondary },
   courseSelectArrow: { fontSize: 13, color: COLORS.textTertiary },
 
-  filterBar: { paddingHorizontal: 16, paddingBottom: 8 },
+  filterBar: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+    flexDirection: "row",
+    gap: 8,
+  },
 
   summaryStrip: {
-    marginHorizontal: 16, marginBottom: 10,
+    marginHorizontal: 16,
+    marginBottom: 10,
     backgroundColor: COLORS.primary3,
-    borderRadius: RADIUS.md, padding: 10,
-    flexDirection: 'row', gap: 16,
+    borderRadius: RADIUS.md,
+    padding: 10,
+    flexDirection: "row",
+    gap: 16,
   },
-  sumItem:  { alignItems: 'center' },
-  sumNum:   { fontSize: 16, fontWeight: FONT.bold },
-  sumLbl:   { fontSize: 9, color: COLORS.primary2, fontWeight: FONT.medium },
+  sumItem: { alignItems: "center" },
+  sumNum: { fontSize: 16, fontWeight: FONT.bold },
+  sumLbl: { fontSize: 9, color: COLORS.primary2, fontWeight: FONT.medium },
 
   asgnCard: {
-    marginHorizontal: 16, marginBottom: 10,
+    marginHorizontal: 16,
+    marginBottom: 10,
     backgroundColor: COLORS.card,
-    borderRadius: RADIUS.lg, padding: 14,
-    borderWidth: 1, borderColor: COLORS.border,
+    borderRadius: RADIUS.lg,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: COLORS.border,
     borderLeftWidth: 3,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05, shadowRadius: 4,
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
     elevation: 2,
   },
   asgnHeader: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'flex-start', marginBottom: 6,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 6,
   },
   asgnTitle: {
-    fontSize: 13, fontWeight: FONT.bold, color: COLORS.textPrimary,
-    flex: 1, marginRight: 8,
+    fontSize: 13,
+    fontWeight: FONT.bold,
+    color: COLORS.textPrimary,
+    flex: 1,
+    marginRight: 8,
   },
-  badge: { paddingVertical: 3, paddingHorizontal: 8, borderRadius: RADIUS.full },
+  badge: {
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: RADIUS.full,
+  },
   badgeText: { fontSize: 9, fontWeight: FONT.semiBold },
 
   asgnMeta: { fontSize: 10, color: COLORS.textTertiary, marginBottom: 2 },
-  asgnDueRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' },
-  asgnSubmitted: { fontSize: 10, color: COLORS.green, fontWeight: FONT.semiBold },
-  asgnOverdue:   { fontSize: 10, color: COLORS.red,   fontWeight: FONT.semiBold },
+  asgnDueRow: { flexDirection: "row", alignItems: "center", flexWrap: "wrap" },
+  asgnSubmitted: {
+    fontSize: 10,
+    color: COLORS.green,
+    fontWeight: FONT.semiBold,
+  },
+  asgnOverdue: { fontSize: 10, color: COLORS.red, fontWeight: FONT.semiBold },
 
   asgnFooter: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: COLORS.border,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
   },
   pts: { fontSize: 12, fontWeight: FONT.semiBold, color: COLORS.orange },
-  asgnActions: { flexDirection: 'row', gap: 6, alignItems: 'center' },
+  asgnActions: { flexDirection: "row", gap: 6, alignItems: "center" },
   btnView: {
-    backgroundColor: COLORS.primary3, paddingVertical: 5, paddingHorizontal: 12,
+    backgroundColor: COLORS.primary3,
+    paddingVertical: 5,
+    paddingHorizontal: 12,
     borderRadius: RADIUS.full,
   },
-  btnViewText:   { fontSize: 10, fontWeight: FONT.semiBold, color: COLORS.primary },
+  btnViewText: {
+    fontSize: 10,
+    fontWeight: FONT.semiBold,
+    color: COLORS.primary,
+  },
   btnSubmit: {
-    backgroundColor: COLORS.primary, paddingVertical: 5, paddingHorizontal: 12,
+    backgroundColor: COLORS.primary,
+    paddingVertical: 5,
+    paddingHorizontal: 12,
     borderRadius: RADIUS.full,
   },
-  btnSubmitText: { fontSize: 10, fontWeight: FONT.semiBold, color: '#fff' },
-  btnReup:       { fontSize: 10, color: COLORS.textTertiary },
+  btnSubmitText: { fontSize: 10, fontWeight: FONT.semiBold, color: "#fff" },
+  btnReup: { fontSize: 10, color: COLORS.textTertiary },
 
   emptyText: {
-    textAlign: 'center', color: COLORS.textTertiary, marginTop: 40, fontSize: 13,
+    textAlign: "center",
+    color: COLORS.textTertiary,
+    marginTop: 40,
+    fontSize: 13,
   },
 });

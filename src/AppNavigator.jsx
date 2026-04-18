@@ -9,10 +9,10 @@ import LoginScreen from "./screens/LoginScreen";
 import HomeScreen from "./screens/HomeScreen";
 import ScheduleScreen from "./screens/ScheduleScreen";
 import NotificationsScreen from "./screens/NotificationsScreen";
-import EventsScreen from "./screens/EventsScreen";
 import ProfileScreen from "./screens/ProfileScreen";
-import AssignmentsScreen from "./screens/AssignmentsScreen";
-
+import AssignmentScreen from "./screens/TasksScreen";
+import GradesScreen from "./screens/GradesScreen";
+import AnnouncementScreen from "./screens/AnnouncementScreen";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const MainStack = createNativeStackNavigator();
@@ -28,18 +28,21 @@ function TabNavigator() {
           let iconName;
           if (route.name === "Home") iconName = "home";
           else if (route.name === "Schedule") iconName = "calendar";
-          else if (route.name === "Events") iconName = "gift";
-          else if (route.name === "Profile") iconName = "person";
-          else if (route.name === "Assignments") iconName = "document-text";
+          // else if (route.name === "Profile") iconName = "person";
+          else if (route.name === "Tasks") iconName = "document-text";
+          else if (route.name === "Updates") iconName = "megaphone";
+          else if (route.name === "Grades") iconName = "stats-chart";
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Schedule" component={ScheduleScreen} />
-      <Tab.Screen name="Assignments" component={AssignmentsScreen} />
-      <Tab.Screen name="Events" component={EventsScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Tasks" component={AssignmentScreen} />
+
+      <Tab.Screen name="Updates" component={AnnouncementScreen} />
+      <Tab.Screen name="Grades" component={GradesScreen} />
+
     </Tab.Navigator>
   );
 }
@@ -51,6 +54,7 @@ function MainTabs() {
       <MainStack.Screen name="Tabs" component={TabNavigator} />
       {/* Stack screens - accessible from tabs but don't show in tab bar */}
       <MainStack.Screen name="Notifications" component={NotificationsScreen} />
+      <MainStack.Screen name="Profile" component={ProfileScreen} />
     </MainStack.Navigator>
   );
 }

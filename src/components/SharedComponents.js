@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   filterPill: {
     paddingVertical: 5,
     paddingHorizontal: 12,
-    borderRadius: RADIUS.full,
+    borderRadius: RADIUS.sm,
     borderWidth: 1,
     borderColor: COLORS.border,
     backgroundColor: COLORS.card,

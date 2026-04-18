@@ -11,6 +11,7 @@ import {
 import { COLORS, RADIUS, FONT } from '../theme/theme';
 import { StatusBarRow } from '../components/SharedComponents';
 import { NOTIFICATIONS } from '../data/mockData';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Map iconBg key → colour
 const ICON_BG = {
@@ -23,6 +24,7 @@ const ICON_BG = {
 
 // ── Notification Card ─────────────────────────────────────────────────────────
 const NotifCard = ({ item }) => (
+  
   <View style={[styles.notifCard, item.unread && styles.notifCardUnread]}>
     {/* Unread indicator dot on left edge */}
     {item.unread && <View style={styles.unreadDot} />}
@@ -47,6 +49,7 @@ const GroupHeader = ({ label }) => (
 // ─────────────────────────────────────────────────────────────────────────────
 export default function NotificationsScreen() {
   const [notifications, setNotifications] = useState(NOTIFICATIONS);
+  const insets = useSafeAreaInsets();
 
   const markAllRead = () =>
     setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
@@ -63,7 +66,7 @@ export default function NotificationsScreen() {
   });
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { paddingTop: insets.top + 16, paddingBottom: 40 }]}>
       {/* <StatusBarRow /> */}
 
       {/* ── Header ── */}
