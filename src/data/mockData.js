@@ -1,7 +1,7 @@
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
 
 export const STUDENT = {
-  name: 'Saif',
+  name: 'Saif ur Rehman',
   email: 'saif@unimate.edu',
   rollNo: 'CS19045',
   semester: '8th Semester',
@@ -15,6 +15,7 @@ export const STUDENT = {
   gpa: '3.85',
   attendance: '92%',
   guardian: { name: 'Ahmed Raza', relation: 'Father', phone: '+92 300 7654321' },
+  enrolledCourses: ['IT-201', 'CS-103', 'IT-305', 'SE-210'],
 };
 
 export const WEEK_DAYS = [
@@ -75,44 +76,55 @@ export const CLASSES = [
   },
 ];
 
-export const ASSIGNMENTS = [
+export const TASKS = [
   {
     id: '1',
     title: 'Project – Portfolio Website',
     course: 'Web Development (IT-201)',
+    courseCode: 'IT-201',
     due: 'Due: Jan 11',
-    submitted: 'Submitted Jan 9',
     pts: 100,
-    status: 'submitted',
+    status: 'done',
+    isNew: false,
     accent: 'green',
+    isGraded: true,
+    marks: '92/100',
   },
   {
     id: '2',
     title: 'Assignment – Linked Lists',
     course: 'Data Structures (CS-103)',
+    courseCode: 'CS-103',
     due: 'Due: Jan 13',
-    submitted: 'Submitted Jan 12',
     pts: 50,
-    status: 'submitted',
+    status: 'done',
     accent: 'green',
+    isNew: false,
+    isGraded: true,
+    marks: '48/50',
   },
   {
     id: '3',
     title: 'Database Design – ER Diagram',
     course: 'Database Systems (IT-305)',
-    due: 'Due: Jan 16, 4:59 AM',
-    submitted: null,
+    courseCode: 'IT-305',
+    due: 'Due: Jan 16',
     pts: 75,
     status: 'pending',
     accent: 'orange',
+    isNew: true,
+    isGraded: false,
+    marks: null,
   },
 ];
+
 export const GRADES_BY_SEMESTER = [
   {
     semesterId: '8',
     title: 'Semester 8 — 2026',
     gpa: 3.7,
     totalCredits: 6,
+    finalNumbersUpdated: false, // GPA pending — final marks not yet released
     grades: [
       {
         id: 'sem8-1',
@@ -150,6 +162,7 @@ export const GRADES_BY_SEMESTER = [
     title: 'Semester 7 — 2025',
     gpa: 3.5,
     totalCredits: 6,
+    finalNumbersUpdated: true,
     grades: [
       {
         id: 'sem7-1',
@@ -187,6 +200,7 @@ export const GRADES_BY_SEMESTER = [
     title: 'Semester 6 — 2025',
     gpa: 3.4,
     totalCredits: 6,
+    finalNumbersUpdated: true,
     grades: [
       {
         id: 'sem6-1',
@@ -224,6 +238,7 @@ export const GRADES_BY_SEMESTER = [
     title: 'Semester 5 — 2024',
     gpa: 3.2,
     totalCredits: 6,
+    finalNumbersUpdated: true,
     grades: [
       {
         id: 'sem5-1',
@@ -261,6 +276,7 @@ export const GRADES_BY_SEMESTER = [
     title: 'Semester 4 — 2024',
     gpa: 3.6,
     totalCredits: 6,
+    finalNumbersUpdated: true,
     grades: [
       {
         id: 'sem4-1',
@@ -293,65 +309,181 @@ export const GRADES_BY_SEMESTER = [
     ],
   },
 ];
-export const NOTIFICATIONS = [
+
+// ── ANNOUNCEMENTS (for Updates screen) ───────────────────────────────────────
+export const ANNOUNCEMENTS = [
   {
-    id: '1',
-    icon: '📝',
-    iconBg: 'red',
-    title: 'Assignment Due Soon!',
-    msg: 'Database Design – ER Diagram is due in 2 hours. Don\'t miss the deadline.',
-    time: '10 minutes ago',
-    unread: true,
-    group: 'New',
+    id: 'ann-1',
+    type: 'important',
+    scope: 'department',
+    title: 'New Attendance Policy',
+    message: 'Minimum 75% attendance required to appear in final exams. This policy is effective immediately for all departments.',
+    date: 'Today',
+    image: null,
   },
   {
-    id: '2',
-    icon: '✅',
-    iconBg: 'green',
-    title: 'Grade Posted',
-    msg: 'Your Web Development midterm result has been published. Check your grades now.',
-    time: '1 hour ago',
-    unread: true,
-    group: 'New',
+    id: 'ann-2',
+    type: 'event',
+    scope: 'class',
+    title: 'React Workshop',
+    message: 'Friday at 2 PM in Lab 3. Open to IT-201 students only.',
+    date: 'Tomorrow',
+    image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c',
+    courseCode: 'IT-201',
   },
   {
-    id: '3',
-    icon: '📅',
-    iconBg: 'purple',
-    title: 'Class Rescheduled',
-    msg: 'Software Engineering class on April 18 has been moved to Room 12. Please note the change.',
-    time: '3 hours ago',
-    unread: true,
-    group: 'New',
+    id: 'ann-3',
+    type: 'general',
+    scope: 'department',
+    title: 'Library Timing Updated',
+    message: 'Library is now open till 10 PM on weekdays. Weekend timings remain unchanged.',
+    date: '2 days ago',
+    image: null,
   },
   {
-    id: '4',
-    icon: '🎉',
-    iconBg: 'orange',
-    title: 'New Event Added',
-    msg: 'React Native Workshop by CS Dept on Dec 23 at Main Auditorium. Register now!',
-    time: 'Yesterday',
-    unread: false,
-    group: 'Earlier',
+    id: 'ann-4',
+    type: 'important',
+    scope: 'class',
+    title: 'Midterm Date Changed',
+    message: 'Data Structures midterm rescheduled to April 25. Please prepare accordingly.',
+    date: '3 days ago',
+    image: null,
+    courseCode: 'CS-103',
   },
   {
-    id: '5',
-    icon: '📣',
-    iconBg: 'blue',
-    title: 'Attendance Alert',
-    msg: 'Your attendance in SE-210 is at 78%. Minimum 75% required to appear in finals.',
-    time: '2 days ago',
-    unread: false,
-    group: 'Earlier',
-  },
-  {
-    id: '6',
-    icon: '🏆',
-    iconBg: 'green',
-    title: 'Assignment Graded',
-    msg: 'You scored 48/50 on Linked Lists assignment. Great work!',
-    time: '3 days ago',
-    unread: false,
-    group: 'Earlier',
+    id: 'ann-5',
+    type: 'event',
+    scope: 'department',
+    title: 'Annual Tech Fest',
+    message: 'CS Department Annual Tech Fest on May 5. Registrations open now!',
+    date: '4 days ago',
+    image: null,
   },
 ];
+
+// ── MOCK NOTIFICATIONS (follows strict model) ───────────────────────────────
+// Seeded into NotificationContext on startup.
+export const MOCK_NOTIFICATIONS = [
+  // CRITICAL — Final results
+  {
+    id: 'notif-1',
+    title: 'Final Result Published',
+    body: 'Your final grades for Semester 7 are now available. Check your transcript.',
+    type: 'general',
+    scope: 'department',
+    priority: 'CRITICAL',
+    entityType: 'grade',
+    entityId: '7',
+    isRead: false,
+    isNew: true,
+    createdAt: '2026-04-18T09:00:00Z',
+  },
+
+  // HIGH — Task graded
+  {
+    id: 'notif-2',
+    title: 'Task Graded',
+    body: "Your task 'Project – Portfolio Website' has been checked. You scored 92/100.",
+    type: 'general',
+    scope: 'class',
+    priority: 'HIGH',
+    entityType: 'task',
+    entityId: '1',
+    isRead: false,
+    isNew: true,
+    createdAt: '2026-04-18T08:30:00Z',
+  },
+
+  // HIGH — Important announcement
+  {
+    id: 'notif-3',
+    title: '⚠️ Important Announcement',
+    body: 'New Attendance Policy: Minimum 75% attendance required to appear in final exams.',
+    type: 'important',
+    scope: 'department',
+    priority: 'HIGH',
+    entityType: 'announcement',
+    entityId: 'ann-1',
+    isRead: false,
+    isNew: true,
+    createdAt: '2026-04-18T07:00:00Z',
+  },
+
+  // MEDIUM — New task assigned
+  {
+    id: 'notif-4',
+    title: 'New Task Assigned',
+    body: "'Database Design – ER Diagram' has been assigned. Due: Jan 16.",
+    type: 'general',
+    scope: 'class',
+    priority: 'MEDIUM',
+    entityType: 'task',
+    entityId: '3',
+    isRead: false,
+    isNew: true,
+    createdAt: '2026-04-17T14:00:00Z',
+  },
+
+  // MEDIUM — Event announcement
+  {
+    id: 'notif-5',
+    title: '📅 Upcoming Event',
+    body: 'React Workshop — Friday at 2 PM in Lab 3. Don\'t miss it!',
+    type: 'event',
+    scope: 'class',
+    priority: 'MEDIUM',
+    entityType: 'announcement',
+    entityId: 'ann-2',
+    isRead: false,
+    isNew: false,
+    createdAt: '2026-04-17T10:00:00Z',
+  },
+
+  // HIGH — Task graded
+  {
+    id: 'notif-6',
+    title: 'Task Graded',
+    body: "Your task 'Assignment – Linked Lists' has been checked. You scored 48/50.",
+    type: 'general',
+    scope: 'class',
+    priority: 'HIGH',
+    entityType: 'task',
+    entityId: '2',
+    isRead: true,
+    isNew: false,
+    createdAt: '2026-04-16T16:00:00Z',
+  },
+
+  // LOW — General notice
+  {
+    id: 'notif-7',
+    title: '📢 Notice',
+    body: 'Library timing has been updated. Now open till 10 PM on weekdays.',
+    type: 'general',
+    scope: 'department',
+    priority: 'LOW',
+    entityType: 'announcement',
+    entityId: 'ann-3',
+    isRead: true,
+    isNew: false,
+    createdAt: '2026-04-16T09:00:00Z',
+  },
+
+  // MEDIUM — Event announcement
+  {
+    id: 'notif-8',
+    title: '📅 Upcoming Event',
+    body: 'CS Department Annual Tech Fest on May 5. Registrations open now!',
+    type: 'event',
+    scope: 'department',
+    priority: 'MEDIUM',
+    entityType: 'announcement',
+    entityId: 'ann-5',
+    isRead: true,
+    isNew: false,
+    createdAt: '2026-04-15T11:00:00Z',
+  },
+];
+
+// ── Old NOTIFICATIONS export (kept for backward compat, unused) ──────────────
+export const NOTIFICATIONS = MOCK_NOTIFICATIONS;

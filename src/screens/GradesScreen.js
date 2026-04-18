@@ -9,56 +9,98 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, RADIUS, FONT } from '../theme/theme';
 import { Avatar, FilterPill, SectionTitle } from '../components/SharedComponents';
+import NotificationBell from '../components/NotificationBell';
 import { GRADES_BY_SEMESTER, STUDENT } from '../data/mockData';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const GRADE_FILTERS = ['Current Sem', 'All Semesters', 'Transcript'];
 
 // ── GPA HERO ─────────────────────────────────────────────
-const GpaHero = () => (
-  <LinearGradient
-    colors={COLORS.gradientGreen}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 1 }}
-    style={styles.gpaHero}
-  >
-    <View>
-      <Text style={styles.gpaLabel}>Current CGPA</Text>
-      <Text style={styles.gpaNumber}>{STUDENT.gpa}</Text>
-      <Text style={styles.gpaSub}>8th Semester · Fall 2019</Text>
-    </View>
+// Shows pending state if final numbers are NOT updated.
+const GpaHero = ({ semester }) => {
+  const isPending = !semester?.finalNumbersUpdated;
 
-    <View style={styles.gpaRight}>
-      <Text style={styles.attNum}>{STUDENT.attendance}</Text>
-      <Text style={styles.attLabel}>Attendance</Text>
-    </View>
-  </LinearGradient>
-);
-
-// ── SEMESTER CARD (NEW) ──────────────────────────────────
-const SemesterCard = ({ item, onPress }) => (
-  <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
+  return (
     <LinearGradient
-      colors={COLORS.gradientPurple}
+      colors={isPending ? ['#F59E0B', '#EF4444'] : COLORS.gradientGreen}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={styles.semHero}
+      style={styles.gpaHero}
     >
       <View>
-        <Text style={styles.semLabel}>Semester</Text>
-        <Text style={styles.semTitle}>{item.title}</Text>
-        <Text style={styles.semSub}>
-          {item.totalCredits} Credits
+        <Text style={styles.gpaLabel}>
+          {isPending ? 'Semester GPA' : 'Current CGPA'}
         </Text>
+
+        {isPending ? (
+          <>
+            <Text style={styles.gpaPending}>Pending Result</Text>
+            <Text style={styles.gpaPendingSub}>
+              GPA will be calculated after{'\n'}final numbers are updated
+            </Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.gpaNumber}>{STUDENT.gpa}</Text>
+            <Text style={styles.gpaSub}>8th Semester · Fall 2019</Text>
+          </>
+        )}
       </View>
 
-      <View style={styles.semRight}>
-        <Text style={styles.semGpa}>{item.gpa}</Text>
-        <Text style={styles.semGpaLabel}>GPA</Text>
+      <View style={styles.gpaRight}>
+        {isPending ? (
+          <>
+            <Text style={styles.pendingIcon}>⏳</Text>
+            <Text style={styles.attLabel}>Awaiting</Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.attNum}>{STUDENT.attendance}</Text>
+            <Text style={styles.attLabel}>Attendance</Text>
+          </>
+        )}
       </View>
     </LinearGradient>
-  </TouchableOpacity>
-);
+  );
+};
+
+// ── SEMESTER CARD (NEW) ──────────────────────────────────
+const SemesterCard = ({ item, onPress }) => {
+  const isPending = !item.finalNumbersUpdated;
+
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
+      <LinearGradient
+        colors={isPending ? ['#F59E0B', '#EF4444'] : COLORS.gradientPurple}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.semHero}
+      >
+        <View>
+          <Text style={styles.semLabel}>Semester</Text>
+          <Text style={styles.semTitle}>{item.title}</Text>
+          <Text style={styles.semSub}>
+            {item.totalCredits} Credits
+          </Text>
+        </View>
+
+        <View style={styles.semRight}>
+          {isPending ? (
+            <>
+              <Text style={styles.semPendingText}>Pending</Text>
+              <Text style={styles.semGpaLabel}>Result</Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.semGpa}>{item.gpa}</Text>
+              <Text style={styles.semGpaLabel}>GPA</Text>
+            </>
+          )}
+        </View>
+      </LinearGradient>
+    </TouchableOpacity>
+  );
+};
 
 // ── PROGRESS BAR ─────────────────────────────────────────
 const ProgressBar = ({ progress, variant }) => {
@@ -131,10 +173,12 @@ const GradeCard = ({ item }) => (
 );
 
 // ── MAIN SCREEN ──────────────────────────────────────────
-export default function GradesScreen() {
+export default function GradesScreen({ navigation }) {
   const [activeFilter, setActiveFilter] = useState('Current Sem');
   const [selectedSemester, setSelectedSemester] = useState(null);
   const insets = useSafeAreaInsets();
+
+  const currentSemester = GRADES_BY_SEMESTER[0];
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top + 16, paddingBottom: 40 }]}>
@@ -142,10 +186,15 @@ export default function GradesScreen() {
       {/* HEADER */}
       <View style={styles.header}>
         <Text style={styles.pageTitle}>Grades</Text>
-        <Avatar label="S" size={36} />
+        <View style={styles.headerRight}>
+          <NotificationBell />
+          <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+            <Avatar label="S" size={36} />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      <GpaHero />
+      <GpaHero semester={currentSemester} />
 
       {/* FILTER */}
       <View style={styles.filterBar}>
@@ -165,10 +214,10 @@ export default function GradesScreen() {
       {/* CURRENT SEM */}
       {activeFilter === 'Current Sem' && (
         <>
-          <SectionTitle>{GRADES_BY_SEMESTER[0].title}</SectionTitle>
+          <SectionTitle>{currentSemester.title}</SectionTitle>
 
           <FlatList
-            data={GRADES_BY_SEMESTER[0].grades}
+            data={currentSemester.grades}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => <GradeCard item={item} />}
           />
@@ -238,6 +287,8 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
 
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+
   gpaHero: {
     marginHorizontal: 16,
     marginBottom: 8,
@@ -252,9 +303,25 @@ const styles = StyleSheet.create({
   gpaNumber: { fontSize: 36, fontWeight: FONT.bold, color: '#fff' },
   gpaSub: { fontSize: 11, color: '#eee' },
 
-  gpaRight: { alignItems: 'flex-end' },
+  gpaPending: {
+    fontSize: 22,
+    fontWeight: FONT.bold,
+    color: '#fff',
+    marginTop: 4,
+  },
+
+  gpaPendingSub: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,0.8)',
+    marginTop: 4,
+    lineHeight: 15,
+  },
+
+  gpaRight: { alignItems: 'flex-end', justifyContent: 'center' },
   attNum: { fontSize: 28, fontWeight: FONT.bold, color: '#fff' },
   attLabel: { fontSize: 10, color: '#eee' },
+
+  pendingIcon: { fontSize: 28, marginBottom: 2 },
 
   filterBar: {
     paddingHorizontal: 16,
@@ -263,7 +330,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
 
-  // NEW SEM CARD
+  // SEM CARD
   semHero: {
     marginHorizontal: 16,
     marginBottom: 10,
@@ -292,10 +359,17 @@ const styles = StyleSheet.create({
 
   semRight: {
     alignItems: 'flex-end',
+    justifyContent: 'center',
   },
 
   semGpa: {
     fontSize: 26,
+    fontWeight: FONT.bold,
+    color: '#fff',
+  },
+
+  semPendingText: {
+    fontSize: 16,
     fontWeight: FONT.bold,
     color: '#fff',
   },

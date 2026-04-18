@@ -76,7 +76,7 @@ export default function ProfileScreen() {
           </LinearGradient>
         </View>
 
-        <Text style={styles.profName}>{STUDENT.name}</Text>
+        <Text style={styles.profName} numberOfLines={1} ellipsizeMode="tail">{STUDENT.name}</Text>
         <Text style={styles.profEmail}>{STUDENT.email}</Text>
 
         <View style={styles.profTags}>
@@ -198,6 +198,8 @@ const styles = StyleSheet.create({
     fontWeight: FONT.bold,
     textAlign: "center",
     marginBottom: 2,
+    width: "70%",
+    alignSelf: "center",
   },
   profEmail: {
     color: "rgba(255,255,255,0.7)",

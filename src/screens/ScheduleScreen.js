@@ -12,6 +12,7 @@ import { Avatar } from '../components/SharedComponents';
 import { CLASSES, WEEK_DAYS } from '../data/mockData';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Feather } from "@expo/vector-icons";
 
 // ── Day Chip ─────────────────────────────────────────────────────────────
 const DayChip = ({ day, active, onPress }) => (
@@ -63,7 +64,7 @@ const ClassCard = ({ item, index }) => {
 };
 
 // ── MAIN SCREEN ──────────────────────────────────────────────────────────
-export default function ScheduleScreen() {
+export default function ScheduleScreen({ navigation }) {
   const [selectedDay, setSelectedDay] = useState(3);
   const insets = useSafeAreaInsets();
 
@@ -73,7 +74,18 @@ export default function ScheduleScreen() {
       {/* ── Header ── */}
       <View style={styles.header}>
         <Text style={styles.pageTitle}>Schedule</Text>
-        <Avatar label="S" size={36} />
+        <View style={styles.headerRight}>
+          <TouchableOpacity
+            style={styles.bellBtn}
+            onPress={() => navigation.navigate("Notifications")}
+          >
+            <Feather name="bell" size={16} color={COLORS.textSecondary} />
+            <View style={styles.bellDot} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+            <Avatar label="S" size={36} />
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.monthNavContainer}>
 
@@ -143,18 +155,42 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bg,
     paddingVertical: 16,
   },
-
- header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    marginBottom: 10,
   },
   pageTitle: {
     fontSize: 22,
     fontWeight: FONT.bold,
     color: COLORS.textPrimary,
+  },
+
+  headerRight: { flexDirection: "row", alignItems: "center", gap: 8 },
+
+  bellBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: COLORS.card,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+  },
+
+  bellDot: {
+    position: "absolute",
+    top: -2,
+    right: -2,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#FF4757",
+    borderWidth: 1.5,
+    borderColor: COLORS.bg,
   },
 
   monthNavContainer: {

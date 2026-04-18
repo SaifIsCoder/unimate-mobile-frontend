@@ -9,9 +9,9 @@ import {
   StyleSheet,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Feather } from "@expo/vector-icons";
 import { COLORS, RADIUS, FONT } from "../theme/theme";
 import { Avatar, SectionTitle } from "../components/SharedComponents";
+import NotificationBell from "../components/NotificationBell";
 import { STUDENT } from "../data/mockData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -75,19 +75,13 @@ export default function HomeScreen({ navigation }) {
     >
       {/* ── Header ── */}
       <View style={styles.header}>
-        <View>
+        <View style={{ flex: 1, paddingRight: 16 }}>
           <Text style={styles.greeting}>Welcome back 👋</Text>
-          <Text style={styles.name}>{STUDENT.name}</Text>
+          <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">{STUDENT.name}</Text>
         </View>
 
         <View style={styles.headerRight}>
-          <TouchableOpacity
-            style={styles.bellBtn}
-            onPress={() => navigation.navigate("Notifications")}
-          >
-            <Feather name="bell" size={16} color={COLORS.textSecondary} />
-            <View style={styles.bellDot} />
-          </TouchableOpacity>
+          <NotificationBell />
           <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
             <Avatar label="S" size={36} />
           </TouchableOpacity>
@@ -141,33 +135,15 @@ const styles = StyleSheet.create({
   },
 
   greeting: { fontSize: 13, color: COLORS.textSecondary, marginBottom: 1 },
-  name: { fontSize: 20, fontWeight: FONT.bold, color: COLORS.textPrimary },
+  name: {
+    fontSize: 20,
+    fontWeight: FONT.bold,
+    color: COLORS.textPrimary,
+    textAlign: "left",
+    lineHeight: 24,
+  },
 
   headerRight: { flexDirection: "row", alignItems: "center", gap: 8 },
-
-  bellBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  },
-
-  bellDot: {
-    position: "absolute",
-    top: -2,
-    right: -2,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#FF4757",
-    borderWidth: 1.5,
-    borderColor: COLORS.bg,
-  },
 
   banner: {
     marginHorizontal: 16,

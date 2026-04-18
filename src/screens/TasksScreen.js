@@ -1,116 +1,118 @@
-// ─── ASSIGNMENTS SCREEN ───────────────────────────────────────────────────────
+// ─── TASKS SCREEN (UPDATED - NOTIFICATION INTEGRATED) ────────────────────────
 
 import React, { useState } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
   FlatList,
   StyleSheet,
 } from "react-native";
 import { COLORS, RADIUS, FONT, ACCENT } from "../theme/theme";
-import {
-  StatusBarRow,
-  Avatar,
-  FilterPill,
-} from "../components/SharedComponents";
-import { ASSIGNMENTS } from "../data/mockData";
+import { Avatar, FilterPill } from "../components/SharedComponents";
+import NotificationBell from "../components/NotificationBell";
+import { TASKS } from "../data/mockData";
+import { useNotifications } from "../context/NotificationContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-const FILTERS = ["All", "Pending", "Submitted", "Overdue"];
+
+const FILTERS = ["All", "Pending", "Done", "Overdue"];
 
 // ── Status Badge ──────────────────────────────────────────────────────────────
 const Badge = ({ status }) => {
   const map = {
-    submitted: { bg: COLORS.green2, text: COLORS.green, label: "✓ Submitted" },
     pending: { bg: COLORS.blue2, text: COLORS.blue, label: "⏳ Pending" },
+    done: { bg: COLORS.green2, text: COLORS.green, label: "✓ Done" },
     overdue: { bg: COLORS.red2, text: COLORS.red, label: "⚠ Overdue" },
   };
+
   const cfg = map[status] || map.pending;
+
   return (
     <View style={[styles.badge, { backgroundColor: cfg.bg }]}>
-      <Text style={[styles.badgeText, { color: cfg.text }]}>{cfg.label}</Text>
+      <Text style={[styles.badgeText, { color: cfg.text }]}>
+        {cfg.label}
+      </Text>
     </View>
   );
 };
 
-// ── Assignment Card ───────────────────────────────────────────────────────────
-const AssignmentCard = ({ item }) => {
+// ── Task Card ────────────────────────────────────────────────────────────────
+const TaskCard = ({ item, hasUpdate }) => {
   const accentColor = ACCENT[item.accent] || ACCENT.purple;
-  const isSubmitted = item.status === "submitted";
+  const isDone = item.status === "done";
 
   return (
-    <View style={[styles.asgnCard, { borderLeftColor: accentColor.border }]}>
-      <View style={styles.asgnHeader}>
-        <Text style={styles.asgnTitle} numberOfLines={2}>
+    <View style={[styles.card, { borderLeftColor: accentColor.border }]}>
+
+      {/* NEW UPDATE INDICATOR — from notification system */}
+      {hasUpdate && <View style={styles.updateDot} />}
+
+      <View style={styles.headerRow}>
+        <Text style={styles.title} numberOfLines={2}>
           {item.title}
         </Text>
         <Badge status={item.status} />
       </View>
-      <Text style={styles.asgnMeta}>📄 {item.course}</Text>
-      <View style={styles.asgnDueRow}>
-        <Text style={styles.asgnMeta}>📅 {item.due}</Text>
-        {item.submitted && (
-          <Text style={styles.asgnSubmitted}> — {item.submitted}</Text>
-        )}
-        {!item.submitted && (
-          <Text style={styles.asgnOverdue}> (Due soon!)</Text>
-        )}
+
+      <Text style={styles.meta}>📄 {item.course}</Text>
+
+      <View style={styles.row}>
+        <Text style={styles.meta}>📅 {item.due}</Text>
       </View>
 
-      <View style={styles.asgnFooter}>
-        <Text style={styles.pts}>⭐ {item.pts} pts</Text>
-        <View style={styles.asgnActions}>
-          <TouchableOpacity style={styles.btnView} activeOpacity={0.7}>
-            <Text style={styles.btnViewText}>👁 View</Text>
-          </TouchableOpacity>
-          {isSubmitted ? (
-            <TouchableOpacity activeOpacity={0.7}>
-              <Text style={styles.btnReup}>Re-upload</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={styles.btnSubmit} activeOpacity={0.7}>
-              <Text style={styles.btnSubmitText}>↑ Submit</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+      {/* FOOTER */}
+      <View style={styles.footer}>
+        {item.isGraded ? (
+          <View style={styles.gradedRow}>
+            <Text style={styles.gradedText}>
+              ✅ Graded: <Text style={styles.marksText}>{item.marks}</Text>
+            </Text>
+          </View>
+        ) : isDone ? (
+          <Text style={styles.doneText}>✔ Completed</Text>
+        ) : (
+          <Text style={styles.pendingText}>Awaiting update</Text>
+        )}
+
+        <TouchableOpacity style={styles.btnView}>
+          <Text style={styles.btnViewText}>👁 View</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-export default function TasksScreen() {
+export default function TasksScreen({ navigation }) {
   const [activeFilter, setActiveFilter] = useState("All");
+  const { hasUnreadForEntity } = useNotifications();
   const insets = useSafeAreaInsets();
 
-  const filtered = ASSIGNMENTS.filter((a) => {
+  const filtered = TASKS.filter((t) => {
     if (activeFilter === "All") return true;
-    return a.status === activeFilter.toLowerCase();
+    return t.status === activeFilter.toLowerCase();
   });
 
-  const total = ASSIGNMENTS.length;
-  const pending = ASSIGNMENTS.filter((a) => a.status === "pending").length;
-  const overdue = ASSIGNMENTS.filter((a) => a.status === "overdue").length;
-  const submitted = ASSIGNMENTS.filter((a) => a.status === "submitted").length;
+  const total = TASKS.length;
+  const pending = TASKS.filter((t) => t.status === "pending").length;
+  const done = TASKS.filter((t) => t.status === "done").length;
+  const overdue = TASKS.filter((t) => t.status === "overdue").length;
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top + 16, paddingBottom: 40 }]}>
-      {/* <StatusBarRow /> */}
+    <View style={[styles.screen, { paddingTop: insets.top + 16 }]}>
 
-      {/* ── Header ── */}
+      {/* HEADER */}
       <View style={styles.header}>
         <Text style={styles.pageTitle}>Tasks</Text>
-        <Avatar label="S" size={36} />
+        <View style={styles.headerRight}>
+          <NotificationBell />
+          <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+            <Avatar label="S" size={36} />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      {/* ── Course Selector (static) ── */}
-      <TouchableOpacity style={styles.courseSelect} activeOpacity={0.7}>
-        <Text style={styles.courseSelectText}>All Courses</Text>
-        <Text style={styles.courseSelectArrow}>▾</Text>
-      </TouchableOpacity>
-
-      {/* ── Filter Pills ── */}
+      {/* FILTERS */}
       <View style={styles.filterBar}>
         {FILTERS.map((f) => (
           <FilterPill
@@ -122,85 +124,82 @@ export default function TasksScreen() {
         ))}
       </View>
 
-      {/* ── Summary Strip ── */}
-      <View style={styles.summaryStrip}>
+      {/* SUMMARY */}
+      <View style={styles.summary}>
         {[
-          { num: total, color: COLORS.primary, lbl: "Total" },
-          { num: pending, color: COLORS.orange, lbl: "Pending" },
-          { num: overdue, color: COLORS.red, lbl: "Overdue" },
-          { num: submitted, color: COLORS.green, lbl: "Done" },
+          { num: total, lbl: "Total", color: COLORS.primary },
+          { num: pending, lbl: "Pending", color: COLORS.orange },
+          { num: done, lbl: "Done", color: COLORS.green },
+          { num: overdue, lbl: "Overdue", color: COLORS.red },
         ].map((s) => (
           <View key={s.lbl} style={styles.sumItem}>
-            <Text style={[styles.sumNum, { color: s.color }]}>{s.num}</Text>
+            <Text style={[styles.sumNum, { color: s.color }]}>
+              {s.num}
+            </Text>
             <Text style={styles.sumLbl}>{s.lbl}</Text>
           </View>
         ))}
       </View>
 
-      {/* ── Assignment List ── */}
+      {/* LIST */}
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <AssignmentCard item={item} />}
+        renderItem={({ item }) => (
+          <TaskCard
+            item={item}
+            hasUpdate={hasUnreadForEntity('task', item.id)}
+          />
+        )}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 16 }}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>No assignments in this category.</Text>
+          <Text style={styles.emptyText}>No tasks available</Text>
         }
       />
     </View>
   );
 }
 
+// ── STYLES ───────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: COLORS.bg, paddingVertical: 16 },
+  screen: { flex: 1, backgroundColor: COLORS.bg },
+
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
     paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  pageTitle: { fontSize: 22, fontWeight: FONT.bold, color: COLORS.textPrimary },
-
-  courseSelect: {
-    marginHorizontal: 16,
     marginBottom: 10,
-    marginTop: 20,
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: RADIUS.md,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
   },
-  courseSelectText: { fontSize: 13, color: COLORS.textSecondary },
-  courseSelectArrow: { fontSize: 13, color: COLORS.textTertiary },
+  pageTitle: {
+    fontSize: 22,
+    fontWeight: FONT.bold,
+    color: COLORS.textPrimary,
+  },
+
+  headerRight: { flexDirection: "row", alignItems: "center", gap: 8 },
 
   filterBar: {
-    paddingHorizontal: 16,
-    paddingBottom: 8,
     flexDirection: "row",
+    paddingHorizontal: 16,
     gap: 8,
+    marginBottom: 10,
   },
 
-  summaryStrip: {
+  summary: {
+    flexDirection: "row",
     marginHorizontal: 16,
     marginBottom: 10,
     backgroundColor: COLORS.primary3,
-    borderRadius: RADIUS.md,
     padding: 10,
-    flexDirection: "row",
+    borderRadius: RADIUS.md,
     gap: 16,
   },
+
   sumItem: { alignItems: "center" },
   sumNum: { fontSize: 16, fontWeight: FONT.bold },
-  sumLbl: { fontSize: 9, color: COLORS.primary2, fontWeight: FONT.medium },
+  sumLbl: { fontSize: 10, color: COLORS.primary2 },
 
-  asgnCard: {
+  card: {
     marginHorizontal: 16,
     marginBottom: 10,
     backgroundColor: COLORS.card,
@@ -209,76 +208,106 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     borderLeftWidth: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    position: "relative",
   },
-  asgnHeader: {
+
+  updateDot: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.primary,
+    borderWidth: 1.5,
+    borderColor: COLORS.card,
+  },
+
+  headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 6,
   },
-  asgnTitle: {
+
+  title: {
     fontSize: 13,
     fontWeight: FONT.bold,
     color: COLORS.textPrimary,
     flex: 1,
     marginRight: 8,
   },
+
+  meta: {
+    fontSize: 10,
+    color: COLORS.textTertiary,
+    marginBottom: 2,
+  },
+
+  row: { flexDirection: "row" },
+
   badge: {
-    paddingVertical: 3,
     paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: RADIUS.full,
   },
-  badgeText: { fontSize: 9, fontWeight: FONT.semiBold },
 
-  asgnMeta: { fontSize: 10, color: COLORS.textTertiary, marginBottom: 2 },
-  asgnDueRow: { flexDirection: "row", alignItems: "center", flexWrap: "wrap" },
-  asgnSubmitted: {
-    fontSize: 10,
-    color: COLORS.green,
+  badgeText: {
+    fontSize: 9,
     fontWeight: FONT.semiBold,
   },
-  asgnOverdue: { fontSize: 10, color: COLORS.red, fontWeight: FONT.semiBold },
 
-  asgnFooter: {
+  footer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginTop: 8,
-    paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
+    paddingTop: 8,
   },
-  pts: { fontSize: 12, fontWeight: FONT.semiBold, color: COLORS.orange },
-  asgnActions: { flexDirection: "row", gap: 6, alignItems: "center" },
+
+  gradedRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  gradedText: {
+    color: COLORS.green,
+    fontSize: 11,
+    fontWeight: FONT.semiBold,
+  },
+
+  marksText: {
+    color: COLORS.textPrimary,
+    fontWeight: FONT.bold,
+  },
+
+  doneText: {
+    color: COLORS.green,
+    fontSize: 11,
+    fontWeight: FONT.semiBold,
+  },
+
+  pendingText: {
+    color: COLORS.orange,
+    fontSize: 11,
+  },
+
   btnView: {
     backgroundColor: COLORS.primary3,
-    paddingVertical: 5,
     paddingHorizontal: 12,
+    paddingVertical: 5,
     borderRadius: RADIUS.full,
   },
+
   btnViewText: {
     fontSize: 10,
-    fontWeight: FONT.semiBold,
     color: COLORS.primary,
+    fontWeight: FONT.semiBold,
   },
-  btnSubmit: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 5,
-    paddingHorizontal: 12,
-    borderRadius: RADIUS.full,
-  },
-  btnSubmitText: { fontSize: 10, fontWeight: FONT.semiBold, color: "#fff" },
-  btnReup: { fontSize: 10, color: COLORS.textTertiary },
 
   emptyText: {
     textAlign: "center",
-    color: COLORS.textTertiary,
     marginTop: 40,
-    fontSize: 13,
+    color: COLORS.textTertiary,
   },
 });

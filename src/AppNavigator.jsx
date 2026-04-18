@@ -5,14 +5,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { useUser } from "./context/UserContext";
 
 // Screens
-import LoginScreen from "./screens/LoginScreen";
 import HomeScreen from "./screens/HomeScreen";
 import ScheduleScreen from "./screens/ScheduleScreen";
 import NotificationsScreen from "./screens/NotificationsScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import AssignmentScreen from "./screens/TasksScreen";
 import GradesScreen from "./screens/GradesScreen";
-import AnnouncementScreen from "./screens/AnnouncementScreen";
+import UpdatesScreen from "./screens/UpdatesScreen";
+import Login from "./screens/auth/Login";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const MainStack = createNativeStackNavigator();
@@ -38,11 +38,9 @@ function TabNavigator() {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Schedule" component={ScheduleScreen} />
+      <Tab.Screen name="Updates" component={UpdatesScreen} />
       <Tab.Screen name="Tasks" component={AssignmentScreen} />
-
-      <Tab.Screen name="Updates" component={AnnouncementScreen} />
       <Tab.Screen name="Grades" component={GradesScreen} />
-
     </Tab.Navigator>
   );
 }
@@ -55,6 +53,7 @@ function MainTabs() {
       {/* Stack screens - accessible from tabs but don't show in tab bar */}
       <MainStack.Screen name="Notifications" component={NotificationsScreen} />
       <MainStack.Screen name="Profile" component={ProfileScreen} />
+      <MainStack.Screen name="Login" component={Login} />
     </MainStack.Navigator>
   );
 }
@@ -67,7 +66,7 @@ export default function AppNavigator() {
       {!user ? (
         <Stack.Screen name="MainTabs" component={MainTabs} />
       ) : (
-        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Login" component={Login} />
       )}
     </Stack.Navigator>
   );
