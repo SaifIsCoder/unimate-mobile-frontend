@@ -293,20 +293,20 @@ const styles = StyleSheet.create({
   },
 
   classTime: {
-    fontSize: 10,
+    fontSize: 12,
     color: COLORS.textTertiary,
     marginBottom: 4,
   },
 
   className: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: FONT.bold,
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
 
   classCode: {
-    fontSize: 10,
+    fontSize: 12,
     color: COLORS.textTertiary,
     marginBottom: 8,
   },
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
   },
 
   classMetaText: {
-    fontSize: 10,
+    fontSize: 12,
     color: COLORS.textSecondary,
   },
 

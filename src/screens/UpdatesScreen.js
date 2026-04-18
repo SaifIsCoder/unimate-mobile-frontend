@@ -1,7 +1,7 @@
 // ─── UPDATES SCREEN ──────────────────────────────────────────────────────────
 // Announcements with type + scope filtering.
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -9,29 +9,29 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-} from 'react-native';
-import { COLORS, RADIUS, FONT } from '../theme/theme';
-import { Avatar, FilterPill } from '../components/SharedComponents';
-import NotificationBell from '../components/NotificationBell';
-import { ANNOUNCEMENTS } from '../data/mockData';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import { COLORS, RADIUS, FONT } from "../theme/theme";
+import { Avatar, FilterPill } from "../components/SharedComponents";
+import NotificationBell from "../components/NotificationBell";
+import { ANNOUNCEMENTS } from "../data/mockData";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // ── TYPE CONFIG ─────────────────────────────────────────────
 const TYPE_CONFIG = {
-  important: { label: 'Important', color: COLORS.red },
-  event: { label: 'Event', color: COLORS.primary },
-  general: { label: 'Notice', color: COLORS.textSecondary },
+  important: { label: "Important", color: COLORS.red },
+  event: { label: "Event", color: COLORS.primary },
+  general: { label: "Notice", color: COLORS.textSecondary },
 };
 
 // ── SCOPE CONFIG ────────────────────────────────────────────
 const SCOPE_CONFIG = {
-  class: { label: 'My Class', color: COLORS.blue },
-  department: { label: 'Department', color: COLORS.green },
+  class: { label: "My Class", color: COLORS.blue },
+  department: { label: "Department", color: COLORS.green },
 };
 
 // ── FILTERS ─────────────────────────────────────────────────
-const TYPE_FILTERS = ['All', 'important', 'event', 'general'];
-const SCOPE_FILTERS = ['All', 'class', 'department'];
+const TYPE_FILTERS = ["All", "important", "event", "general"];
+const SCOPE_FILTERS = ["All", "class", "department"];
 
 // ── CARD ────────────────────────────────────────────────────
 const AnnouncementCard = ({ item }) => {
@@ -40,7 +40,6 @@ const AnnouncementCard = ({ item }) => {
 
   return (
     <View style={styles.card}>
-      
       {/* IMAGE */}
       {item.image && (
         <Image source={{ uri: item.image }} style={styles.image} />
@@ -49,10 +48,13 @@ const AnnouncementCard = ({ item }) => {
       {/* HEADER */}
       <View style={styles.cardHeader}>
         <View style={styles.badgeRow}>
-          <Text style={[styles.badge, { color: cfg.color }]}>
-            {cfg.label}
-          </Text>
-          <View style={[styles.scopeBadge, { backgroundColor: scopeCfg.color + '18' }]}>
+          <Text style={[styles.badge, { color: cfg.color }]}>{cfg.label}</Text>
+          <View
+            style={[
+              styles.scopeBadge,
+              { backgroundColor: scopeCfg.color + "18" },
+            ]}
+          >
             <Text style={[styles.scopeBadgeText, { color: scopeCfg.color }]}>
               {scopeCfg.label}
             </Text>
@@ -73,21 +75,27 @@ const AnnouncementCard = ({ item }) => {
 
 // ── MAIN ────────────────────────────────────────────────────
 export default function UpdatesScreen({ navigation }) {
-  const [activeTypeFilter, setActiveTypeFilter] = useState('All');
-  const [activeScopeFilter, setActiveScopeFilter] = useState('All');
+  const [activeTypeFilter, setActiveTypeFilter] = useState("All");
+  const [activeScopeFilter, setActiveScopeFilter] = useState("All");
   const insets = useSafeAreaInsets();
 
   const filteredData = useMemo(() => {
     return ANNOUNCEMENTS.filter((a) => {
-      const typeMatch = activeTypeFilter === 'All' || a.type === activeTypeFilter;
-      const scopeMatch = activeScopeFilter === 'All' || a.scope === activeScopeFilter;
+      const typeMatch =
+        activeTypeFilter === "All" || a.type === activeTypeFilter;
+      const scopeMatch =
+        activeScopeFilter === "All" || a.scope === activeScopeFilter;
       return typeMatch && scopeMatch;
     });
   }, [activeTypeFilter, activeScopeFilter]);
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top + 16, paddingBottom: 40 }]}>
-      
+    <View
+      style={[
+        styles.screen,
+        { paddingTop: insets.top + 16, paddingBottom: 40 },
+      ]}
+    >
       {/* HEADER */}
       <View style={styles.header}>
         <Text style={styles.pageTitle}>Updates</Text>
@@ -104,7 +112,7 @@ export default function UpdatesScreen({ navigation }) {
         {TYPE_FILTERS.map((f) => (
           <FilterPill
             key={`type-${f}`}
-            label={f === 'All' ? 'All Types' : TYPE_CONFIG[f]?.label || f}
+            label={f === "All" ? "All Types" : TYPE_CONFIG[f]?.label || f}
             active={activeTypeFilter === f}
             onPress={() => setActiveTypeFilter(f)}
           />
@@ -116,7 +124,7 @@ export default function UpdatesScreen({ navigation }) {
         {SCOPE_FILTERS.map((f) => (
           <FilterPill
             key={`scope-${f}`}
-            label={f === 'All' ? 'All Scopes' : SCOPE_CONFIG[f]?.label || f}
+            label={f === "All" ? "All Scopes" : SCOPE_CONFIG[f]?.label || f}
             active={activeScopeFilter === f}
             onPress={() => setActiveScopeFilter(f)}
           />
@@ -131,7 +139,7 @@ export default function UpdatesScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={
           filteredData.length === 0
-            ? { flex: 1, justifyContent: 'center', alignItems: 'center' }
+            ? { flex: 1, justifyContent: "center", alignItems: "center" }
             : { paddingBottom: 16 }
         }
         ListEmptyComponent={
@@ -157,8 +165,8 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     marginBottom: 10,
   },
@@ -169,10 +177,10 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
 
-  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  headerRight: { flexDirection: "row", alignItems: "center", gap: 8 },
 
   filterBar: {
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingHorizontal: 16,
     marginBottom: 8,
     gap: 6,
@@ -183,32 +191,32 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     backgroundColor: COLORS.card,
     borderRadius: RADIUS.lg,
-    overflow: 'hidden',
+    overflow: "hidden",
     borderWidth: 1,
     borderColor: COLORS.border,
   },
 
   image: {
-    width: '100%',
+    width: "100%",
     height: 140,
   },
 
   cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 12,
     paddingBottom: 4,
   },
 
   badgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
   },
 
   badge: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: FONT.semiBold,
   },
 
@@ -219,17 +227,17 @@ const styles = StyleSheet.create({
   },
 
   scopeBadgeText: {
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: FONT.semiBold,
   },
 
   date: {
-    fontSize: 10,
+    fontSize: 11,
     color: COLORS.textTertiary,
   },
 
   title: {
-    fontSize: 14,
+    fontSize: 17,
     fontWeight: FONT.bold,
     color: COLORS.textPrimary,
     paddingHorizontal: 12,
@@ -237,7 +245,7 @@ const styles = StyleSheet.create({
   },
 
   message: {
-    fontSize: 11,
+    fontSize: 12,
     color: COLORS.textSecondary,
     paddingHorizontal: 12,
     paddingBottom: 12,
@@ -246,7 +254,7 @@ const styles = StyleSheet.create({
 
   // Empty state
   emptyState: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingHorizontal: 40,
   },
 
@@ -262,6 +270,6 @@ const styles = StyleSheet.create({
   emptySub: {
     fontSize: 11,
     color: COLORS.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   },
   profEmail: {
     color: "rgba(255,255,255,0.7)",
-    fontSize: 11,
+    fontSize: 12,
     textAlign: "center",
     marginBottom: 10,
   },
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: RADIUS.full,
   },
-  profTagText: { color: "#fff", fontSize: 10, fontWeight: FONT.medium },
+  profTagText: { color: "#fff", fontSize: 11, fontWeight: FONT.medium },
 
   statGrid: {
     flexDirection: "row",
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   },
   statNum: { fontSize: 24, fontWeight: FONT.bold },
   statLbl: {
-    fontSize: 10,
+    fontSize: 11,
     color: COLORS.textTertiary,
     fontWeight: FONT.medium,
     marginTop: 2,
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   infoSectionTitle: {
-    fontSize: 11,
+    fontSize: 14,
     fontWeight: FONT.bold,
     color: COLORS.textSecondary,
     textTransform: "uppercase",
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.border,
   },
   infoLabel: {
-    fontSize: 12,
+    fontSize: 13,
     color: COLORS.textTertiary,
     fontWeight: FONT.medium,
   },

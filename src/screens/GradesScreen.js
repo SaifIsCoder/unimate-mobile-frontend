@@ -1,19 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   FlatList,
   StyleSheet,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, RADIUS, FONT } from '../theme/theme';
-import { Avatar, FilterPill, SectionTitle } from '../components/SharedComponents';
-import NotificationBell from '../components/NotificationBell';
-import { GRADES_BY_SEMESTER, STUDENT } from '../data/mockData';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { COLORS, RADIUS, FONT } from "../theme/theme";
+import {
+  Avatar,
+  FilterPill,
+  SectionTitle,
+} from "../components/SharedComponents";
+import NotificationBell from "../components/NotificationBell";
+import { GRADES_BY_SEMESTER, STUDENT } from "../data/mockData";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const GRADE_FILTERS = ['Current Sem', 'All Semesters', 'Transcript'];
+const GRADE_FILTERS = ["Current Sem", "All Semesters", "Transcript"];
 
 // ── GPA HERO ─────────────────────────────────────────────
 // Shows pending state if final numbers are NOT updated.
@@ -22,21 +26,21 @@ const GpaHero = ({ semester }) => {
 
   return (
     <LinearGradient
-      colors={isPending ? ['#F59E0B', '#EF4444'] : COLORS.gradientGreen}
+      colors={isPending ? ["#F59E0B", "#EF4444"] : COLORS.gradientGreen}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.gpaHero}
     >
       <View>
         <Text style={styles.gpaLabel}>
-          {isPending ? 'Semester GPA' : 'Current CGPA'}
+          {isPending ? "Semester GPA" : "Current CGPA"}
         </Text>
 
         {isPending ? (
           <>
             <Text style={styles.gpaPending}>Pending Result</Text>
             <Text style={styles.gpaPendingSub}>
-              GPA will be calculated after{'\n'}final numbers are updated
+              GPA will be calculated after{"\n"}final numbers are updated
             </Text>
           </>
         ) : (
@@ -71,7 +75,7 @@ const SemesterCard = ({ item, onPress }) => {
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
       <LinearGradient
-        colors={isPending ? ['#F59E0B', '#EF4444'] : COLORS.gradientPurple}
+        colors={isPending ? ["#F59E0B", "#EF4444"] : COLORS.gradientPurple}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.semHero}
@@ -79,9 +83,7 @@ const SemesterCard = ({ item, onPress }) => {
         <View>
           <Text style={styles.semLabel}>Semester</Text>
           <Text style={styles.semTitle}>{item.title}</Text>
-          <Text style={styles.semSub}>
-            {item.totalCredits} Credits
-          </Text>
+          <Text style={styles.semSub}>{item.totalCredits} Credits</Text>
         </View>
 
         <View style={styles.semRight}>
@@ -105,8 +107,8 @@ const SemesterCard = ({ item, onPress }) => {
 // ── PROGRESS BAR ─────────────────────────────────────────
 const ProgressBar = ({ progress, variant }) => {
   const colors = {
-    green: ['#1DB87A', '#0EA5E9'],
-    purple: [COLORS.primary, '#9C6CF8'],
+    green: ["#1DB87A", "#0EA5E9"],
+    purple: [COLORS.primary, "#9C6CF8"],
     orange: [COLORS.orange, COLORS.red],
   };
 
@@ -160,7 +162,8 @@ const GradeCard = ({ item }) => (
         Midterm: <Text style={styles.gradeItemStrong}>{item.midterm}</Text>
       </Text>
       <Text style={styles.gradeItem}>
-        Assignments: <Text style={styles.gradeItemStrong}>{item.assignments}</Text>
+        Assignments:{" "}
+        <Text style={styles.gradeItemStrong}>{item.assignments}</Text>
       </Text>
       <Text style={styles.gradeItem}>
         Final: <Text style={styles.gradeItemStrong}>—</Text>
@@ -174,15 +177,19 @@ const GradeCard = ({ item }) => (
 
 // ── MAIN SCREEN ──────────────────────────────────────────
 export default function GradesScreen({ navigation }) {
-  const [activeFilter, setActiveFilter] = useState('Current Sem');
+  const [activeFilter, setActiveFilter] = useState("Current Sem");
   const [selectedSemester, setSelectedSemester] = useState(null);
   const insets = useSafeAreaInsets();
 
   const currentSemester = GRADES_BY_SEMESTER[0];
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top + 16, paddingBottom: 40 }]}>
-      
+    <View
+      style={[
+        styles.screen,
+        { paddingTop: insets.top + 16, paddingBottom: 40 },
+      ]}
+    >
       {/* HEADER */}
       <View style={styles.header}>
         <Text style={styles.pageTitle}>Grades</Text>
@@ -212,7 +219,7 @@ export default function GradesScreen({ navigation }) {
       </View>
 
       {/* CURRENT SEM */}
-      {activeFilter === 'Current Sem' && (
+      {activeFilter === "Current Sem" && (
         <>
           <SectionTitle>{currentSemester.title}</SectionTitle>
 
@@ -225,7 +232,7 @@ export default function GradesScreen({ navigation }) {
       )}
 
       {/* ALL SEMESTERS */}
-      {activeFilter === 'All Semesters' && !selectedSemester && (
+      {activeFilter === "All Semesters" && !selectedSemester && (
         <FlatList
           data={GRADES_BY_SEMESTER}
           keyExtractor={(item) => item.semesterId}
@@ -239,7 +246,7 @@ export default function GradesScreen({ navigation }) {
       )}
 
       {/* SEM DETAIL */}
-      {activeFilter === 'All Semesters' && selectedSemester && (
+      {activeFilter === "All Semesters" && selectedSemester && (
         <>
           <TouchableOpacity
             style={styles.backBtn}
@@ -259,7 +266,7 @@ export default function GradesScreen({ navigation }) {
       )}
 
       {/* TRANSCRIPT */}
-      {activeFilter === 'Transcript' && (
+      {activeFilter === "Transcript" && (
         <View style={styles.emptyState}>
           <Text style={styles.emptyTitle}>Transcript Coming Soon</Text>
           <Text style={styles.emptySub}>
@@ -276,8 +283,8 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: COLORS.bg, paddingVertical: 16 },
 
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     marginBottom: 10,
   },
@@ -287,7 +294,7 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
 
-  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  headerRight: { flexDirection: "row", alignItems: "center", gap: 8 },
 
   gpaHero: {
     marginHorizontal: 16,
@@ -295,38 +302,38 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderRadius: RADIUS.xl,
     padding: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 
-  gpaLabel: { fontSize: 11, color: '#fff' },
-  gpaNumber: { fontSize: 36, fontWeight: FONT.bold, color: '#fff' },
-  gpaSub: { fontSize: 11, color: '#eee' },
+  gpaLabel: { fontSize: 11, color: "#fff" },
+  gpaNumber: { fontSize: 36, fontWeight: FONT.bold, color: "#fff" },
+  gpaSub: { fontSize: 11, color: "#eee" },
 
   gpaPending: {
     fontSize: 22,
     fontWeight: FONT.bold,
-    color: '#fff',
+    color: "#fff",
     marginTop: 4,
   },
 
   gpaPendingSub: {
     fontSize: 10,
-    color: 'rgba(255,255,255,0.8)',
+    color: "rgba(255,255,255,0.8)",
     marginTop: 4,
     lineHeight: 15,
   },
 
-  gpaRight: { alignItems: 'flex-end', justifyContent: 'center' },
-  attNum: { fontSize: 28, fontWeight: FONT.bold, color: '#fff' },
-  attLabel: { fontSize: 10, color: '#eee' },
+  gpaRight: { alignItems: "flex-end", justifyContent: "center" },
+  attNum: { fontSize: 28, fontWeight: FONT.bold, color: "#fff" },
+  attLabel: { fontSize: 10, color: "#eee" },
 
   pendingIcon: { fontSize: 28, marginBottom: 2 },
 
   filterBar: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
   },
 
@@ -336,47 +343,47 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: RADIUS.xl,
     padding: 18,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 
   semLabel: {
     fontSize: 10,
-    color: 'rgba(255,255,255,0.7)',
+    color: "rgba(255,255,255,0.7)",
   },
 
   semTitle: {
     fontSize: 14,
     fontWeight: FONT.bold,
-    color: '#fff',
+    color: "#fff",
   },
 
   semSub: {
     fontSize: 10,
-    color: 'rgba(255,255,255,0.6)',
+    color: "rgba(255,255,255,0.6)",
     marginTop: 4,
   },
 
   semRight: {
-    alignItems: 'flex-end',
-    justifyContent: 'center',
+    alignItems: "flex-end",
+    justifyContent: "center",
   },
 
   semGpa: {
     fontSize: 26,
     fontWeight: FONT.bold,
-    color: '#fff',
+    color: "#fff",
   },
 
   semPendingText: {
     fontSize: 16,
     fontWeight: FONT.bold,
-    color: '#fff',
+    color: "#fff",
   },
 
   semGpaLabel: {
     fontSize: 10,
-    color: 'rgba(255,255,255,0.7)',
+    color: "rgba(255,255,255,0.7)",
   },
 
   backBtn: {
@@ -401,19 +408,19 @@ const styles = StyleSheet.create({
   },
 
   gradeHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 10,
   },
 
   gradeCourse: {
-    fontSize: 13,
+    fontSize: 16,
     fontWeight: FONT.bold,
     color: COLORS.textPrimary,
   },
 
   gradeCode: {
-    fontSize: 10,
+    fontSize: 12,
     color: COLORS.textTertiary,
   },
 
@@ -421,12 +428,12 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   gradeLetterText: {
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: FONT.bold,
   },
 
@@ -438,18 +445,18 @@ const styles = StyleSheet.create({
   },
 
   progressFill: {
-    height: '100%',
+    height: "100%",
     borderRadius: 3,
   },
 
   gradeBreakdown: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 10,
   },
 
   gradeItem: {
-    fontSize: 10,
+    fontSize: 11,
     color: COLORS.textTertiary,
   },
 
@@ -459,7 +466,7 @@ const styles = StyleSheet.create({
   },
 
   emptyState: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 40,
   },
 

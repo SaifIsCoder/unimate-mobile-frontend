@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 13,
+    fontSize: 16,
     fontWeight: FONT.bold,
     color: COLORS.textPrimary,
     flex: 1,
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   },
 
   meta: {
-    fontSize: 10,
+    fontSize: 12,
     color: COLORS.textTertiary,
     marginBottom: 2,
   },
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   },
 
   badgeText: {
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: FONT.semiBold,
   },
 
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
 
   gradedText: {
     color: COLORS.green,
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: FONT.semiBold,
   },
 

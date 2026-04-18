@@ -95,7 +95,7 @@ const NotifCard = ({ item, onPress }) => {
           },
         ]}
       >
-        <Text style={{ fontSize: 16 }}>{entityIcon}</Text>
+        <Text style={{ fontSize: 18 }}>{entityIcon}</Text>
       </View>
 
       {/* Content */}
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
   },
 
   notifTitle: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: FONT.semiBold,
     color: COLORS.textPrimary,
     flex: 1,
@@ -364,27 +364,27 @@ const styles = StyleSheet.create({
   },
 
   notifMsg: {
-    fontSize: 11,
+    fontSize: 12,
     color: COLORS.textSecondary,
     lineHeight: 15.4,
     marginBottom: 4,
   },
 
   notifTime: {
-    fontSize: 10,
+    fontSize: 11,
     color: COLORS.textTertiary,
   },
 
   priorityTag: {
     alignSelf: 'flex-start',
     paddingHorizontal: 6,
-    paddingVertical: 2,
+    paddingVertical: 2.5,
     borderRadius: RADIUS.sm,
     marginTop: 2,
   },
 
   priorityTagText: {
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: FONT.semiBold,
   },
 
