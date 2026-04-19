@@ -29,9 +29,6 @@ module.exports = {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff"
       },
-      notification: {
-        icon: "./assets/images/notification-icon.png"
-      },
       edgeToEdgeEnabled: true,
       runtimeVersion: "1.0.0"
     },
