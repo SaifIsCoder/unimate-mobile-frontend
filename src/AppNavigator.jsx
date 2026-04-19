@@ -11,7 +11,7 @@ import NotificationsScreen from "./screens/NotificationsScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import AssignmentScreen from "./screens/TasksScreen";
 import GradesScreen from "./screens/GradesScreen";
-import UpdatesScreen from "./screens/UpdatesScreen";
+import UpdatesScreen from "./screens/updates/UpdatesScreen";
 import Login from "./screens/auth/Login";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();

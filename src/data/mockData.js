@@ -1,5 +1,7 @@
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
 
+import { COLORS } from '../theme/theme';
+
 export const STUDENT = {
   name: 'Saif ur Rehman',
   email: 'saif@unimate.edu',
@@ -310,59 +312,6 @@ export const GRADES_BY_SEMESTER = [
   },
 ];
 
-// ── ANNOUNCEMENTS (for Updates screen) ───────────────────────────────────────
-export const ANNOUNCEMENTS = [
-  {
-    id: 'ann-1',
-    type: 'important',
-    scope: 'department',
-    title: 'New Attendance Policy',
-    message: 'Minimum 75% attendance required to appear in final exams. This policy is effective immediately for all departments.',
-    date: 'Today',
-    image: null,
-  },
-  {
-    id: 'ann-2',
-    type: 'event',
-    scope: 'class',
-    title: 'React Workshop',
-    message: 'Friday at 2 PM in Lab 3. Open to IT-201 students only.',
-    date: 'Tomorrow',
-    image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c',
-    courseCode: 'IT-201',
-  },
-  {
-    id: 'ann-3',
-    type: 'general',
-    scope: 'department',
-    title: 'Library Timing Updated',
-    message: 'Library is now open till 10 PM on weekdays. Weekend timings remain unchanged.',
-    date: '2 days ago',
-    image: null,
-  },
-  {
-    id: 'ann-4',
-    type: 'important',
-    scope: 'class',
-    title: 'Midterm Date Changed',
-    message: 'Data Structures midterm rescheduled to April 25. Please prepare accordingly.',
-    date: '3 days ago',
-    image: null,
-    courseCode: 'CS-103',
-  },
-  {
-    id: 'ann-5',
-    type: 'event',
-    scope: 'department',
-    title: 'Annual Tech Fest',
-    message: 'CS Department Annual Tech Fest on May 5. Registrations open now!',
-    date: '4 days ago',
-    image: null,
-  },
-];
-
-// ── MOCK NOTIFICATIONS (follows strict model) ───────────────────────────────
-// Seeded into NotificationContext on startup.
 export const MOCK_NOTIFICATIONS = [
   // CRITICAL — Final results
   {
@@ -487,3 +436,139 @@ export const MOCK_NOTIFICATIONS = [
 
 // ── Old NOTIFICATIONS export (kept for backward compat, unused) ──────────────
 export const NOTIFICATIONS = MOCK_NOTIFICATIONS;
+
+
+export const TYPE_CONFIG = {
+  important: { label: "Important", emoji: "⚠️", color: COLORS.red || "#DC2626" },
+  event:     { label: "Event",     emoji: "🎉", color: COLORS.primary },
+  general:   { label: "Notice",    emoji: "📢", color: COLORS.textSecondary },
+};
+
+  export const SCOPE_CONFIG = {
+  class:      { label: "My Class",   color: COLORS.blue  || "#2563EB" },
+  department: { label: "Department", color: COLORS.green || "#059669" },
+};
+
+export const ANNOUNCEMENTS = [
+  {
+    id: "a1",
+    type: "important",
+    scope: "department",
+    title: "Final Exam Schedule Released",
+    message: "The final exam schedule has been released. Check Now.",
+    date: "30 mins ago",
+  },
+  {
+    id: "a2",
+    type: "event",
+    scope: "department",
+    title: "Course Registration Opens Tomorrow",
+    message: "Course registration for next semester starts tomorrow at 9:00 AM. Make sure to register early.",
+    date: "2 hours ago",
+  },
+  {
+    id: "a3",
+    type: "event",
+    scope: "class",
+    title: "Workshop: Machine Learning with Python",
+    message: "Thursday at 2 PM, Room 20\nJoin us for a workshop on machine learning using Python. All students are welcome!",
+    date: "1 day ago",
+  },
+  {
+    id: "a4",
+    type: "general",
+    scope: "department",
+    title: "Library Timings Updated",
+    message: "The library will remain open until 9 PM on weekdays starting this week.",
+    date: "2 days ago",
+  },
+];
+
+export const POST_TYPE_CONFIG = {
+  internship:         { label: "Internship",    emoji: "💼", color: "#7C3AED" },
+  competition:        { label: "Competition",   emoji: "🏆", color: "#D97706" },
+  gpa_milestone:      { label: "GPA Milestone", emoji: "⭐", color: "#059669" },
+  project_completion: { label: "Project",       emoji: "🚀", color: "#2563EB" },
+  certification:      { label: "Certified",     emoji: "📜", color: "#DC2626" },
+  custom:             { label: "Achievement",   emoji: "🎯", color: "#6B7280" },
+};
+
+
+
+export const COMMUNITY_POSTS = [
+  {
+    id: "p1",
+    authorName: "Ahmed Raza",
+    authorInitial: "A",
+    authorRole: "student",
+    semester: "6th Semester",
+    type: "internship",
+    title: "Secured Internship at Systems Limited",
+    body: "Excited to share that I'll be joining Systems Limited this summer as a Software Engineer intern. Grateful for the support from our department!",
+    likesCount: 24,
+    liked: false,
+    commentsCount: 5,
+    timeAgo: "2h ago",
+  },
+  {
+    id: "p2",
+    authorName: "Dr. Tariq Mahmood",
+    authorInitial: "T",
+    authorRole: "teacher",
+    type: "custom",
+    title: "Internship Drive — Next Week",
+    body: "A company will be visiting campus next Wednesday for on-spot interviews. BSIT 6th and 7th semester students should prepare their CVs.",
+    likesCount: 41,
+    liked: true,
+    commentsCount: 12,
+    timeAgo: "5h ago",
+  },
+  {
+    id: "p3",
+    authorName: "Zainab Khalid",
+    authorInitial: "Z",
+    authorRole: "student",
+    semester: "4th Semester",
+    type: "certification",
+    title: "AWS Cloud Practitioner Certified",
+    body: "Just passed my AWS Cloud Practitioner exam on the first attempt. Highly recommend it for anyone interested in cloud computing.",
+    likesCount: 18,
+    liked: false,
+    commentsCount: 3,
+    timeAgo: "1d ago",
+  },
+  {
+    id: "p4",
+    authorName: "Saif ur Rehman",
+    authorInitial: "S",
+    authorRole: "student",
+    semester: "8th Semester",
+    type: "gpa_milestone",
+    title: "Hit 3.85 CGPA This Semester",
+    body: "Alhamdulillah, managed to bring my CGPA up to 3.85. Consistency is the key.",
+    likesCount: 56,
+    liked: false,
+    commentsCount: 8,
+    timeAgo: "2d ago",
+  },
+  {
+    id: "p5",
+    authorName: "Bilal Akhtar",
+    authorInitial: "B",
+    authorRole: "student",
+    semester: "6th Semester",
+    type: "competition",
+    title: "1st Place — FAST Programming Contest",
+    body: "Our team took first place at the FAST NUCES programming contest. 3 months of grinding paid off.",
+    likesCount: 73,
+    liked: false,
+    commentsCount: 14,
+    timeAgo: "3d ago",
+  },
+];
+
+export const MOCK_COMMENTS = [
+  { id: "c1", author: "Usman Ali",  initial: "U", text: "Congratulations! Well deserved.", time: "1h ago" },
+  { id: "c2", author: "Sara Noor",  initial: "S", text: "Mashallah, very inspiring!",       time: "2h ago" },
+  { id: "c3", author: "Ali Hassan", initial: "A", text: "Keep it up bro!",                  time: "3h ago" },
+];

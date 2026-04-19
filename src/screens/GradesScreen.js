@@ -16,7 +16,7 @@ import {
 import NotificationBell from "../components/NotificationBell";
 import { GRADES_BY_SEMESTER, STUDENT } from "../data/mockData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 const GRADE_FILTERS = ["Current Sem", "All Semesters", "Transcript"];
 
 // ── GPA HERO ─────────────────────────────────────────────
@@ -252,7 +252,7 @@ export default function GradesScreen({ navigation }) {
             style={styles.backBtn}
             onPress={() => setSelectedSemester(null)}
           >
-            <Text style={styles.backText}>← Back</Text>
+            <FontAwesome name="long-arrow-left" size={24} color="black" />
           </TouchableOpacity>
 
           <SectionTitle>{selectedSemester.title}</SectionTitle>
@@ -389,6 +389,15 @@ const styles = StyleSheet.create({
   backBtn: {
     marginHorizontal: 16,
     marginBottom: 6,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: RADIUS.md,
+    padding: 3,
+    width: 60,
+    backgroundColor: COLORS.card,
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   backText: {
