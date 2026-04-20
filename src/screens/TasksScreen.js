@@ -14,6 +14,7 @@ import NotificationBell from "../components/NotificationBell";
 import { TASKS } from "../data/mockData";
 import { useNotifications } from "../context/NotificationContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Background from "../components/Background";
 
 const FILTERS = ["All", "Pending", "Done", "Overdue"];
 
@@ -100,7 +101,7 @@ export default function TasksScreen({ navigation }) {
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top + 16 }]}>
-
+<Background />
       {/* HEADER */}
       <View style={styles.header}>
         <Text style={styles.pageTitle}>Tasks</Text>

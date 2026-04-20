@@ -17,6 +17,7 @@ import NotificationBell from "../components/NotificationBell";
 import { GRADES_BY_SEMESTER, STUDENT } from "../data/mockData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Background from "../components/Background";
 const GRADE_FILTERS = ["Current Sem", "All Semesters", "Transcript"];
 
 // ── GPA HERO ─────────────────────────────────────────────
@@ -190,6 +191,7 @@ export default function GradesScreen({ navigation }) {
         { paddingTop: insets.top + 16, paddingBottom: 40 },
       ]}
     >
+      <Background />
       {/* HEADER */}
       <View style={styles.header}>
         <Text style={styles.pageTitle}>Grades</Text>

@@ -1,12 +1,13 @@
 // ─── HOME SCREEN (REFACTORED) ─────────────────────────────────────────────
 
-import React from "react";
+import React, { useRef } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
   StyleSheet,
+  Animated,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { COLORS, RADIUS, FONT } from "../theme/theme";
@@ -14,21 +15,64 @@ import { Avatar, SectionTitle } from "../components/SharedComponents";
 import NotificationBell from "../components/NotificationBell";
 import { STUDENT } from "../data/mockData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Background from "../components/Background";
 
-// ── Banner (Classes ONLY) ────────────────────────────────────────────────
-const Banner = () => (
-  <LinearGradient
-    colors={COLORS.gradientPurple}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 1 }}
-    style={styles.banner}
+const Pressable = ({ onPress, style, children }) => {
+  const scale = useRef(new Animated.Value(1)).current;
+  const press = () => {
+    Animated.sequence([
+      Animated.timing(scale, { toValue: 0.97, duration: 80, useNativeDriver: true }),
+      Animated.timing(scale, { toValue: 1, duration: 120, useNativeDriver: true }),
+    ]).start();
+    onPress?.();
+  };
+  return (
+    <TouchableOpacity onPress={press} activeOpacity={1}>
+      <Animated.View style={[style, { transform: [{ scale }] }]}>
+        {children}
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
+ 
+// ─────────────────────────────────────────────────────────────────────────────
+// CLASS BANNER — deep gradient, subtle dot pattern overlay
+// ─────────────────────────────────────────────────────────────────────────────
+ 
+const ClassBanner = ({ navigation }) => (
+  <Pressable
+    onPress={() => navigation.navigate("Schedule")}
+    style={{ marginHorizontal: 16, marginVertical: 8 }}
   >
-    <Text style={styles.bannerLabel}>📅 Today — Thursday</Text>
-    <Text style={styles.bannerTitle}>3 Classes Today</Text>
-    <Text style={styles.bannerSub}>Next: Web Dev at 9:00 AM → Room 15</Text>
-  </LinearGradient>
+    <LinearGradient
+      colors={["#7c3aed", "#5b21b6"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.banner}
+    >
+      {/* Decorative circles */}
+      <View style={styles.bannerCircle1} />
+      <View style={styles.bannerCircle2} />
+ 
+      <View style={styles.bannerContent}>
+        <View style={styles.bannerLeft}>
+          <View style={styles.bannerDatePill}>
+            <Text style={styles.bannerDateText}>📅 Thursday</Text>
+          </View>
+          <Text style={styles.bannerTitle}>3 Classes Today</Text>
+          <Text style={styles.bannerSub}>Next: Web Dev · 9:00 AM · Room 15</Text>
+        </View>
+        <View style={styles.bannerRight}>
+          <Text style={styles.bannerCount}>3</Text>
+          <Text style={styles.bannerCountLabel}>classes</Text>
+        </View>
+      </View>
+ 
+      {/* Tap hint */}
+      <Text style={styles.bannerTap}>View schedule →</Text>
+    </LinearGradient>
+  </Pressable>
 );
-
 // ── Stat Tile ────────────────────────────────────────────────────────────
 const StatTile = ({ bg, label, value, sub, borderColor }) => (
   <View style={[styles.statTile, { backgroundColor: bg, borderColor }]}>
@@ -73,6 +117,7 @@ export default function HomeScreen({ navigation }) {
         flexGrow: 1,
       }}
     >
+      <Background />
       {/* ── Header ── */}
       <View style={styles.header}>
         <View style={{ flex: 1, paddingRight: 16 }}>
@@ -89,7 +134,8 @@ export default function HomeScreen({ navigation }) {
       </View>
 
       {/* ── 1. Class Banner ── */}
-      <Banner />
+          <ClassBanner navigation={navigation} />
+
 
       {/* ── 2. Stats ── */}
       <View style={styles.tileRow}>
@@ -144,31 +190,101 @@ const styles = StyleSheet.create({
   },
 
   headerRight: { flexDirection: "row", alignItems: "center", gap: 8 },
-
   banner: {
-    marginHorizontal: 16,
-    marginVertical: 8,
-    borderRadius: RADIUS.xl,
-    paddingVertical: 26,
-    paddingHorizontal: 16,
+    borderRadius: 20,
+    paddingTop: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
     overflow: "hidden",
     position: "relative",
   },
 
-  bannerLabel: {
-    fontSize: 12,
-    color: "rgba(255,255,255,0.8)",
-    marginBottom: 4,
-    fontWeight: FONT.medium,
+  bannerCircle1: {
+    position: "absolute",
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: "rgba(255,255,255,0.07)",
+    top: -30,
+    right: -20,
   },
-  bannerTitle: {
-    fontSize: 18,
-    fontWeight: FONT.bold,
-    color: "#fff",
-    marginBottom: 2,
-  },
-  bannerSub: { fontSize: 12, color: "rgba(255,255,255,0.75)" },
 
+  bannerCircle2: {
+    position: "absolute",
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "rgba(255,255,255,0.05)",
+    bottom: -20,
+    left: 60,
+  },
+
+  bannerContent: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+  },
+
+  bannerLeft: {
+    flex: 1,
+  },
+
+  bannerDatePill: {
+    alignSelf: "flex-start",
+    backgroundColor: "rgba(255,255,255,0.18)",
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    marginBottom: 8,
+  },
+
+  bannerDateText: {
+    fontSize: 11,
+    color: "rgba(255,255,255,0.9)",
+    fontWeight: "600",
+  },
+
+  bannerTitle: {
+    fontSize: 20,
+    fontWeight: "800",
+    color: "#fff",
+    marginBottom: 4,
+  },
+
+  bannerSub: {
+    fontSize: 12,
+    color: "rgba(255,255,255,0.75)",
+    fontWeight: "500",
+  },
+
+  bannerRight: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.15)",
+    borderRadius: 16,
+    width: 64,
+    height: 64,
+    marginLeft: 12,
+  },
+
+  bannerCount: {
+    fontSize: 28,
+    fontWeight: "800",
+    color: "#fff",
+  },
+
+  bannerCountLabel: {
+    fontSize: 10,
+    color: "rgba(255,255,255,0.7)",
+    fontWeight: "600",
+  },
+
+  bannerTap: {
+    marginTop: 14,
+    fontSize: 11,
+    color: "rgba(255,255,255,0.6)",
+    fontWeight: "600",
+  },
   tileRow: {
     flexDirection: "row",
     gap: 8,

@@ -30,10 +30,9 @@ export const COLORS = {
   textTertiary: '#9EA5B5',
 
   // UI
-  bg: '#F4F5FA',
+  bg: '#f5f3ff',
   card: '#FFFFFF',
   border: '#EAEDF5',
-
   // Gradients (used as array in LinearGradient)
   gradientPurple: ['#5B4AE8', '#9C6CF8', '#C084FC'],
   gradientGreen: ['#1DB87A', '#0EA5E9'],

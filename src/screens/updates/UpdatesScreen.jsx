@@ -10,6 +10,7 @@ import NotificationBell from "../../components/NotificationBell";
 import { Avatar } from "../../components/SharedComponents";
 import AnnouncementsTab from "./AnnouncementsTab";
 import CommunityTab from "./CommunityTab";
+import Background from "../../components/Background";
 
 // ── TAB SWITCHER ─────────────────────────────────────────────
 const TabSwitcher = ({ activeTab, onTabChange }) => (
@@ -76,7 +77,7 @@ export default function UpdatesScreen({ navigation }) {
 
   return (
     <View style={[s.screen, { paddingTop: insets.top + 16 }]}>
-
+      <Background />
       {/* HEADER */}
       <View style={s.header}>
         <Text style={s.pageTitle}>Updates</Text>

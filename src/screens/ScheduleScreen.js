@@ -13,6 +13,7 @@ import { CLASSES, WEEK_DAYS } from '../data/mockData';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from "@expo/vector-icons";
+import Background from '../components/Background';
 
 // ── Day Chip ─────────────────────────────────────────────────────────────
 const DayChip = ({ day, active, onPress }) => (
@@ -70,7 +71,7 @@ export default function ScheduleScreen({ navigation }) {
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top + 16, paddingBottom: 40 }]}>
-
+<Background />
       {/* ── Header ── */}
       <View style={styles.header}>
         <Text style={styles.pageTitle}>Schedule</Text>
