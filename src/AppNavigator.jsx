@@ -13,6 +13,7 @@ import AssignmentScreen from "./screens/TasksScreen";
 import GradesScreen from "./screens/GradesScreen";
 import UpdatesScreen from "./screens/updates/UpdatesScreen";
 import Login from "./screens/auth/Login";
+import CreateCommunityPost from "./screens/updates/CreateCommunityPost";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const MainStack = createNativeStackNavigator();
@@ -54,6 +55,8 @@ function MainTabs() {
       <MainStack.Screen name="Notifications" component={NotificationsScreen} />
       <MainStack.Screen name="Profile" component={ProfileScreen} />
       <MainStack.Screen name="Login" component={Login} />
+      <MainStack.Screen name="CreateCommunityPost" component={CreateCommunityPost} /> 
+
     </MainStack.Navigator>
   );
 }
