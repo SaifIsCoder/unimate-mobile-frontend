@@ -16,7 +16,7 @@ import {
 import NotificationBell from "../components/NotificationBell";
 import { GRADES_BY_SEMESTER, STUDENT } from "../data/mockData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Background from "../components/Background";
 const GRADE_FILTERS = ["Current Sem", "All Semesters", "Transcript"];
 
@@ -73,18 +73,41 @@ const GpaHero = ({ semester }) => {
 const SemesterCard = ({ item, onPress }) => {
   const isPending = !item.finalNumbersUpdated;
 
+  const Container = isPending ? LinearGradient : View;
+
+  const containerProps = isPending
+    ? {
+        colors: ["#F59E0B", "#EF4444"],
+        start: { x: 0, y: 0 },
+        end: { x: 1, y: 1 },
+      }
+    : {};
+
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
-      <LinearGradient
-        colors={isPending ? ["#F59E0B", "#EF4444"] : COLORS.gradientPurple}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.semHero}
+      <Container
+        {...containerProps}
+        style={[
+          styles.semHero,
+          !isPending && {
+            backgroundColor: "#FFFFFF",
+            borderWidth: 1,
+            borderColor: "#E5E7EB",
+          },
+        ]}
       >
         <View>
-          <Text style={styles.semLabel}>Semester</Text>
-          <Text style={styles.semTitle}>{item.title}</Text>
-          <Text style={styles.semSub}>{item.totalCredits} Credits</Text>
+          <Text style={[styles.semLabel, !isPending && { color: "#6B7280" }]}>
+            Semester
+          </Text>
+
+          <Text style={[styles.semTitle, !isPending && { color: "#111827" }]}>
+            {item.title}
+          </Text>
+
+          <Text style={[styles.semSub, !isPending && { color: "#6B7280" }]}>
+            {item.totalCredits} Credits
+          </Text>
         </View>
 
         <View style={styles.semRight}>
@@ -95,12 +118,16 @@ const SemesterCard = ({ item, onPress }) => {
             </>
           ) : (
             <>
-              <Text style={styles.semGpa}>{item.gpa}</Text>
-              <Text style={styles.semGpaLabel}>GPA</Text>
+              <Text style={[styles.semGpa, { color: "#111827" }]}>
+                {item.gpa}
+              </Text>
+              <Text style={[styles.semGpaLabel, { color: "#6B7280" }]}>
+                GPA
+              </Text>
             </>
           )}
         </View>
-      </LinearGradient>
+      </Container>
     </TouchableOpacity>
   );
 };

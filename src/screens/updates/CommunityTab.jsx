@@ -191,11 +191,6 @@ const PostCard = ({ item, onLike, onComment }) => {
         <View style={pc.authorInfo}>
           <View style={pc.nameRow}>
             <Text style={pc.authorName}>{item.authorName}</Text>
-            {isTeacher && (
-              <View style={pc.teacherBadge}>
-                <Text style={pc.teacherBadgeText}>Teacher</Text>
-              </View>
-            )}
           </View>
           <Text style={pc.meta}>
             {isTeacher ? "Faculty" : item.semester} · {item.timeAgo}

@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import AchievementSelector from "../../components/community/AchievementSelector";
 import PostPreview from "../../components/community/PostPreview";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const MAX_TITLE = 100;
 const MAX_BODY = 500;
@@ -25,6 +26,7 @@ export default function CreateCommunityPost({ navigation }) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [loading, setLoading] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const isValid = useMemo(() => {
     return title.trim().length > 0 && body.trim().length > 0;
@@ -49,7 +51,12 @@ export default function CreateCommunityPost({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { paddingTop: insets.top + 16, paddingBottom: 40 },
+      ]}
+    >
       {/* HEADER */}
       <Text style={styles.header}>Share Achievement</Text>
 
@@ -68,7 +75,9 @@ export default function CreateCommunityPost({ navigation }) {
           }}
           style={styles.input}
         />
-        <Text style={styles.counter}>{title.length}/{MAX_TITLE}</Text>
+        <Text style={styles.counter}>
+          {title.length}/{MAX_TITLE}
+        </Text>
 
         {/* BODY */}
         <Text style={styles.label}>Description</Text>
@@ -81,16 +90,13 @@ export default function CreateCommunityPost({ navigation }) {
           }}
           style={[styles.input, styles.textarea]}
         />
-        <Text style={styles.counter}>{body.length}/{MAX_BODY}</Text>
+        <Text style={styles.counter}>
+          {body.length}/{MAX_BODY}
+        </Text>
 
         {/* PREVIEW */}
         <Text style={styles.label}>Preview</Text>
-        <PostPreview
-          type={type}
-          title={title}
-          body={body}
-          user={USER}
-        />
+        <PostPreview type={type} title={title} body={body} user={USER} />
 
         {/* ACTIONS */}
         <View style={styles.actions}>

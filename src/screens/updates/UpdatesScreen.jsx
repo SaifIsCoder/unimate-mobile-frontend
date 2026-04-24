@@ -42,9 +42,11 @@ const ts = StyleSheet.create({
     flexDirection: "row",
     marginHorizontal: 16,
     marginBottom: 14,
-    backgroundColor: COLORS.border + "55",
+    backgroundColor: COLORS.card + "95",
     borderRadius: 50,
     padding: 3,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   tab: {
     flex: 1,
