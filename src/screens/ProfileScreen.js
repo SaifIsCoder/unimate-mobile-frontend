@@ -14,6 +14,8 @@ import { COLORS, RADIUS, FONT } from "../theme/theme";
 import { StatusBarRow } from "../components/SharedComponents";
 import { STUDENT } from "../data/mockData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useUser } from "../context/UserContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // ── Info Row ──────────────────────────────────────────────────────────────────
 const InfoRow = ({ label, value, highlight }) => (
@@ -43,11 +45,23 @@ const InfoSection = ({ title, rows }) => (
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
+  const { logout } = useUser();
 
   const handleLogout = () =>
     Alert.alert("Logout", "Are you sure you want to logout?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Logout", style: "destructive" },
+      {
+        text: "Logout",
+        style: "destructive",
+        onPress: async () => {
+          await logout();
+          await AsyncStorage.multiRemove([
+            "has_set_password",
+            "mock_user_email",
+            "mock_user_password",
+          ]);
+        },
+      },
     ]);
 
   return (

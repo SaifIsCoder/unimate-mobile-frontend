@@ -6,8 +6,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { COLORS, RADIUS, FONT } from "../../theme/theme";
-import NotificationBell from "../../components/NotificationBell";
-import { Avatar } from "../../components/SharedComponents";
+import Header from "../../components/Header";
 import AnnouncementsTab from "./AnnouncementsTab";
 import CommunityTab from "./CommunityTab";
 import Background from "../../components/Background";
@@ -78,18 +77,10 @@ export default function UpdatesScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState("announcements");
 
   return (
-    <View style={[s.screen, { paddingTop: insets.top + 16 }]}>
+    <View style={[s.screen, { paddingTop: insets.top }]}>
       <Background />
       {/* HEADER */}
-      <View style={s.header}>
-        <Text style={s.pageTitle}>Updates</Text>
-        <View style={s.headerRight}>
-          <NotificationBell />
-          <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-            <Avatar label="S" size={36} />
-          </TouchableOpacity>
-        </View>
-      </View>
+      <Header title="Updates" />
 
       {/* TAB SWITCHER */}
       <TabSwitcher activeTab={activeTab} onTabChange={setActiveTab} />
@@ -108,21 +99,5 @@ const s = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.bg,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    marginBottom: 14,
-  },
-  pageTitle: {
-    fontSize: 22,
-    fontWeight: FONT.bold,
-    color: COLORS.textPrimary,
-  },
-  headerRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
+  // Unified Header styling is managed inside components/Header
 });

@@ -7,9 +7,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from "react-native";
 import { COLORS, RADIUS, FONT } from "../../theme/theme";
 import { FilterPill } from "../../components/SharedComponents";
+import { LinearGradient } from "expo-linear-gradient";
 
 const TYPE_CONFIG = {
   important: {
@@ -35,6 +37,8 @@ const ANNOUNCEMENTS = [
     title: "Final Exam Schedule Released",
     message: "The final exam schedule has been released. Check Now.",
     date: "30 mins ago",
+    image:
+      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1470&auto=format&fit=crop",
   },
   {
     id: "a2",
@@ -44,6 +48,8 @@ const ANNOUNCEMENTS = [
     message:
       "Course registration for next semester starts tomorrow at 9:00 AM. Make sure to register early.",
     date: "2 hours ago",
+    image:
+      "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1470&auto=format&fit=crop",
   },
   {
     id: "a3",
@@ -53,6 +59,8 @@ const ANNOUNCEMENTS = [
     message:
       "Thursday at 2 PM, Room 20\nJoin us for a workshop on machine learning using Python. All students are welcome!",
     date: "1 day ago",
+    image:
+      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1470&auto=format&fit=crop",
   },
   {
     id: "a4",
@@ -88,12 +96,28 @@ const AnnouncementCard = ({ item }) => {
         </View>
       </View>
       <Text style={s.message}>{item.message}</Text>
-      <TouchableOpacity>
+      {/* {item.image && (
+        <Image source={{ uri: item.image }} style={s.cardImage} resizeMode="cover" />
+      )} */}
+      {/* <TouchableOpacity>
         <Text style={s.viewDetails}>View Details</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };
+
+// ─── AI ANNOUNCEMENTS SUMMARY ────────────────────────────────────────────────
+const AiAnnouncementsSummary = () => (
+  <View style={s.aiCard}>
+    <View style={s.aiHeaderRow}>
+      <Text style={s.aiIcon}>✨</Text>
+      <Text style={s.aiLabel}>TODAY'S PRIORITIES</Text>
+    </View>
+    <Text style={s.aiBody}>
+      Focus on the final exam schedule released 30 mins ago. Your Math exam is scheduled for next Monday. Prepare early!
+    </Text>
+  </View>
+);
 
 export default function AnnouncementsTab() {
   const [activeType, setActiveType] = useState("All");
@@ -139,6 +163,10 @@ export default function AnnouncementsTab() {
           />
         ))}
       </ScrollView>
+
+      {/* AI Summary: Today's Priorities */}
+      <AiAnnouncementsSummary />
+
       <FlatList
         style={{ flex: 1 }}
         data={filtered}
@@ -163,7 +191,34 @@ export default function AnnouncementsTab() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, },
+  container: { flex: 1 },
+  aiCard: {
+    marginHorizontal: 16,
+    marginTop: 6,
+    marginBottom: 12,
+    backgroundColor: "rgba(255,255,255,0.85)",
+    borderRadius: 16,
+    borderTopWidth: 4,
+    borderTopColor: "#6063ee",
+    borderWidth: 1,
+    borderColor: "#6063ee",
+    padding: 14,
+    gap: 10,
+    shadowColor: "#6366f1",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.07,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  aiHeaderRow: { flexDirection: "row", alignItems: "center", gap: 8 },
+  aiIcon: { fontSize: 16 },
+  aiLabel: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#4648d4",
+    letterSpacing: 1,
+  },
+  aiBody: { fontSize: 14, fontWeight: "500", color: "#1e1b4b", lineHeight: 21 },
   filterScroll: { flexGrow: 0, flexShrink: 0 },
   filterBar: { paddingHorizontal: 16, paddingVertical: 6, gap: 6 },
   card: {
@@ -193,6 +248,13 @@ const s = StyleSheet.create({
     color: COLORS.textSecondary,
     lineHeight: 19,
     marginBottom: 10,
+  },
+  cardImage: {
+    width: "100%",
+    height: 160,
+    borderRadius: RADIUS.md,
+    marginBottom: 12,
+    backgroundColor: COLORS.bg,
   },
   viewDetails: {
     fontSize: 13,

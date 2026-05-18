@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  Image,
 } from "react-native";
 import { COLORS, RADIUS, FONT } from "../../theme/theme";
 import { FilterPill } from "../../components/SharedComponents";
@@ -45,6 +46,7 @@ const INITIAL_POSTS = [
     liked: false,
     commentsCount: 5,
     timeAgo: "2h ago",
+    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1484&auto=format&fit=crop",
   },
   {
     id: "p2",
@@ -72,6 +74,7 @@ const INITIAL_POSTS = [
     liked: false,
     commentsCount: 3,
     timeAgo: "1d ago",
+    image: "https://images.unsplash.com/photo-1454165833767-027ffea9e778?q=80&w=1470&auto=format&fit=crop",
   },
   {
     id: "p4",
@@ -100,6 +103,7 @@ const INITIAL_POSTS = [
     liked: false,
     commentsCount: 14,
     timeAgo: "3d ago",
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1470&auto=format&fit=crop",
   },
 ];
 const MOCK_COMMENTS = [
@@ -203,6 +207,9 @@ const PostCard = ({ item, onLike, onComment }) => {
       </View>
       <Text style={pc.title}>{item.title}</Text>
       <Text style={pc.body}>{item.body}</Text>
+      {item.image && (
+        <Image source={{ uri: item.image }} style={pc.postImage} resizeMode="cover" />
+      )}
       <View style={pc.divider} />
       <View style={pc.actions}>
         <TouchableOpacity style={pc.actionBtn} onPress={() => onLike(item.id)}>
@@ -425,6 +432,13 @@ const pc = StyleSheet.create({
     marginBottom: 4,
   },
   body: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19 },
+  postImage: {
+    width: "100%",
+    height: 180,
+    borderRadius: RADIUS.md,
+    marginTop: 12,
+    backgroundColor: COLORS.bg,
+  },
   divider: { height: 1, backgroundColor: COLORS.border, marginVertical: 10 },
   actions: { flexDirection: "row", gap: 20 },
   actionBtn: { flexDirection: "row", alignItems: "center", gap: 5 },

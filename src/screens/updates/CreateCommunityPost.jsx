@@ -7,10 +7,13 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  Image,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import AchievementSelector from "../../components/community/AchievementSelector";
 import PostPreview from "../../components/community/PostPreview";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Background from "../../components/Background";
 
 const MAX_TITLE = 100;
 const MAX_BODY = 500;
@@ -26,6 +29,7 @@ export default function CreateCommunityPost({ navigation }) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [loading, setLoading] = useState(false);
+  const [image, setImage] = useState(null);
   const insets = useSafeAreaInsets();
 
   const isValid = useMemo(() => {
@@ -57,6 +61,8 @@ export default function CreateCommunityPost({ navigation }) {
         { paddingTop: insets.top + 16, paddingBottom: 40 },
       ]}
     >
+      <Background />
+
       {/* HEADER */}
       <Text style={styles.header}>Share Achievement</Text>
 
@@ -93,6 +99,33 @@ export default function CreateCommunityPost({ navigation }) {
         <Text style={styles.counter}>
           {body.length}/{MAX_BODY}
         </Text>
+
+        {/* IMAGE */}
+        <Text style={styles.label}>Attachment</Text>
+        <Pressable
+          style={styles.imageBtn}
+          onPress={() => {
+            // Placeholder: In a real app, use expo-image-picker
+            setImage("https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1470&auto=format&fit=crop");
+          }}
+        >
+          {image ? (
+            <View style={styles.imagePreviewContainer}>
+              <Image source={{ uri: image }} style={styles.imagePreview} />
+              <Pressable
+                style={styles.removeImage}
+                onPress={() => setImage(null)}
+              >
+                <Ionicons name="close-circle" size={24} color="#EF4444" />
+              </Pressable>
+            </View>
+          ) : (
+            <View style={styles.imagePlaceholder}>
+              <Ionicons name="camera-outline" size={32} color="#9CA3AF" />
+              <Text style={styles.imagePlaceholderText}>Add Photo</Text>
+            </View>
+          )}
+        </Pressable>
 
         {/* PREVIEW */}
         <Text style={styles.label}>Preview</Text>
@@ -174,5 +207,40 @@ const styles = StyleSheet.create({
   postText: {
     color: "#fff",
     fontWeight: "600",
+  },
+  imageBtn: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderStyle: "dashed",
+    overflow: "hidden",
+    marginTop: 4,
+  },
+  imagePlaceholder: {
+    height: 120,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  imagePlaceholderText: {
+    color: "#9CA3AF",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  imagePreviewContainer: {
+    height: 200,
+    width: "100%",
+  },
+  imagePreview: {
+    width: "100%",
+    height: "100%",
+  },
+  removeImage: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: "#fff",
+    borderRadius: 12,
   },
 });

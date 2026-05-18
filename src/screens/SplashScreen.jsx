@@ -6,6 +6,7 @@ import {
   Animated,
   Dimensions,
   StatusBar,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path, Circle, Line, Rect, G, Defs, RadialGradient, Stop } from 'react-native-svg';
@@ -119,10 +120,7 @@ export default function SplashScreen({ onFinish }) {
         }),
       ]),
 
-      // 3. Light sweep across logo
-      Animated.timing(sweepX, {
-        toValue: 240, duration: 800, useNativeDriver: true,
-      }),
+
 
       // 4. Title fades up
       Animated.parallel([
@@ -223,15 +221,12 @@ export default function SplashScreen({ onFinish }) {
             },
           ]}
         >
-          {/* Light sweep overlay */}
-          <Animated.View
-            style={[
-              styles.lightSweep,
-              { transform: [{ translateX: sweepX }] },
-            ]}
-            pointerEvents="none"
+
+          <Image
+            source={require('../../assets/images/splash-screen-icon.png')}
+            style={styles.logoImage}
+            resizeMode="contain"
           />
-          <UniMateLogo glowOpacity={glowOpacity} />
         </Animated.View>
 
         {/* App name */}
@@ -323,13 +318,16 @@ const styles = StyleSheet.create({
     height: 180,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
     // Outer glow via shadow
     shadowColor: '#A78BFA',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.9,
     shadowRadius: 40,
     elevation: 20,
+  },
+  logoImage: {
+    width: 140,
+    height: 140,
   },
   lightSweep: {
     position: 'absolute',

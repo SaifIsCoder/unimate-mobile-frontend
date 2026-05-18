@@ -141,6 +141,9 @@ const isPendingActivationError = (error) =>
 /**
  * Authenticate user against UniMate API
  */
+/**
+ * Authenticate user against UniMate API (Mocked for local simulation)
+ */
 export const loginUser = async (email, password, tenantCode) => {
   const normalizedEmail = normalizeEmail(email);
   const normalizedTenantCode = normalizeTenantCode(tenantCode);
@@ -152,75 +155,77 @@ export const loginUser = async (email, password, tenantCode) => {
   assertEmail(normalizedEmail);
   assertTenantCode(normalizedTenantCode);
 
-  await enforceLoginRateLimit();
+  // Simulate network delay
+  await new Promise((resolve) => setTimeout(resolve, 800));
 
-  try {
-    const payload = await apiRequest(API_ENDPOINTS.AUTH.LOGIN, {
-      method: "POST",
-      body: JSON.stringify({
-        email: normalizedEmail,
-        password,
-        tenantCode: normalizedTenantCode,
-      }),
-    });
-
-    const data = parseAuthPayload(payload, "Login");
-
-    if (!data.accessToken || !data.refreshToken || !isPlainObject(data.user)) {
-      throw new Error("Login failed: incomplete token or user data.");
+  const hasSetPassword = await AsyncStorage.getItem("has_set_password");
+  
+  if (hasSetPassword === "true") {
+    // Second login: validate credentials against the saved mock credentials
+    const savedEmail = await AsyncStorage.getItem("mock_user_email");
+    const savedPassword = await AsyncStorage.getItem("mock_user_password");
+    
+    if (savedEmail && normalizedEmail !== normalizeEmail(savedEmail)) {
+      throw new Error("Invalid email. Please use the email you logged in with originally.");
     }
-
-    await setTokens({
-      accessToken: data.accessToken,
-      refreshToken: data.refreshToken,
-    });
-    await setUserProfile(data.user);
-    await resetLoginAttempts();
-
-    return data.user;
-  } catch (error) {
-    if (isCredentialError(error)) {
-      await markFailedLoginAttempt();
+    if (savedPassword && password !== savedPassword) {
+      throw new Error("Invalid password. Please use the new password you configured.");
     }
-
-    throw error;
+  } else {
+    // First login: store the email they used to log in
+    await AsyncStorage.setItem("mock_user_email", normalizedEmail);
   }
+
+  const mockUser = {
+    id: 1,
+    name: "Scholar Student",
+    email: normalizedEmail,
+    role: "student",
+    needsPasswordReset: hasSetPassword !== "true",
+  };
+
+  await setTokens({
+    accessToken: "mock_access_token_12345",
+    refreshToken: "mock_refresh_token_12345",
+  });
+  await setUserProfile(mockUser);
+  await resetLoginAttempts();
+
+  return mockUser;
 };
 
-
-
 /**
- * Fetch current user profile
+ * Fetch current user profile (Mocked for local simulation)
  */
 export const getCurrentUser = async () => {
-  const payload = await apiRequest(API_ENDPOINTS.USERS.ME, {
-    method: "GET",
-  });
-
-  if (!isPlainObject(payload)) {
-    throw new Error("Failed to load user profile: invalid server response.");
+  const cached = await getUserProfile();
+  if (cached) {
+    return cached;
   }
 
-  const user = payload.data;
-  if (!isPlainObject(user)) {
-    throw new Error("Failed to load user profile: missing data.");
+  const token = await getAccessToken();
+  if (token) {
+    const hasSetPassword = await AsyncStorage.getItem("has_set_password");
+    const mockUser = {
+      id: 1,
+      name: "Scholar Student",
+      email: "student@university.edu",
+      role: "student",
+      needsPasswordReset: hasSetPassword !== "true",
+    };
+    await setUserProfile(mockUser);
+    return mockUser;
   }
 
-  await setUserProfile(user);
-  return user;
+  throw new Error("Failed to load user profile: no active session.");
 };
 
 /**
  * Logout
  */
 export const logoutUser = async () => {
-  try {
-    await apiRequest(API_ENDPOINTS.AUTH.LOGOUT, { method: "POST" });
-  } catch (error) {
-    // ignore logout API errors so local cleanup always happens
-  } finally {
-    await clearTokens();
-  }
+  // Mock mode: clear local tokens and cached user profiles instantly without network timeouts
+  await clearTokens();
 };
 
 /**

@@ -122,8 +122,8 @@ const styles = StyleSheet.create({
     borderColor: COLORS.bg,
   },
   sectionTitle: {
-    fontSize: 13,
-    fontWeight: FONT.semiBold,
+    fontSize: 15,
+    fontWeight: FONT.bold,
     color: COLORS.textPrimary,
     paddingHorizontal: 16,
     paddingTop: 12,

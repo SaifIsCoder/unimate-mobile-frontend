@@ -10,10 +10,13 @@ import ScheduleScreen from "./screens/ScheduleScreen";
 import NotificationsScreen from "./screens/NotificationsScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import AssignmentScreen from "./screens/TasksScreen";
-import GradesScreen from "./screens/GradesScreen";
+import GradesScreen from "./screens/grades/GradesScreen";
+import SetGPAGoalScreen from "./screens/grades/SetGPAGoalScreen";
 import UpdatesScreen from "./screens/updates/UpdatesScreen";
 import Login from "./screens/auth/Login";
+import AllSemestersScreen from "./screens/grades/AllSemesters";
 import CreateCommunityPost from "./screens/updates/CreateCommunityPost";
+import SetPasswordScreen from "./screens/auth/SetPasswordScreen";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const MainStack = createNativeStackNavigator();
@@ -55,9 +58,18 @@ function MainTabs() {
       <MainStack.Screen name="Notifications" component={NotificationsScreen} />
       <MainStack.Screen name="Profile" component={ProfileScreen} />
       <MainStack.Screen name="Login" component={Login} />
-      <MainStack.Screen name="CreateCommunityPost" component={CreateCommunityPost} /> 
-
+      <MainStack.Screen
+        name="CreateCommunityPost"
+        component={CreateCommunityPost}
+      />
+      <MainStack.Screen name="SetGPAGoal" component={SetGPAGoalScreen} />
+      <MainStack.Screen
+        name="AllSemestersScreen"
+        component={AllSemestersScreen}
+      />
+    <MainStack.Screen name="SetPassword" component={SetPasswordScreen} />
     </MainStack.Navigator>
+
   );
 }
 
@@ -67,10 +79,12 @@ export default function AppNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {!user ? (
-        <Stack.Screen name="MainTabs" component={MainTabs} />
-      ) : (
         <Stack.Screen name="Login" component={Login} />
+      ) : user.needsPasswordReset ? (
+        <Stack.Screen name="SetPassword" component={SetPasswordScreen} />
+      ) : (
+        <Stack.Screen name="MainTabs" component={MainTabs} />
       )}
     </Stack.Navigator>
-  );
+  );  
 }

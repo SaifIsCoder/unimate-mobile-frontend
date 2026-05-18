@@ -1,359 +1,427 @@
-"use client";
-
 import React, { useState, useRef } from "react";
 import {
-  StyleSheet,
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  ScrollView,
-  Platform,
+  StyleSheet,
   Animated,
-  StatusBar,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Image
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { loginUser } from "../../services/authService";
-import { useUser } from "../../context/UserContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { MaterialIcons } from "@expo/vector-icons";
+
+// ── Import your existing shared components ────────────────
 import Background from "../../components/Background";
+import { COLORS } from "../../theme/theme";
+import { useUser } from "../../context/UserContext";
+import { loginUser } from "../../services/authService";
+// ── Design Tokens ─────────────────────────────────────────
+const C = {
+  primary: "#2c2abc",
+  primaryFixed: "#e1e0ff",
+  onPrimary: "#ffffff",
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  secondary: "#6b38d4",
 
-// Floating Input
-const FloatingInput = ({
+  surface: "#f9f9ff",
+  surfaceContainerLowest: "#ffffff",
+  surfaceContainerLow: "#f0f3ff",
+
+  onSurface: "#151c27",
+  onSurfaceVariant: "#464554",
+  outline: "#767586",
+  outlineVariant: "#c6c5d7",
+
+  background: "#f9f9ff",
+};
+
+const R = { sm: 4, md: 8, lg: 12, xl: 18, full: 9999 };
+const F = { regular: "400", semiBold: "600", bold: "700", extraBold: "800" };
+
+// ── LOGO BOX ──────────────────────────────────────────────
+const LogoBox = () => (
+  <View style={s.logoBox}>
+    {/* <MaterialIcons name="auto-awesome" size={32} color={C.onPrimary} /> */}
+    <Image source={require("../../../assets/images/splash-screen-icon.png")} style={s.logo} resizeMode="contain" width={100} height={100}/>
+  </View>
+);
+
+// ── INPUT FIELD ───────────────────────────────────────────
+const InputField = ({
   label,
   value,
-  onChangeText,
-  secureTextEntry,
+  onChange,
+  placeholder,
   keyboardType = "default",
-  autoCapitalize = "sentences",
-  returnKeyType = "next",
-  onSubmitEditing,
-  inputRef,
-  error,
+  leftIcon,
+  rightElement,
+  secureTextEntry = false,
 }) => {
   const [focused, setFocused] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const labelAnim = useRef(new Animated.Value(value ? 1 : 0)).current;
-
-  const handleFocus = () => {
-    setFocused(true);
-    Animated.timing(labelAnim, {
-      toValue: 1,
-      duration: 180,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const handleBlur = () => {
-    setFocused(false);
-    if (!value) {
-      Animated.timing(labelAnim, {
-        toValue: 0,
-        duration: 160,
-        useNativeDriver: false,
-      }).start();
-    }
-  };
-
-  const labelTop = labelAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [16, 6],
-  });
-
-  const labelSize = labelAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [15, 11],
-  });
-
-  const labelColor = labelAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [
-      "#9ca3af",
-      error ? "#ef4444" : focused ? "#7c3aed" : "#6b7280",
-    ],
-  });
-
-  const borderColor = error ? "#ef4444" : focused ? "#7c3aed" : "#e5e7eb";
 
   return (
-    <View style={[inputStyles.wrapper, { borderColor }]}>
-      <Animated.Text
+    <View style={s.fieldGroup}>
+      <Text style={s.fieldLabel}>{label}</Text>
+      <View
         style={[
-          inputStyles.label,
-          { top: labelTop, fontSize: labelSize, color: labelColor },
+          s.inputWrapper,
+          focused && s.inputWrapperFocused,
         ]}
       >
-        {label}
-      </Animated.Text>
-
-      <TextInput
-        ref={inputRef}
-        style={inputStyles.input}
-        value={value}
-        onChangeText={onChangeText}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        secureTextEntry={secureTextEntry && !showPassword}
-        keyboardType={keyboardType}
-        autoCapitalize={autoCapitalize}
-        autoCorrect={false}
-        returnKeyType={returnKeyType}
-        onSubmitEditing={onSubmitEditing}
-        placeholderTextColor="transparent"
-        placeholder=" "
-      />
-
-      {secureTextEntry && (
-        <TouchableOpacity
-          onPress={() => setShowPassword((v) => !v)}
-          style={inputStyles.eyeBtn}
-        >
-          <Text style={inputStyles.eyeText}>
-            {showPassword ? "Hide" : "Show"}
-          </Text>
-        </TouchableOpacity>
-      )}
+        {leftIcon && (
+          <MaterialIcons
+            name={leftIcon}
+            size={18}
+            color={focused ? C.primary : C.outline}
+            style={s.leftIcon}
+          />
+        )}
+        <TextInput
+          style={s.input}
+          value={value}
+          onChangeText={onChange}
+          placeholder={placeholder}
+          placeholderTextColor={C.outlineVariant}
+          keyboardType={keyboardType}
+          secureTextEntry={secureTextEntry}
+          autoCapitalize="none"
+          autoCorrect={false}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+        />
+        {rightElement}
+      </View>
     </View>
   );
 };
 
-// Background Shapes
-const BgShapes = () => (
-  <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
-    <View style={styles.blob1} />
-    <View style={styles.blob2} />
-    <View style={styles.blob3} />
-  </View>
-);
+// ── SIGN IN BUTTON ────────────────────────────────────────
+const SignInButton = ({ onPress, loading }) => {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
-// Logo
-const LogoMark = () => (
-  <View style={logo.container}>
-    <View style={logo.outer}>
-      <View style={logo.inner}>
-        <View style={logo.shieldTop} />
-        <View style={logo.shieldBottom} />
-      </View>
-    </View>
-  </View>
-);
+  return (
+    <Pressable
+      onPress={onPress}
+      onPressIn={() =>
+        Animated.spring(scaleAnim, { toValue: 0.97, useNativeDriver: true }).start()
+      }
+      onPressOut={() =>
+        Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start()
+      }
+    >
+      <Animated.View style={[s.signInBtn, { transform: [{ scale: scaleAnim }] }]}>
+        <Text style={s.signInText}>{loading ? "Signing In..." : "Sign In"}</Text>
+        {!loading && (
+          <MaterialIcons name="arrow-forward" size={18} color={C.onPrimary} />
+        )}
+      </Animated.View>
+    </Pressable>
+  );
+};
 
-// Main Screen
+// ── MAIN SCREEN ───────────────────────────────────────────
 export default function Login({ navigation }) {
+  const insets = useSafeAreaInsets();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [keepSignedIn, setKeepSignedIn] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-
+  const [errorMsg, setErrorMsg] = useState("");
   const { setUser } = useUser();
-  const passwordRef = useRef(null);
 
-  const validate = () => {
-    const newErrors = {};
-
-    if (!email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!EMAIL_REGEX.test(email.trim().toLowerCase())) {
-      newErrors.email = "Enter a valid email address";
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      setErrorMsg("Email and password are required.");
+      return;
     }
-
-    if (!password.trim()) {
-      newErrors.password = "Password is required";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleLogin = async () => {
-    if (!validate()) return;
-
     setLoading(true);
-    setErrors({});
-
+    setErrorMsg("");
     try {
-      const user = await loginUser(email.trim().toLowerCase(), password, "UOS");
-      await setUser(user);
-      navigation.replace("MainTabs");
-    } catch (error) {
-      const message =
-        error?.message || "Something went wrong. Please try again.";
-      setErrors({ general: message });
+      const mockUser = await loginUser(email, password, "UOS");
+      await setUser(mockUser);
+    } catch (err) {
+      setErrorMsg(err.message || "Invalid credentials.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f5f3ff" />
-
-      {/* <BgShapes /> */}
+    <View style={[s.screen, { paddingTop: insets.top }]}>
       <Background />
+
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <ScrollView contentContainerStyle={styles.scroll}>
-          <View style={styles.header}>
-            <LogoMark />
-            <Text style={styles.brand}>
-              uni<Text style={styles.brandAccent}>Mate</Text>
-            </Text>
-            <Text style={styles.tagline}>
-              Smarter Academics. Connected Students.
-            </Text>
+        <ScrollView
+          contentContainerStyle={[
+            s.scrollContent,
+            { paddingBottom: 40 + insets.bottom },
+          ]}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* ── Branding ── */}
+          <View style={s.branding}>
+            <LogoBox />
+            <Text style={s.brandName}>uni<Text style={{ color: COLORS.primary, fontWeight: F.extraBold }}>Mate</Text></Text>
+            <Text style={s.brandTagline}>Welcome Back, Scholar!</Text>
           </View>
 
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Welcome back</Text>
-            <Text style={styles.cardSubtitle}>Sign in to your account</Text>
+          {/* ── Form Card ── */}
+          <View style={s.card}>
+            {errorMsg ? (
+              <Text style={s.errorText}>{errorMsg}</Text>
+            ) : null}
 
-            <FloatingInput
-              label="Email address"
+            {/* Email */}
+            <InputField
+              label="INSTITUTIONAL EMAIL"
               value={email}
-              onChangeText={setEmail}
+              onChange={setEmail}
+              placeholder="you@university.edu"
               keyboardType="email-address"
-              autoCapitalize="none"
-              returnKeyType="next"
-              onSubmitEditing={() => passwordRef.current?.focus()}
-              error={!!errors.email}
+              leftIcon="person-outline"
             />
 
-            <FloatingInput
-              label="Password"
+            {/* Password */}
+            <InputField
+              label="PASSWORD"
               value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              returnKeyType="done"
-              onSubmitEditing={handleLogin}
-              inputRef={passwordRef}
-              error={!!errors.password}
+              onChange={setPassword}
+              placeholder="••••"
+              secureTextEntry={!showPassword}
+              leftIcon="lock-outline"
+              rightElement={
+                <TouchableOpacity
+                  onPress={() => setShowPassword((v) => !v)}
+                  activeOpacity={0.7}
+                  style={s.eyeBtn}
+                >
+                  <MaterialIcons
+                    name={showPassword ? "visibility-off" : "visibility"}
+                    size={20}
+                    color={C.outline}
+                  />
+                </TouchableOpacity>
+              }
             />
 
-            <TouchableOpacity onPress={handleLogin} disabled={loading}>
-              <View style={styles.btn}>
-                {loading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.btnText}>Sign in</Text>
+            {/* Forgot Password — inline with PASSWORD label */}
+            <TouchableOpacity
+              style={s.forgotWrapper}
+              activeOpacity={0.7}
+            >
+              <Text style={s.forgotText}>Forgot Password?</Text>
+            </TouchableOpacity>
+
+            {/* Keep me signed in */}
+            <TouchableOpacity
+              style={s.checkboxRow}
+              onPress={() => setKeepSignedIn((v) => !v)}
+              activeOpacity={0.7}
+            >
+              <View style={[s.checkbox, keepSignedIn && s.checkboxChecked]}>
+                {keepSignedIn && (
+                  <MaterialIcons name="check" size={12} color={C.onPrimary} />
                 )}
               </View>
+              <Text style={s.checkboxLabel}>Keep me signed in</Text>
             </TouchableOpacity>
+
+            {/* Sign In Button */}
+            <SignInButton onPress={handleSignIn} loading={loading} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
-// Styles
-const inputStyles = StyleSheet.create({
-  wrapper: {
-    height: 58,
-    backgroundColor: "#fff",
-    borderRadius: 14,
-    borderWidth: 1.5,
-    paddingHorizontal: 16,
-    justifyContent: "flex-end",
-    marginBottom: 16,
+// ── STYLES ────────────────────────────────────────────────
+const s = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: C.background },
+
+  scrollContent: {
+    flexGrow: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    paddingTop: 48,
+    gap: 24,
   },
-  label: {
-    position: "absolute",
-    left: 16,
+
+  // ── BRANDING ──
+  branding: {
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 4,
   },
+
+  logoBox: {
+    width: 100,
+    height: 90,
+    borderRadius: 18,
+    backgroundColor: C.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 8,
+    shadowColor: C.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+
+  brandName: {
+    fontSize: 22,
+    fontWeight: F.extraBold,
+    // color: C.onSurface,
+    letterSpacing: -0.3,
+  },
+
+  brandTagline: {
+    fontSize: 13,
+    fontWeight: F.regular,
+    color: C.onSurfaceVariant,
+  },
+
+  // ── CARD ──
+  card: {
+    width: "100%",
+    backgroundColor: C.surfaceContainerLowest,
+    borderRadius: R.xl,
+    borderWidth: 1,
+    borderColor: `${C.outlineVariant}4D`,
+    padding: 20,
+    gap: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
+    elevation: 4,
+  },
+
+  errorText: {
+    color: "#ba1a1a",
+    fontSize: 13,
+    fontWeight: F.semiBold,
+    textAlign: "center",
+    marginBottom: 4,
+  },
+
+  // ── FIELD ──
+  fieldGroup: { gap: 6 },
+
+  fieldLabel: {
+    fontSize: 10,
+    fontWeight: F.bold,
+    color: C.onSurfaceVariant,
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    marginLeft: 2,
+  },
+
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: 44,
+    backgroundColor: C.surfaceContainerLowest,
+    borderWidth: 1,
+    borderColor: C.outlineVariant,
+    borderRadius: R.lg,
+    paddingHorizontal: 12,
+  },
+
+  inputWrapperFocused: {
+    borderColor: C.primary,
+    borderWidth: 2,
+  },
+
+  leftIcon: {
+    marginRight: 8,
+  },
+
   input: {
-    fontSize: 15,
-    color: "#111827",
-    paddingBottom: 8,
-    paddingTop: 18,
+    flex: 1,
+    fontSize: 14,
+    color: C.onSurface,
+    height: "100%",
   },
+
   eyeBtn: {
-    position: "absolute",
-    right: 16,
-    top: 0,
-    bottom: 0,
-    justifyContent: "center",
+    padding: 4,
+    marginLeft: 6,
   },
-  eyeText: {
-    color: "#7c3aed",
-  },
-});
 
-const logo = StyleSheet.create({
-  container: { alignItems: "center" },
-  outer: {
-    width: 72,
-    height: 72,
-    borderRadius: 20,
-    backgroundColor: "#7c3aed",
-    alignItems: "center",
-    justifyContent: "center",
+  // ── FORGOT ──
+  forgotWrapper: {
+    alignSelf: "flex-end",
+    marginTop: -8,
   },
-  inner: { width: 36, height: 36 },
-  shieldTop: {
-    width: 28,
+
+  forgotText: {
+    fontSize: 12,
+    fontWeight: F.semiBold,
+    color: C.primary,
+  },
+
+  // ── CHECKBOX ──
+  checkboxRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+
+  checkbox: {
+    width: 18,
     height: 18,
-    backgroundColor: "#fff",
-  },
-  shieldBottom: {
-    width: 28,
-    height: 10,
-    backgroundColor: "#ddd",
-  },
-});
-
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#f5f3ff" },
-  scroll: { flexGrow: 1, padding: 24 },
-  header: { alignItems: "center", marginBottom: 20 },
-  brand: { fontSize: 28, fontWeight: "bold" },
-  brandAccent: { color: "#7c3aed" },
-  tagline: { fontSize: 12 },
-  card: { backgroundColor: "#fff", padding: 20, borderRadius: 20 },
-  cardTitle: { fontSize: 20, fontWeight: "bold" },
-  cardSubtitle: { fontSize: 14, marginBottom: 10 },
-  btn: {
-    backgroundColor: "#7c3aed",
-    padding: 14,
-    borderRadius: 10,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: C.outlineVariant,
+    backgroundColor: C.surfaceContainerLowest,
     alignItems: "center",
+    justifyContent: "center",
   },
-  btnText: { color: "#fff", fontWeight: "bold" },
 
-  blob1: {
-    position: "absolute",
-    top: -80,
-    left: -80,
-    width: 260,
-    height: 260,
-    borderRadius: 130,
-    backgroundColor: "#7c3aed",
-    opacity: 0.08,
+  checkboxChecked: {
+    backgroundColor: C.primary,
+    borderColor: C.primary,
   },
-  blob2: {
-    position: "absolute",
-    top: 60,
-    right: -40,
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: "#a78bfa",
-    opacity: 0.1,
+
+  checkboxLabel: {
+    fontSize: 13,
+    color: C.onSurfaceVariant,
   },
-  blob3: {
-    position: "absolute",
-    bottom: -60,
-    right: -60,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: "#6d28d9",
-    opacity: 0.07,
+
+  // ── SIGN IN BUTTON ──
+  signInBtn: {
+    height: 44,
+    backgroundColor: C.primary,
+    borderRadius: R.lg,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginTop: 4,
+    shadowColor: C.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.30,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+
+  signInText: {
+    fontSize: 15,
+    fontWeight: F.bold,
+    color: C.onPrimary,
+    letterSpacing: 0.1,
   },
 });
