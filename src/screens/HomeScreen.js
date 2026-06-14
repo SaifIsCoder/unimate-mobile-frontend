@@ -10,9 +10,10 @@ import {
   StyleSheet,
   Animated,
 } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { COLORS, RADIUS, FONT } from "../theme/theme";
-import { SectionTitle } from "../components/SharedComponents";
+import { AIBriefCard } from "../components/SharedComponents";
 import Header from "../components/Header";
 import { STUDENT } from "../data/mockData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -45,17 +46,7 @@ const Pressable = ({ onPress, style, children }) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 1. STUDENT WELCOME BANNER
-// ─────────────────────────────────────────────────────────────────────────────
-const StudentWelcomeBanner = () => (
-  <View style={styles.welcomeBanner}>
-    <View style={styles.welcomeLeft}>
-      {/* <Text style={styles.welcomeBack}>Welcome back 👋</Text>
-      <Text style={styles.studentName}>{STUDENT.name}</Text> */}
-    </View>
-  </View>
-);
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2. AI BRIEF
@@ -66,55 +57,6 @@ const AI_BRIEF = {
   tags: ["Web Dev quiz", "Attendance risk", "3 classes"],
 };
 
-const AIBrief = () => (
-  <View style={styles.aiBriefWrapper}>
-    <LinearGradient
-      colors={COLORS.gradientPurple} // Using the existing brand purple gradient from theme.js
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.aiBriefCard}
-    >
-      {/* Subtle overlay glow circle */}
-      <View style={styles.aiBriefGlowCircle} />
-
-      <View style={styles.aiBriefHeader}>
-        <View style={styles.aiBriefIconWrap}>
-          <Text style={{ fontSize: 13 }}>🧠</Text>
-        </View>
-        <Text style={styles.aiBriefLabel}>AI INSIGHT · TODAY</Text>
-      </View>
-
-      <Text style={styles.aiBriefText}>{AI_BRIEF.summary}</Text>
-
-      <View style={styles.aiBriefTags}>
-        {AI_BRIEF.tags.map((tag) => (
-          <View key={tag} style={styles.aiBriefTag}>
-            <Text style={styles.aiBriefTagText}>✨ {tag}</Text>
-          </View>
-        ))}
-      </View>
-    </LinearGradient>
-  </View>
-);
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 3. CLASSES BANNER
-// ─────────────────────────────────────────────────────────────────────────────
-const CLASSES = [
-  {
-    name: "Data Structures",
-    time: "9:00 AM",
-    room: "Room 15",
-    status: "active",
-  },
-  { name: "Web Development", time: "11:00 AM", room: "Lab 2", status: "next" },
-  {
-    name: "Database Systems",
-    time: "2:00 PM",
-    room: "Hall B",
-    status: "later",
-  },
-];
 
 const ClassesBanner = ({ navigation }) => (
   <Pressable
@@ -134,7 +76,14 @@ const ClassesBanner = ({ navigation }) => (
       {/* Top row */}
       <View style={styles.bannerTop}>
         <View style={styles.bannerDatePill}>
-          <Text style={styles.bannerDateText}>📅 Thursday, 17 July</Text>
+          <View style={styles.bannerDateRow}>
+            <MaterialIcons
+              name="calendar-month"
+              size={12}
+              color="rgba(255,255,255,0.9)"
+            />
+            <Text style={styles.bannerDateText}>Thursday, 17 July</Text>
+          </View>
         </View>
         <View style={styles.bannerCountBox}>
           <Text style={styles.bannerCountNum}>3</Text>
@@ -361,7 +310,7 @@ const EVENTS = [
     date: "Tomorrow",
     time: "2:00 PM",
     location: "Lab 3",
-    emoji: "🎉",
+    icon: "celebration",
     color: "#4f46e5",
     bg: "#eef2ff",
   },
@@ -371,7 +320,17 @@ const EVENTS = [
     date: "Mon, 22 July",
     time: "9:00 AM",
     location: "Exam Hall",
-    emoji: "📝",
+    icon: "edit-note",
+    color: "#0891b2",
+    bg: "#ecfeff",
+  },
+  {
+    id: 3,
+    title: "Mid-term Exams",
+    date: "Mon, 22 July",
+    time: "9:00 AM",
+    location: "Exam Hall",
+    icon: "edit-note",
     color: "#0891b2",
     bg: "#ecfeff",
   },
@@ -390,6 +349,7 @@ const UpcomingSection = ({ navigation }) => (
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ gap: 10 }}
+      style={eventStyles.cardContainer}
     >
       {EVENTS.map((ev) => (
         <TouchableOpacity
@@ -399,7 +359,7 @@ const UpcomingSection = ({ navigation }) => (
         >
           <View style={[eventStyles.card, { borderTopColor: ev.color }]}>
             <View style={[eventStyles.iconCircle, { backgroundColor: ev.bg }]}>
-              <Text style={{ fontSize: 18 }}>{ev.emoji}</Text>
+              <MaterialIcons name={ev.icon} size={18} color={ev.color} />
             </View>
             <Text style={eventStyles.evTitle} numberOfLines={1}>
               {ev.title}
@@ -407,7 +367,10 @@ const UpcomingSection = ({ navigation }) => (
             <Text style={eventStyles.evDate}>
               {ev.date} · {ev.time}
             </Text>
-            <Text style={eventStyles.evLoc}>📍 {ev.location}</Text>
+            <View style={eventStyles.evLocRow}>
+              <MaterialIcons name="place" size={12} color={COLORS.textTertiary} />
+              <Text style={eventStyles.evLoc}>{ev.location}</Text>
+            </View>
           </View>
         </TouchableOpacity>
       ))}
@@ -445,27 +408,29 @@ export default function HomeScreen({ navigation }) {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingBottom: 48,
+          paddingBottom: 25,
           flexGrow: 1,
         }}
       >
-        {/* 1.5 · Student Profile Welcome Banner */}
-        {/* <StudentWelcomeBanner /> */}
-
+       
         {/* 2 · AI Brief */}
-        <AIBrief />
+        <View style={{ paddingHorizontal: 16, marginTop: 6}}>
+
+
+        <AIBriefCard data={AI_BRIEF} />
+        </View>
 
         {/* 3 · Classes Banner */}
         <ClassesBanner navigation={navigation} />
 
         {/* 4 · Attendance Alert */}
         <AttendanceAlert navigation={navigation} />
+        <UpcomingSection navigation={navigation} />
 
         {/* 5 · Tasks */}
         <TasksSection navigation={navigation} />
 
         {/* 6 · Upcoming Events */}
-        <UpcomingSection navigation={navigation} />
       </ScrollView>
     </View>
   );
@@ -499,6 +464,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
     marginLeft: 17,
+    marginBottom: 10,
     // marginTop: 8,
   },
   studentMetaPill: {
@@ -513,85 +479,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "700",
     color: COLORS.textSecondary,
-  },
-
-  // AI Brief (AI Insights Card)
-  aiBriefWrapper: {
-    marginHorizontal: 16,
-    marginTop: 14,
-    borderRadius: 18,
-    // Keep shadow on wrapper WITHOUT overflow: "hidden" so the shadow actually renders in React Native!
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-    elevation: 5,
-    backgroundColor: "transparent",
-  },
-  aiBriefCard: {
-    padding: 16,
-    borderRadius: 18, // Border radius must be directly on the LinearGradient
-    overflow: "hidden", // Clips the glow circle perfectly
-  },
-  aiBriefGlowCircle: {
-    position: "absolute",
-    width: 130,
-    height: 130,
-    borderRadius: 65,
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
-    top: -40,
-    right: -40,
-  },
-  aiBriefHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 10,
-  },
-  aiBriefIconWrap: {
-    width: 24,
-    height: 24,
-    borderRadius: 7,
-    backgroundColor: "rgba(255, 255, 255, 0.25)",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.35)",
-  },
-  aiBriefLabel: {
-   fontSize: 13,
-    fontWeight: "700",
-    color: "#FFFFFF",
-    letterSpacing: 1,
-  },
-
-  aiBriefText: {
-    fontSize: 13,
-    color: "#FFFFFF",
-    lineHeight: 20,
-    fontWeight: "500",
-    textShadowColor: "rgba(0, 0, 0, 0.1)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 1,
-  },
-  aiBriefTags: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6,
-    marginTop: 12,
-  },
-  aiBriefTag: {
-    backgroundColor: "rgba(255, 255, 255, 0.18)",
-    borderRadius: 99,
-    paddingHorizontal: 10,
-    paddingVertical: 3.5,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.12)",
-  },
-  aiBriefTagText: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: "#FFFFFF",
   },
 
   // Classes Banner
@@ -635,6 +522,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 10,
     paddingVertical: 5,
+  },
+  bannerDateRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
   bannerDateText: {
     fontSize: 11,
@@ -837,7 +729,7 @@ const taskStyles = StyleSheet.create({
 
 // Events styles
 const eventStyles = StyleSheet.create({
-  wrap: { marginTop: 20, paddingBottom: 8 },
+  wrap: { marginTop: 15, paddingBottom: 8 },
   titleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -851,17 +743,20 @@ const eventStyles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   seeAll: { fontSize: 12, color: COLORS.primary, fontWeight: "600" },
-
+  cardContainer: {
+    // paddingLeft: 16,
+    marginHorizontal: 18,
+  },
   card: {
     width: 160,
     backgroundColor: COLORS.card,
     borderRadius: RADIUS.lg,
     padding: 14,
-    borderWidth: 1,
+    // borderWidth: 1,
     borderColor: COLORS.border,
-    borderTopWidth: 3,
-    gap: 4,
-    marginLeft: 16,
+    // borderTopWidth: 3,
+    gap: 3,
+    // marginLeft: 16,
   },
   iconCircle: {
     width: 36,
@@ -873,5 +768,6 @@ const eventStyles = StyleSheet.create({
   },
   evTitle: { fontSize: 13, fontWeight: "700", color: COLORS.textPrimary },
   evDate: { fontSize: 11, color: COLORS.textSecondary, marginTop: 2 },
-  evLoc: { fontSize: 10, color: COLORS.textTertiary, marginTop: 2 },
+  evLocRow: { flexDirection: "row", alignItems: "center", gap: 3, marginTop: 2 },
+  evLoc: { fontSize: 10, color: COLORS.textTertiary },
 });

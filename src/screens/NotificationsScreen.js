@@ -19,7 +19,7 @@ import {
   NOTIFICATION_PRIORITIES,
 } from '../constants/notificationConstants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 // ── Relative time helper ─────────────────────────────────────────────────────
 const getRelativeTime = (dateString) => {
@@ -51,7 +51,7 @@ const PriorityHeader = ({ priority }) => {
 
   return (
     <View style={styles.priorityHeader}>
-      <Text style={styles.priorityIcon}>{config.icon}</Text>
+      <MaterialIcons name={config.icon} size={14} color={config.color} />
       <Text style={[styles.priorityLabel, { color: config.color }]}>
         {config.label}
       </Text>
@@ -62,7 +62,7 @@ const PriorityHeader = ({ priority }) => {
 // ── Notification Card ────────────────────────────────────────────────────────
 const NotifCard = ({ item, onPress }) => {
   const config = PRIORITY_CONFIG[item.priority] || PRIORITY_CONFIG.MEDIUM;
-  const entityIcon = ENTITY_ICON_MAP[item.entityType] || '📣';
+  const entityIcon = ENTITY_ICON_MAP[item.entityType] || 'campaign';
 
   return (
     <TouchableOpacity
@@ -95,7 +95,7 @@ const NotifCard = ({ item, onPress }) => {
           },
         ]}
       >
-        <Text style={{ fontSize: 18 }}>{entityIcon}</Text>
+        <MaterialIcons name={entityIcon} size={18} color={config.color} />
       </View>
 
       {/* Content */}
@@ -140,7 +140,7 @@ const NotifCard = ({ item, onPress }) => {
 // ── Empty State ──────────────────────────────────────────────────────────────
 const EmptyState = () => (
   <View style={styles.emptyState}>
-    <Text style={styles.emptyIcon}>🔔</Text>
+    <MaterialIcons name="notifications-off" size={40} color={COLORS.textTertiary} />
     <Text style={styles.emptyTitle}>No Notifications</Text>
     <Text style={styles.emptySub}>
       You're all caught up! We'll notify you when something new arrives.

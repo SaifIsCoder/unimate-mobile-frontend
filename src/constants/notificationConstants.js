@@ -39,28 +39,28 @@ export const PRIORITY_CONFIG = {
     color: COLORS.red,
     bgColor: '#FFF5F5',
     borderColor: COLORS.red,
-    icon: '🔴',
+    icon: 'error',
     label: 'Critical',
   },
   HIGH: {
     color: COLORS.orange,
     bgColor: '#FEF9F0',
     borderColor: COLORS.orange,
-    icon: '🟠',
+    icon: 'priority-high',
     label: 'High Priority',
   },
   MEDIUM: {
     color: COLORS.primary,
     bgColor: '#FAFBFF',
     borderColor: COLORS.primary,
-    icon: '🟣',
+    icon: 'notifications-active',
     label: 'Medium',
   },
   LOW: {
     color: COLORS.textTertiary,
     bgColor: COLORS.card,
     borderColor: COLORS.border,
-    icon: '⚪',
+    icon: 'notifications-none',
     label: 'Low',
   },
 };
@@ -81,9 +81,9 @@ export const ANNOUNCEMENT_PRIORITY_MAP = {
 
 // ── Entity Type → Icon Mapping ───────────────────────────────────────────────
 export const ENTITY_ICON_MAP = {
-  task: '📝',
-  announcement: '📣',
-  grade: '🎓',
+  task: 'assignment',
+  announcement: 'campaign',
+  grade: 'school',
 };
 
 // ── Safe Validators ──────────────────────────────────────────────────────────

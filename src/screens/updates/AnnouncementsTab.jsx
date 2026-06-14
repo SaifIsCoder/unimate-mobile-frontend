@@ -11,8 +11,7 @@ import {
 } from "react-native";
 import { COLORS, RADIUS, FONT } from "../../theme/theme";
 import { FilterPill } from "../../components/SharedComponents";
-import { LinearGradient } from "expo-linear-gradient";
-
+import { AIBriefCard } from "../../components/SharedComponents";
 const TYPE_CONFIG = {
   important: {
     label: "Important",
@@ -106,18 +105,8 @@ const AnnouncementCard = ({ item }) => {
   );
 };
 
-// ─── AI ANNOUNCEMENTS SUMMARY ────────────────────────────────────────────────
-const AiAnnouncementsSummary = () => (
-  <View style={s.aiCard}>
-    <View style={s.aiHeaderRow}>
-      <Text style={s.aiIcon}>✨</Text>
-      <Text style={s.aiLabel}>TODAY'S PRIORITIES</Text>
-    </View>
-    <Text style={s.aiBody}>
-      Focus on the final exam schedule released 30 mins ago. Your Math exam is scheduled for next Monday. Prepare early!
-    </Text>
-  </View>
-);
+const AI_BRIEF =
+  "Focus on the final exam schedule released 30 mins ago. Your Math exam is scheduled for next Monday. Prepare early!";
 
 export default function AnnouncementsTab() {
   const [activeType, setActiveType] = useState("All");
@@ -164,9 +153,9 @@ export default function AnnouncementsTab() {
         ))}
       </ScrollView>
 
-      {/* AI Summary: Today's Priorities */}
-      <AiAnnouncementsSummary />
-
+      <View style={{ paddingHorizontal: 16, marginTop: 6 }}>
+        <AIBriefCard data={AI_BRIEF} />
+      </View>
       <FlatList
         style={{ flex: 1 }}
         data={filtered}

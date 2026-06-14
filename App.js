@@ -17,14 +17,14 @@ export default function App() {
   }
 
   return (
-    <SafeAreaProvider>
-      <UserProvider>
-        <NotificationProvider>
-          <NavigationContainer>
-            <AppNavigator />
-          </NavigationContainer>
-        </NotificationProvider>
-      </UserProvider>
-    </SafeAreaProvider>
+      <SafeAreaProvider>
+        <UserProvider>
+          <NotificationProvider>
+            <NavigationContainer>
+              <AppNavigator />
+            </NavigationContainer>
+          </NotificationProvider>
+        </UserProvider>
+      </SafeAreaProvider>
   );
 }

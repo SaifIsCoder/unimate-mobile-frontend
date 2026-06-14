@@ -1,7 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons";
-
+import { MaterialIcons } from "@expo/vector-icons";
 import { useUser } from "./context/UserContext";
 
 // Screens
@@ -28,15 +27,21 @@ function TabNavigator() {
         headerShown: false,
         tabBarActiveTintColor: "#4F46E5",
         tabBarInactiveTintColor: "gray",
+        tabBarStyle: {
+          backgroundColor: "#fff",
+          borderTopWidth: 0,
+          height: 55,
+          fontSize: 10,
+          elevation: 0,
+        },
         tabBarIcon: ({ color, size }) => {
           let iconName;
-          if (route.name === "Home") iconName = "home";
-          else if (route.name === "Schedule") iconName = "calendar";
-          // else if (route.name === "Profile") iconName = "person";
-          else if (route.name === "Tasks") iconName = "document-text";
-          else if (route.name === "Updates") iconName = "megaphone";
-          else if (route.name === "Grades") iconName = "stats-chart";
-          return <Ionicons name={iconName} size={size} color={color} />;
+          if (route.name === "Home") iconName = "home-filled";
+          else if (route.name === "Schedule") iconName = "calendar-month";
+          else if (route.name === "Tasks") iconName = "task-alt";
+          else if (route.name === "Updates") iconName = "campaign";
+          else if (route.name === "Grades") iconName = "query-stats";
+          return <MaterialIcons name={iconName} size={size} color={color} />;
         },
       })}
     >
@@ -67,9 +72,8 @@ function MainTabs() {
         name="AllSemestersScreen"
         component={AllSemestersScreen}
       />
-    <MainStack.Screen name="SetPassword" component={SetPasswordScreen} />
+      <MainStack.Screen name="SetPassword" component={SetPasswordScreen} />
     </MainStack.Navigator>
-
   );
 }
 
@@ -86,5 +90,5 @@ export default function AppNavigator() {
         <Stack.Screen name="MainTabs" component={MainTabs} />
       )}
     </Stack.Navigator>
-  );  
+  );
 }

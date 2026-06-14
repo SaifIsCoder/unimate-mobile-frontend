@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { COLORS, FONT } from '../theme/theme';
 import { useNotifications } from '../context/NotificationContext';
@@ -19,7 +19,7 @@ export default function NotificationBell() {
       onPress={() => navigation.navigate('Notifications')}
       activeOpacity={0.7}
     >
-      <Feather name="bell" size={16} color={COLORS.textSecondary} />
+      <MaterialIcons name="notifications-none" size={18} color={COLORS.textSecondary} />
 
       {/* Unread count badge */}
       {unreadCount > 0 && (

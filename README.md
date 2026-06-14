@@ -36,121 +36,137 @@ To build a **centralized mobile application** that allows students to:
 ## ✨ Features
 
 ### 🏠 Home Dashboard
-
 * Daily overview of classes
 * GPA and attendance snapshot
 * Upcoming tasks and events
 * Latest announcements
 
----
-
 ### 📅 Schedule Management
-
 * Weekly class schedule
 * Day-wise navigation
 * “Now” and “Next” class indicators
 
----
-
 ### ✅ Tasks Management
-
-* Unified system for:
-
-  * Assignments
-  * Quizzes
-  * Deadlines
+* Unified system for assignments, quizzes, and deadlines
 * Action-oriented interface
 
----
-
 ### 📊 Grades System
-
 * Semester-wise results
 * Subject-level breakdown
 * GPA per semester
 * CGPA (planned via backend)
 
----
-
-### 📢 Announcements
-
+### 📢 Announcements & 🎉 Events
 * Departmental notices
 * Academic rules and updates
-* Event-related information
-
----
-
-### 🎉 Events
-
 * University and department events
-* Upcoming activities tracking
-
----
 
 ### 👤 Student Profile
-
 * Academic and personal details
-* Structured information layout
-
----
-
-## 🧠 System Design Approach
-
-The application is designed using a **student-centric approach**:
-
-* Focus on *daily usability*
-* Clear separation between:
-
-  * **Updates (information)**
-  * **Tasks (actions)**
 
 ---
 
 ## 🏗️ Technology Stack
 
 ### Frontend
-
 * React Native (Expo)
 * React Navigation
 * Context API
 
 ### Backend (Planned)
-
 * Node.js + Express
 * MongoDB
 
 ---
 
-## 📁 Project Structure
+## 📁 Detailed Project Overview: Modules & Functions
 
-```id="p93xq1"
-/screens        → Application screens
-/components     → Reusable UI components
-/context        → State management
-/data           → Mock data (for development)
-/theme          → Styling system
-/navigation     → Navigation setup
-```
+The application is structured using a clean, scalable component-based architecture inside the `src/` directory.
 
----
+### 1. 📂 Screens (`/src/screens`)
+Contains the main views and user interfaces of the application.
+* **Core Screens**: 
+  * `HomeScreen.js`: Displays the dashboard overview.
+  * `ScheduleScreen.js`: Shows the class timetable and daily schedule.
+  * `TasksScreen.js`: Lists pending assignments, quizzes, and deadlines.
+  * `ProfileScreen.js`: User's personal and academic profile.
+  * `NotificationsScreen.js`: History of recent alerts.
+  * `SplashScreen.jsx`: The loading screen displayed on app startup.
+* **Auth (`/auth`)**:
+  * `Login.jsx`: User authentication interface.
+  * `SetPasswordScreen.jsx`: Screen for users to configure their password.
+* **Grades (`/grades`)**:
+  * `GradesScreen.js`: Main grade overview.
+  * `AllSemesters.jsx`: Detailed breakdown of grades across all semesters.
+  * `SetGPAGoalScreen.js`: Allows users to set target GPA goals.
+* **Updates (`/updates`)**:
+  * `UpdatesScreen.jsx`: Central hub for announcements and community posts.
+  * `AnnouncementsTab.jsx`: Displays official notices.
+  * `CommunityTab.jsx`: Student forum and discussions.
+  * `CreateCommunityPost.jsx`: Interface to publish a new community post.
 
-## 🔄 Data Structure (Example)
+### 2. 🧩 Components (`/src/components`)
+Reusable UI elements utilized across various screens.
+* **Global Components**:
+  * `Header.jsx`: Custom top navigation bar.
+  * `Background.jsx`: Standardized background layout.
+  * `UserDrawer.jsx`: Side navigation drawer for quick access.
+  * `NotificationBell.jsx`: Icon showing unread notification count.
+  * `SeedButton.jsx`: Shared styled button element.
+  * `SharedComponents.js`: Utility UI components exported centrally.
+* **Community (`/community`)**:
+  * `PostPreview.jsx`: Snippet view for community posts.
+  * `AchievementSelector.jsx`: UI for selecting/displaying student achievements.
 
-Grades are organized by semester:
+### 3. 🌐 Services (`/src/services`)
+Handles external data fetching, APIs, and background tasks.
+* **`apiClient.js`**: Core HTTP client handling requests, token management, and errors.
+  * `apiRequest(url, options, retryCount)`: Centralized API call handler.
+  * `setTokens()`, `getAccessToken()`, `getRefreshToken()`, `clearTokens()`: Token management.
+  * `getUserProfile()`, `setUserProfile()`: Cache handling for user data.
+* **`authService.js`**: Authentication specific logic.
+  * `loginUser(email, password, tenantCode)`: Authenticates user.
+  * `logoutUser()`: Clears session.
+  * `getCurrentUser()`, `loadCachedUser()`: Retrieves active user session.
+* **`notificationService.js`**: Push notifications and local alerts logic.
+  * `requestPermissions()`: Prompts user for notification access.
+  * `scheduleNotification()`, `scheduleDelayedNotification()`: Triggers local notifications.
+  * `cancelNotification()`, `cancelAllNotifications()`: Removes scheduled alerts.
+  * `getAllScheduledNotifications()`: Retrieves pending notifications.
 
-```id="c2k8s9"
-Semester
-  ├── GPA
-  ├── Total Credits
-  └── Subjects (Grades)
-```
+### 4. 🧠 Context (`/src/context`)
+Global state management using React's Context API.
+* **`UserContext.js`**: 
+  * `UserProvider`: Wraps the app to provide user state.
+  * `useUser()`: Custom hook to access auth state, profile, and login/logout methods globally.
+* **`NotificationContext.js`**: 
+  * `NotificationProvider`: Manages incoming and unread notifications.
+  * `useNotifications()`: Custom hook to interact with notification data across screens.
+
+### 5. 🛠️ Configuration & Constants (`/src/config` & `/src/constants`)
+* **`/config`**:
+  * `api.js`: API endpoints and base URL definitions.
+  * `supabase.js`: Configuration for Supabase services (if applicable).
+* **`/constants`**:
+  * `colors.js`, `sizes.js`: Standardized design tokens.
+  * `routes.js`: Navigation route names.
+  * `roles.js`: User role mappings.
+  * `notificationConstants.js`: Notification types and formatting.
+
+### 6. 🗃️ Data & Theme (`/src/data` & `/src/theme`)
+* **`mockData.js`**: Contains dummy JSON data for development before backend integration.
+* **`theme.js`**: Global stylesheet definitions and custom theme settings.
+
+### 7. 🧭 Navigation
+* **`AppNavigator.jsx`**: Configures React Navigation (Stacks, Tabs, and Drawers) routing the screens together.
 
 ---
 
 ## 🔐 Authentication
 
-* Login-based access system
-* User session managed via Context API
+* Login-based access system via `/services/authService.js`
+* User session managed globally via `UserContext`
+* Access tokens securely managed via `apiClient.js`
 
 ---
 
@@ -167,7 +183,7 @@ Semester
 
 * Backend integration (API-based system)
 * Automatic CGPA calculation
-* Notifications system
+* Notifications system full integration
 * Data synchronization
 
 ---
@@ -184,5 +200,3 @@ This project is developed as a **Final Year Project (FYP)** for:
 ## 👨‍💻 Developer
 
 Developed by a final year student as part of undergraduate degree requirements.
-
----

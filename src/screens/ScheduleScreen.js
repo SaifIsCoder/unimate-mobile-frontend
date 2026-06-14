@@ -12,10 +12,9 @@ import { COLORS, RADIUS, FONT, ACCENT } from "../theme/theme";
 import Header from "../components/Header";
 import { CLASSES, WEEK_DAYS } from "../data/mockData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
-import Entypo from "@expo/vector-icons/Entypo";
+import { MaterialIcons } from "@expo/vector-icons";
 import Background from "../components/Background";
-
+import { AIBriefCard } from "../components/SharedComponents";
 // ─────────────────────────────────────────────────────────────────────────────
 // CONSTANTS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -69,11 +68,11 @@ const DateStrip = ({
     {/* Month navigation */}
     <View style={stripStyles.monthRow}>
       <TouchableOpacity style={stripStyles.chevronBtn} onPress={onPrevMonth}>
-        <Entypo name="chevron-left" size={20} color={COLORS.textPrimary} />
+        <MaterialIcons name="chevron-left" size={22} color={COLORS.textPrimary} />
       </TouchableOpacity>
       <Text style={stripStyles.monthLabel}>{month}</Text>
       <TouchableOpacity style={stripStyles.chevronBtn} onPress={onNextMonth}>
-        <Entypo name="chevron-right" size={20} color={COLORS.textPrimary} />
+        <MaterialIcons name="chevron-right" size={22} color={COLORS.textPrimary} />
       </TouchableOpacity>
     </View>
 
@@ -123,18 +122,6 @@ const DateStrip = ({
 // ─────────────────────────────────────────────────────────────────────────────
 // 3. AI COGNITIVE BRIEF
 // ─────────────────────────────────────────────────────────────────────────────
-const AIBriefCard = () => (
-  <View style={briefStyles.card}>
-    {/* Watermark icon */}
- <View style={briefStyles.headerRow}>
-      <Text style={briefStyles.icon}>✨</Text>
-      <Text style={briefStyles.label}>COGNITIVE LOAD ALERT</Text>
-    </View>
-
-
-    <Text style={briefStyles.body}>{AI_BRIEF}</Text>
-  </View>
-);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 4. CLASS CARD
@@ -198,11 +185,11 @@ const ClassCard = ({ item, index, total }) => {
           {/* Meta row */}
           <View style={cardStyles.metaRow}>
             <View style={cardStyles.metaItem}>
-              <Text style={cardStyles.metaIcon}>🚪</Text>
+              <MaterialIcons name="meeting-room" size={14} color={COLORS.textSecondary} />
               <Text style={cardStyles.metaMeta}>{item.room}</Text>
             </View>
             <View style={cardStyles.metaItem}>
-              <Text style={cardStyles.metaIcon}>👤</Text>
+              <MaterialIcons name="person-outline" size={14} color={COLORS.textSecondary} />
               <Text style={cardStyles.metaMeta}>{item.teacher}</Text>
             </View>
           </View>
@@ -210,7 +197,7 @@ const ClassCard = ({ item, index, total }) => {
           {/* Prep time block — shown for specific class */}
           {hasPrep && (
             <View style={cardStyles.prepBlock}>
-              <Text style={cardStyles.prepIcon}>⏱</Text>
+              <MaterialIcons name="timer" size={14} color="#5b21b6" />
               <Text style={cardStyles.prepText}>15 min prep-time added</Text>
             </View>
           )}
@@ -225,7 +212,7 @@ const ClassCard = ({ item, index, total }) => {
 // ─────────────────────────────────────────────────────────────────────────────
 const EmptyState = () => (
   <View style={styles.emptyWrap}>
-    <Text style={styles.emptyEmoji}>📭</Text>
+    <MaterialIcons name="event-busy" size={36} color={COLORS.textTertiary} />
     <Text style={styles.emptyTitle}>No classes today</Text>
     <Text style={styles.emptySub}>You have time to relax or plan ahead</Text>
   </View>
@@ -258,23 +245,25 @@ export default function ScheduleScreen({ navigation }) {
 
       {/* 1 · Unified Header */}
       <Header title="Schedule" />
-       <DateStrip
-          selectedDay={selectedDay}
-          setSelectedDay={setSelectedDay}
-          month={month}
-          onPrevMonth={handlePrevMonth}
-          onNextMonth={handleNextMonth}
-        />
+      <DateStrip
+        selectedDay={selectedDay}
+        setSelectedDay={setSelectedDay}
+        month={month}
+        onPrevMonth={handlePrevMonth}
+        onNextMonth={handleNextMonth}
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 48 }}
       >
         {/* 2 · Date Strip */}
- 
 
         {/* 3 · AI Brief */}
-        <AIBriefCard />
+     <View style={{ paddingHorizontal: 16, marginTop: 6}}>
 
+
+        <AIBriefCard data={AI_BRIEF} />
+        </View>
         {/* Section header */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionLabel}>TODAY'S SESSIONS</Text>
@@ -344,7 +333,6 @@ const styles = StyleSheet.create({
 
   // Empty state
   emptyWrap: { alignItems: "center", marginTop: 48, gap: 8 },
-  emptyEmoji: { fontSize: 36 },
   emptyTitle: { fontSize: 15, fontWeight: "700", color: COLORS.textPrimary },
   emptySub: { fontSize: 12, color: COLORS.textSecondary },
 });
@@ -413,36 +401,6 @@ const stripStyles = StyleSheet.create({
   },
   chipNum: { fontSize: 16, fontWeight: "700", color: COLORS.textSecondary },
   chipTextActive: { color: "#fff" },
-});
-
-// AI Brief
-const briefStyles = StyleSheet.create({
-  card: {
-    marginHorizontal: 16,
-    marginTop: 16,
-    backgroundColor: "rgba(255,255,255,0.85)",
-    borderRadius: 16,
-    borderTopWidth: 4,
-    borderTopColor: "#6063ee",
-    borderWidth: 1,
-    borderColor: "#6063ee",
-    padding: 14,
-    gap: 10,
-    shadowColor: "#6366f1",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.07,
-    shadowRadius: 10,
-    elevation: 3,
-  },
- headerRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  icon: { fontSize: 16 },
-  label: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#4648d4",
-    letterSpacing: 1,
-  },
-  body: { fontSize: 14, fontWeight: "500", color: "#1e1b4b", lineHeight: 21 },
 });
 
 // Class Card
@@ -524,7 +482,6 @@ const cardStyles = StyleSheet.create({
 
   metaRow: { flexDirection: "row", gap: 16 },
   metaItem: { flexDirection: "row", alignItems: "center", gap: 4 },
-  metaIcon: { fontSize: 12 },
   metaMeta: { fontSize: 12, color: COLORS.textSecondary, fontWeight: "500" },
 
   prepBlock: {
@@ -539,6 +496,5 @@ const cardStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#c4b5fd",
   },
-  prepIcon: { fontSize: 14 },
   prepText: { fontSize: 12, color: "#5b21b6", fontWeight: "600" },
 });

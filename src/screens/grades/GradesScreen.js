@@ -5,16 +5,13 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
-  Animated,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
-
-// ── Import your existing shared components ────────────────
 import Header from "../../components/Header";
 import Background from "../../components/Background";
+import { AIBriefCard } from "../../components/SharedComponents";
 
 // ── Theme tokens (mirrors Tailwind config in HTML) ────────
 const COLORS = {
@@ -60,7 +57,7 @@ const FONT = {
   bold: "700",
   extraBold: "800",
 };
-
+const AI_BRIEF = `Focus Mode: Your Database assignment is due in 2 days, and you usually struggle with this subject. Start now to avoid a late-night crunch.`;
 // ── Mock Data ─────────────────────────────────────────────
 const COURSES = [
   {
@@ -136,38 +133,6 @@ const GpaHero = ({ navigation }) => (
         <MaterialIcons name="emoji-events" size={14} color={COLORS.primary} />
         <Text style={styles.goalButtonText}>Set CGPA Goal</Text>
       </TouchableOpacity>
-    </View>
-  </View>
-);
-
-// ── AI INSIGHT CARD ───────────────────────────────────────
-// Mirrors: <section class="ai-glow border border-secondary/20 ...">
-const AiInsightCard = () => (
-  <View style={styles.aiCard}>
-    {/* Decorative blur orb (top-right) */}
-    <View style={styles.aiOrb} />
-
-    <View style={styles.aiInner}>
-      {/* Icon box */}
-      <View style={styles.aiIconBox}>
-        <MaterialIcons
-          name="auto-awesome"
-          size={22}
-          color={COLORS.onSecondaryContainer}
-        />
-      </View>
-
-      {/* Text content */}
-      <View style={styles.aiTextBlock}>
-        <View style={styles.aiTopRow}>
-          <Text style={styles.aiChip}>AI INSIGHT</Text>
-          <Text style={styles.aiTime}>NOW</Text>
-        </View>
-        <Text style={styles.aiBody}>
-          An A in <Text style={styles.aiHighlight}>Web Dev</Text> is worth more
-          to your CGPA right now than an A in a 1-credit lab. Prioritize this!
-        </Text>
-      </View>
     </View>
   </View>
 );
@@ -252,53 +217,6 @@ const CourseCard = ({ item }) => {
   );
 };
 
-// ── FAB ───────────────────────────────────────────────────
-const FloatingButton = () => (
-  <TouchableOpacity style={styles.fab} activeOpacity={0.85}>
-    <Text style={styles.fabIcon}>✨</Text>
-  </TouchableOpacity>
-);
-
-// ── BOTTOM NAV ────────────────────────────────────────────
-const NAV_ITEMS = [
-  { icon: "home", label: "Home", active: false },
-  { icon: "calendar-today", label: "Schedule", active: false },
-  { icon: "notifications-active", label: "Updates", active: false },
-  { icon: "assignment", label: "Tasks", active: false },
-  { icon: "grade", label: "Grades", active: true },
-];
-
-// const BottomNav = ({ bottomInset }) => (
-//   <View style={[styles.bottomNav, { paddingBottom: bottomInset || 8 }]}>
-//     {NAV_ITEMS.map((item) => (
-//       <TouchableOpacity
-//         key={item.label}
-//         style={[styles.navItem, item.active && styles.navItemActive]}
-//         activeOpacity={0.7}
-//       >
-//         <MaterialIcons
-//           name={item.icon}
-//           size={24}
-//           color={
-//             item.active ? COLORS.onSecondaryContainer : COLORS.onSurfaceVariant
-//           }
-//         />
-//         <Text
-//           style={[
-//             styles.navLabel,
-//             item.active
-//               ? { color: COLORS.onSecondaryContainer }
-//               : { color: COLORS.onSurfaceVariant },
-//           ]}
-//         >
-//           {item.label}
-//         </Text>
-//       </TouchableOpacity>
-//     ))}
-//   </View>
-// );
-
-// ── MAIN SCREEN ───────────────────────────────────────────
 export default function GradesScreen({ navigation }) {
   const insets = useSafeAreaInsets();
 
@@ -321,8 +239,8 @@ export default function GradesScreen({ navigation }) {
         {/* 1. GPA Hero */}
         <GpaHero navigation={navigation} />
 
-        {/* 2. AI Insight */}
-        <AiInsightCard />
+        <AIBriefCard data={AI_BRIEF} />
+
         <TouchableOpacity
           style={{
             flexDirection: "row",
@@ -360,12 +278,6 @@ export default function GradesScreen({ navigation }) {
           <CourseCard key={course.id} item={course} />
         ))}
       </ScrollView>
-
-      {/* FAB */}
-      {/* <FloatingButton /> */}
-
-      {/* BOTTOM NAV */}
-      {/* <BottomNav bottomInset={insets.bottom} /> */}
     </View>
   );
 }
@@ -401,7 +313,7 @@ const styles = StyleSheet.create({
   },
 
   gpaHero: {
-    backgroundColor: COLORS.primaryContainer, // #4648d4
+    backgroundColor: COLORS.primaryContainer,
     borderRadius: RADIUS.xl,
     padding: 20,
     gap: 0,
@@ -501,86 +413,6 @@ const styles = StyleSheet.create({
     fontWeight: FONT.bold,
     color: COLORS.onPrimaryContainer,
     letterSpacing: 0.5,
-  },
-
-  // ── AI INSIGHT ──
-  aiCard: {
-    borderRadius: RADIUS.xl,
-    borderWidth: 1,
-    borderColor: `${COLORS.secondary}33`,
-    backgroundColor: COLORS.surfaceContainerLowest,
-    padding: 16,
-    overflow: "hidden",
-    // ai-glow shadow
-    shadowColor: COLORS.secondary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 20,
-    elevation: 4,
-  },
-
-  // Decorative blur orb
-  aiOrb: {
-    position: "absolute",
-    top: -16,
-    right: -16,
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: `${COLORS.secondary}0D`, // /5 opacity
-  },
-
-  aiInner: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 12,
-  },
-
-  aiIconBox: {
-    backgroundColor: COLORS.secondaryContainer,
-    borderRadius: RADIUS.lg,
-    padding: 8,
-  },
-
-  aiTextBlock: {
-    flex: 1,
-    gap: 4,
-  },
-
-  aiTopRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 2,
-  },
-
-  aiChip: {
-    fontSize: 10,
-    fontWeight: FONT.bold,
-    color: COLORS.secondary,
-    letterSpacing: 0.8,
-    textTransform: "uppercase",
-  },
-
-  aiTime: {
-    fontSize: 10,
-    fontWeight: FONT.bold,
-    color: COLORS.outlineVariant,
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
-  },
-
-  aiBody: {
-    fontSize: 13,
-    fontWeight: FONT.semiBold,
-    color: COLORS.onSurface,
-    lineHeight: 18,
-    letterSpacing: 0.1,
-  },
-
-  aiHighlight: {
-    color: COLORS.primary,
-    fontWeight: FONT.bold,
   },
 
   // ── SECTION HEADER ──

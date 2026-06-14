@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { useUser } from "../context/UserContext";
 import { useNavigation, CommonActions } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 const { width } = Dimensions.get("window");
 const defaultAvatar = require("../../assets/avatar.jpg");
 export default function UserDrawer({ visible, onClose }) {
@@ -100,24 +100,24 @@ export default function UserDrawer({ visible, onClose }) {
               onClose();
             }}
           >
-            <Ionicons name="person-circle-outline" size={22} color="#111827" />
+            <MaterialIcons name="person-outline" size={22} color="#111827" />
             <Text style={styles.menuText}>Profile</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem}>
-            <Ionicons name="settings-outline" size={22} color="#111827" />
+            <MaterialIcons name="settings" size={22} color="#111827" />
             <Text style={styles.menuText}>Settings</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
-            <Ionicons name="log-out-outline" size={22} color="#EF4444" />
+            <MaterialIcons name="logout" size={22} color="#EF4444" />
             <Text style={[styles.menuText, { color: "#EF4444" }]}>Logout</Text>
           </TouchableOpacity>
         </View>
 
         {/* Close button */}
         <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-          <Ionicons name="close" size={24} color="black" />
+          <MaterialIcons name="close" size={24} color="black" />
         </TouchableOpacity>
       </Animated.View>
     </Animated.View>
