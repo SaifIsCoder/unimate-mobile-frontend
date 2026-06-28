@@ -73,9 +73,8 @@ To build a **centralized mobile application** that allows students to:
 * React Navigation
 * Context API
 
-### Backend (Planned)
-* Node.js + Express
-* MongoDB
+### Backend
+* Supabase (Authentication, Database)
 
 ---
 
@@ -174,8 +173,8 @@ Global state management using React's Context API.
 
 * UI Design: ✅ Completed
 * Navigation: ✅ Implemented
-* Data Handling: ⚠️ Mock data
-* Backend Integration: ⏳ In progress
+* Data Handling: ⚠️ Mock data (Transitioning to Supabase)
+* Backend Integration: ⏳ In progress (Supabase initialized)
 
 ---
 

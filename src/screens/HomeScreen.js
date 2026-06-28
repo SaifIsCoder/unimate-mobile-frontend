@@ -46,7 +46,6 @@ const Pressable = ({ onPress, style, children }) => {
   );
 };
 
-
 const AI_BRIEF = {
   summary:
     "Heavy day ahead — 3 back-to-back classes. Prep for your Web Dev quiz during the 11 AM break. Data Structures attendance is at risk; consider attending today's session.",
@@ -105,7 +104,6 @@ const ATTENDANCE_DATA = [
   { name: "Database Systems", attended: 16, total: 20 },
   { name: "Web Development", attended: 18, total: 20 },
 ];
-
 
 const ClassesBanner = ({ navigation }) => (
   <Pressable
@@ -352,7 +350,11 @@ const UpcomingSection = ({ navigation }) => (
               {ev.date} · {ev.time}
             </Text>
             <View style={eventStyles.evLocRow}>
-              <MaterialIcons name="place" size={12} color={COLORS.textTertiary} />
+              <MaterialIcons
+                name="place"
+                size={12}
+                color={COLORS.textTertiary}
+              />
               <Text style={eventStyles.evLoc}>{ev.location}</Text>
             </View>
           </View>
@@ -369,7 +371,6 @@ export default function HomeScreen({ navigation }) {
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <Background />
 
-      {/* 1 · Unified Header */}
       <Header title={STUDENT.name} />
       <View style={styles.studentMetaRow}>
         <View style={styles.studentMetaPill}>
@@ -393,30 +394,17 @@ export default function HomeScreen({ navigation }) {
           flexGrow: 1,
         }}
       >
-       
-        {/* 2 · AI Brief */}
-        <View style={{ paddingHorizontal: 16, marginTop: 6}}>
-
-
-        <AIBriefCard data={AI_BRIEF} />
+        <View style={{ paddingHorizontal: 16, marginTop: 6 }}>
+          <AIBriefCard data={AI_BRIEF} />
         </View>
-
-        {/* 3 · Classes Banner */}
         <ClassesBanner navigation={navigation} />
-
-        {/* 4 · Attendance Alert */}
         <AttendanceAlert navigation={navigation} />
         <UpcomingSection navigation={navigation} />
-
-        {/* 5 · Tasks */}
         <TasksSection navigation={navigation} />
-
-        {/* 6 · Upcoming Events */}
       </ScrollView>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: COLORS.bg },
@@ -744,6 +732,11 @@ const eventStyles = StyleSheet.create({
   },
   evTitle: { fontSize: 13, fontWeight: "700", color: COLORS.textPrimary },
   evDate: { fontSize: 11, color: COLORS.textSecondary, marginTop: 2 },
-  evLocRow: { flexDirection: "row", alignItems: "center", gap: 3, marginTop: 2 },
+  evLocRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    marginTop: 2,
+  },
   evLoc: { fontSize: 10, color: COLORS.textTertiary },
 });
