@@ -1,201 +1,222 @@
-# 🎓 UniMate – Student Management App
+<div align="center">
+  <img src="/docs/images/logo.png" alt="UniMate Logo" width="120" height="120" />
 
-### (Final Year Project – University of Sargodha)
+  # 🎓 UniMate
 
-UniMate is a mobile application developed as a Final Year Project (FYP) for the **University of Sargodha**, designed to help students manage their academic activities in one unified system.
+  **The unified, smart academic companion for students.**
 
----
+  [![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev/)
+  [![Expo](https://img.shields.io/badge/Expo-1B1F23?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev/)
+  [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-## 📌 Problem Statement
-
-Students at the University of Sargodha currently rely on multiple disconnected sources:
-
-* Notice boards for announcements
-* LMS/teachers for assignments
-* Manual tracking for schedules and grades
-
-This leads to:
-
-* Missed deadlines
-* Poor organization
-* Lack of a centralized system
+</div>
 
 ---
 
-## 🎯 Objective
+## 📖 Overview
 
-To build a **centralized mobile application** that allows students to:
+**UniMate** is a comprehensive mobile application built to streamline and centralize the student experience. Originally developed as a Final Year Project for the **University of Sargodha**, it solves the problem of scattered academic resources by bringing schedules, grades, assignments, and announcements into a single, intuitive platform.
 
-* Track daily schedules
-* Manage academic tasks (assignments, quizzes, deadlines)
-* View grades and GPA
-* Stay updated with announcements and events
+Whether you're tracking a critical deadline, checking if your attendance is slipping, or keeping up with department news, UniMate acts as your personal academic assistant.
 
 ---
 
-## ✨ Features
+## ✨ Key Features
 
-### 🏠 Home Dashboard
-* Daily overview of classes
-* GPA and attendance snapshot
-* Upcoming tasks and events
-* Latest announcements
-
-### 📅 Schedule Management
-* Weekly class schedule
-* Day-wise navigation
-* “Now” and “Next” class indicators
-
-### ✅ Tasks Management
-* Unified system for assignments, quizzes, and deadlines
-* Action-oriented interface
-
-### 📊 Grades System
-* Semester-wise results
-* Subject-level breakdown
-* GPA per semester
-* CGPA (planned via backend)
-
-### 📢 Announcements & 🎉 Events
-* Departmental notices
-* Academic rules and updates
-* University and department events
-
-### 👤 Student Profile
-* Academic and personal details
+* **🏠 Smart Dashboard**: Get a daily AI-driven brief, attendance risk alerts, and a quick snapshot of upcoming classes.
+* **📅 Schedule Management**: View day-wise and weekly class schedules with "Now" and "Next" indicators.
+* **✅ Unified Task Manager**: Track assignments, quizzes, and project deadlines with urgency flags.
+* **📊 Grades & GPA Tracking**: Monitor semester-wise results, subject breakdowns, and simulate target GPA goals.
+* **📢 Community & Updates**: Stay informed with official department announcements and a dedicated student discussion forum.
 
 ---
 
-## 🏗️ Technology Stack
+## 📱 Screenshots
+
+| Home Dashboard | Daily Schedule | Task Management | Academic Profile |
+| :---: | :---: | :---: | :---: |
+| <img src="/docs/images/home.png" width="200" alt="Home Screen"/> | <img src="/docs/images/schedule.png" width="200" alt="Schedule Screen"/> | <img src="/docs/images/tasks.png" width="200" alt="Tasks Screen"/> | <img src="/docs/images/profile.png" width="200" alt="Profile Screen"/> |
+
+---
+
+## 🏛️ System Architecture
+
+UniMate follows a modular, component-based architecture built on top of Expo, utilizing a robust global state management system and seamless backend integration.
+
+```mermaid
+graph TD
+    Client[Mobile App Client] --> UI[React Native UI Layer]
+    UI --> Context[Context API State]
+    UI --> Navigation[React Navigation]
+    
+    Context --> Services[Service Layer]
+    Services --> API[Supabase Client / APIs]
+    Services --> Storage[AsyncStorage Cache]
+    
+    API --> DB[(Supabase PostgreSQL)]
+    API --> Auth[Supabase Auth]
+```
+
+---
+
+## 💻 Technology Stack
 
 ### Frontend
-* React Native (Expo)
-* React Navigation
-* Context API
+* **Framework**: React Native (Expo)
+* **Navigation**: React Navigation (Stacks, Tabs, Drawers)
+* **State Management**: React Context API
+* **Animations**: React Native Reanimated
 
-### Backend
-* Supabase (Authentication, Database)
+### Backend & Infrastructure
+* **BaaS Platform**: Supabase
+* **Database**: PostgreSQL
+* **Authentication**: Supabase Auth
 
----
-
-## 📁 Detailed Project Overview: Modules & Functions
-
-The application is structured using a clean, scalable component-based architecture inside the `src/` directory.
-
-### 1. 📂 Screens (`/src/screens`)
-Contains the main views and user interfaces of the application.
-* **Core Screens**: 
-  * `HomeScreen.js`: Displays the dashboard overview.
-  * `ScheduleScreen.js`: Shows the class timetable and daily schedule.
-  * `TasksScreen.js`: Lists pending assignments, quizzes, and deadlines.
-  * `ProfileScreen.js`: User's personal and academic profile.
-  * `NotificationsScreen.js`: History of recent alerts.
-  * `SplashScreen.jsx`: The loading screen displayed on app startup.
-* **Auth (`/auth`)**:
-  * `Login.jsx`: User authentication interface.
-  * `SetPasswordScreen.jsx`: Screen for users to configure their password.
-* **Grades (`/grades`)**:
-  * `GradesScreen.js`: Main grade overview.
-  * `AllSemesters.jsx`: Detailed breakdown of grades across all semesters.
-  * `SetGPAGoalScreen.js`: Allows users to set target GPA goals.
-* **Updates (`/updates`)**:
-  * `UpdatesScreen.jsx`: Central hub for announcements and community posts.
-  * `AnnouncementsTab.jsx`: Displays official notices.
-  * `CommunityTab.jsx`: Student forum and discussions.
-  * `CreateCommunityPost.jsx`: Interface to publish a new community post.
-
-### 2. 🧩 Components (`/src/components`)
-Reusable UI elements utilized across various screens.
-* **Global Components**:
-  * `Header.jsx`: Custom top navigation bar.
-  * `Background.jsx`: Standardized background layout.
-  * `UserDrawer.jsx`: Side navigation drawer for quick access.
-  * `NotificationBell.jsx`: Icon showing unread notification count.
-  * `SeedButton.jsx`: Shared styled button element.
-  * `SharedComponents.js`: Utility UI components exported centrally.
-* **Community (`/community`)**:
-  * `PostPreview.jsx`: Snippet view for community posts.
-  * `AchievementSelector.jsx`: UI for selecting/displaying student achievements.
-
-### 3. 🌐 Services (`/src/services`)
-Handles external data fetching, APIs, and background tasks.
-* **`apiClient.js`**: Core HTTP client handling requests, token management, and errors.
-  * `apiRequest(url, options, retryCount)`: Centralized API call handler.
-  * `setTokens()`, `getAccessToken()`, `getRefreshToken()`, `clearTokens()`: Token management.
-  * `getUserProfile()`, `setUserProfile()`: Cache handling for user data.
-* **`authService.js`**: Authentication specific logic.
-  * `loginUser(email, password, tenantCode)`: Authenticates user.
-  * `logoutUser()`: Clears session.
-  * `getCurrentUser()`, `loadCachedUser()`: Retrieves active user session.
-* **`notificationService.js`**: Push notifications and local alerts logic.
-  * `requestPermissions()`: Prompts user for notification access.
-  * `scheduleNotification()`, `scheduleDelayedNotification()`: Triggers local notifications.
-  * `cancelNotification()`, `cancelAllNotifications()`: Removes scheduled alerts.
-  * `getAllScheduledNotifications()`: Retrieves pending notifications.
-
-### 4. 🧠 Context (`/src/context`)
-Global state management using React's Context API.
-* **`UserContext.js`**: 
-  * `UserProvider`: Wraps the app to provide user state.
-  * `useUser()`: Custom hook to access auth state, profile, and login/logout methods globally.
-* **`NotificationContext.js`**: 
-  * `NotificationProvider`: Manages incoming and unread notifications.
-  * `useNotifications()`: Custom hook to interact with notification data across screens.
-
-### 5. 🛠️ Configuration & Constants (`/src/config` & `/src/constants`)
-* **`/config`**:
-  * `api.js`: API endpoints and base URL definitions.
-  * `supabase.js`: Configuration for Supabase services (if applicable).
-* **`/constants`**:
-  * `colors.js`, `sizes.js`: Standardized design tokens.
-  * `routes.js`: Navigation route names.
-  * `roles.js`: User role mappings.
-  * `notificationConstants.js`: Notification types and formatting.
-
-### 6. 🗃️ Data & Theme (`/src/data` & `/src/theme`)
-* **`mockData.js`**: Contains dummy JSON data for development before backend integration.
-* **`theme.js`**: Global stylesheet definitions and custom theme settings.
-
-### 7. 🧭 Navigation
-* **`AppNavigator.jsx`**: Configures React Navigation (Stacks, Tabs, and Drawers) routing the screens together.
+### Local Storage
+* **Caching & Config**: React Native AsyncStorage, SecureStore
 
 ---
 
-## 🔐 Authentication
+## 📁 Repository Structure
 
-* Login-based access system via `/services/authService.js`
-* User session managed globally via `UserContext`
-* Access tokens securely managed via `apiClient.js`
-
----
-
-## 📦 Current Status
-
-* UI Design: ✅ Completed
-* Navigation: ✅ Implemented
-* Data Handling: ⚠️ Mock data (Transitioning to Supabase)
-* Backend Integration: ⏳ In progress (Supabase initialized)
-
----
-
-## 🚧 Future Enhancements
-
-* Backend integration (API-based system)
-* Automatic CGPA calculation
-* Notifications system full integration
-* Data synchronization
+```text
+├── src/
+│   ├── components/      # Reusable UI elements (Headers, Buttons, Badges)
+│   ├── config/          # Environment and Supabase configurations
+│   ├── constants/       # App-wide constants (Colors, Sizes, Routes)
+│   ├── context/         # Global state (UserContext, NotificationContext)
+│   ├── data/            # Mock data and offline fallbacks
+│   ├── screens/         # Main application views (grouped by feature)
+│   ├── services/        # API clients, auth logic, push notification handlers
+│   ├── theme/           # Global stylesheets and typography
+│   └── AppNavigator.jsx # Routing configuration
+├── App.js               # Application entry point
+├── app.json             # Expo configuration
+└── package.json         # Dependencies and scripts
+```
 
 ---
 
-## 🎓 Academic Context
+## 🚀 Installation and Setup
 
-This project is developed as a **Final Year Project (FYP)** for:
+### Prerequisites
+* **Node.js** (v18 or newer recommended)
+* **npm** or **yarn**
+* **Expo CLI** (`npm install -g expo-cli`)
+* **Expo Go** app installed on your physical device (iOS/Android), or a configured simulator/emulator.
 
-> **University of Sargodha**
-> Department of Computer Science
+### Setup Instructions
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/unimate-mobile-frontend.git
+   cd unimate-mobile-frontend
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
 ---
 
-## 👨‍💻 Developer
+## 🔐 Environment Variables
 
-Developed by a final year student as part of undergraduate degree requirements.
+Create a `.env` file in the root of your project and populate it with your Supabase credentials:
+
+```env
+EXPO_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+
+*Note: The app is designed with a fallback mechanism and will log a warning if Supabase is not configured, running seamlessly using local mock data for UI testing.*
+
+---
+
+## 🏃 Running the Project
+
+Start the Expo development server:
+
+```bash
+npx expo start
+```
+
+* Press `a` to open in Android Emulator.
+* Press `i` to open in iOS Simulator.
+* Scan the QR code using the **Expo Go** app on your physical device.
+
+---
+
+## 🔌 API Overview
+
+The `src/services/apiClient.js` module serves as the central hub for all network activity. It encapsulates:
+* **Token Management**: Intercepts requests to append JWT tokens securely.
+* **Retry Logic**: Automatically retries failed requests for resilience on flaky mobile networks.
+* **Error Handling**: Standardizes error responses before propagating them to the UI components.
+
+---
+
+## 🗄️ Database Overview
+
+The backend relies on **Supabase (PostgreSQL)**. Key entities include:
+* **Users/Students**: Stores academic profiles, tenant codes, and enrollment statuses.
+* **Schedules**: Relational mapping of courses, timeslots, and locations.
+* **Tasks**: Assignments and quizzes linked to specific subjects.
+* **Announcements**: Department-wide or university-wide notices.
+
+---
+
+## 🛡️ Authentication & Security
+
+* **Provider**: Supabase Authentication handles secure user sign-in and session generation.
+* **Session Persistence**: Tokens are securely stored locally using `AsyncStorage`.
+* **State Management**: The `UserContext` globally tracks the authentication state, ensuring protected routes are inaccessible to unauthenticated users.
+
+---
+
+## 📈 Project Status
+
+- **UI/UX Design**: ✅ Completed
+- **Navigation Flow**: ✅ Implemented
+- **Data Handling**: 🔄 Transitioning from mock data to live API
+- **Backend Integration**: ⏳ Supabase setup initialized, endpoints in progress
+
+---
+
+## 🗺️ Roadmap
+
+- [x] Initial UI Component Library implementation
+- [x] Core Screens (Home, Schedule, Tasks, Profile)
+- [x] Supabase SDK Integration
+- [ ] Complete CRUD operations for Tasks and Grades
+- [ ] Push Notifications integration via Expo Notifications
+- [ ] Offline-first sync capabilities
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! To contribute:
+
+1. Fork the repository.
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
+
+Please ensure your code adheres to the existing styling conventions and includes appropriate comments.
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+## 🙏 Developer & Acknowledgements
+
+Developed as a Final Year Project for the **Department of Computer Science** at the **University of Sargodha**. 
+
+*Special thanks to the faculty and student body for their feedback during the requirement gathering and design phases.*
