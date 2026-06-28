@@ -103,9 +103,6 @@ const ProgressRing = ({ cgpa = 3.82, maxCgpa = 4.0 }) => {
     </View>
   );
 };
-
-// ── CGPA HERO CARD ────────────────────────────────────────
-// Mirrors: <div class="relative overflow-hidden rounded-[18px] bg-gradient-to-br from-primary to-secondary ...">
 const CgpaHeroCard = () => (
   <View style={s.heroWrapper}>
     <LinearGradient
@@ -161,9 +158,6 @@ const CgpaHeroCard = () => (
     </LinearGradient>
   </View>
 );
-
-// ── SEMESTER ROW ──────────────────────────────────────────
-// Mirrors: <div class="group bg-surface-container-lowest border ... rounded-[14px] p-4 ...">
 const SemesterRow = ({ item }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const isCurrent = item.isCurrent;
@@ -225,9 +219,6 @@ const SemesterRow = ({ item }) => {
     </Animated.View>
   );
 };
-
-// ── BAR CHART ─────────────────────────────────────────────
-// Mirrors the 5-bar flex row in Grade Trends card
 const BAR_DATA = [
   { height: "60%", color: C.surfaceContainer },
   { height: "75%", color: C.surfaceContainer },
@@ -283,9 +274,6 @@ const BarChart = () => {
     </View>
   );
 };
-
-// ── TREND CARD ────────────────────────────────────────────
-// Mirrors: <div class="rounded-[18px] border ... bg-surface-container-lowest p-5 ai-glow ...">
 const TrendCard = () => (
   <View style={s.trendCard}>
     {/* Watermark icon */}
@@ -310,36 +298,6 @@ const TrendCard = () => (
   </View>
 );
 
-// ── FAB ───────────────────────────────────────────────────
-const Fab = () => {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  return (
-    <Pressable
-      style={s.fab}
-      onPressIn={() =>
-        Animated.spring(scaleAnim, {
-          toValue: 0.9,
-          useNativeDriver: true,
-        }).start()
-      }
-      onPressOut={() =>
-        Animated.spring(scaleAnim, {
-          toValue: 1,
-          useNativeDriver: true,
-        }).start()
-      }
-    >
-      <Animated.View
-        style={[s.fabInner, { transform: [{ scale: scaleAnim }] }]}
-      >
-        <MaterialIcons name="auto-awesome" size={28} color="#ffffff" />
-      </Animated.View>
-    </Pressable>
-  );
-};
-
-// ── SEMESTER DATA ─────────────────────────────────────────
 const SEMESTERS = [
   {
     id: "8",
@@ -371,7 +329,6 @@ const SEMESTERS = [
   },
 ];
 
-// ── MAIN SCREEN ───────────────────────────────────────────
 export default function AllSemestersScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const [showAll, setShowAll] = useState(false);
@@ -389,7 +346,7 @@ export default function AllSemestersScreen({ navigation }) {
         style={s.scroll}
         contentContainerStyle={[
           s.scrollContent,
-          { paddingBottom: 100 + insets.bottom },
+          { paddingBottom: 30 + insets.bottom },
         ]}
         showsVerticalScrollIndicator={false}
       >

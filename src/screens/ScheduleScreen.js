@@ -254,7 +254,7 @@ export default function ScheduleScreen({ navigation }) {
       />
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 48 }}
+        contentContainerStyle={{ paddingBottom: 25 }}
       >
         {/* 2 · Date Strip */}
 

@@ -218,14 +218,6 @@ const ApplyButton = ({ onPress }) => (
   </View>
 );
 
-// ── BOTTOM NAV ────────────────────────────────────────────
-const NAV_ITEMS = [
-  { icon: "home", label: "Home", active: false },
-  { icon: "calendar-today", label: "Schedule", active: false },
-  { icon: "grade", label: "Grades", active: true },
-  { icon: "assignment", label: "Tasks", active: false },
-  { icon: "notifications-active", label: "Updates", active: false },
-];
 
 // ── MAIN SCREEN ───────────────────────────────────────────
 export default function CgpaGoalScreen({ navigation }) {
@@ -253,7 +245,7 @@ export default function CgpaGoalScreen({ navigation }) {
         style={s.scroll}
         contentContainerStyle={[
           s.scrollContent,
-          { paddingBottom: 80 + insets.bottom },
+          { paddingBottom: 30 + insets.bottom },
         ]}
         showsVerticalScrollIndicator={false}
       >

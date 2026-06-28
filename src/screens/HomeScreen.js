@@ -47,15 +47,64 @@ const Pressable = ({ onPress, style, children }) => {
 };
 
 
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 2. AI BRIEF
-// ─────────────────────────────────────────────────────────────────────────────
 const AI_BRIEF = {
   summary:
     "Heavy day ahead — 3 back-to-back classes. Prep for your Web Dev quiz during the 11 AM break. Data Structures attendance is at risk; consider attending today's session.",
   tags: ["Web Dev quiz", "Attendance risk", "3 classes"],
 };
+const TASKS = [
+  {
+    id: 1,
+    title: "Submit DB Assignment",
+    due: "Today, 5:00 PM",
+    subject: "Database Systems",
+    urgent: true,
+  },
+  {
+    id: 2,
+    title: "Read Web Dev chapter 7",
+    due: "Tomorrow",
+    subject: "Web Development",
+    urgent: false,
+  },
+];
+const EVENTS = [
+  {
+    id: 1,
+    title: "React Workshop",
+    date: "Tomorrow",
+    time: "2:00 PM",
+    location: "Lab 3",
+    icon: "celebration",
+    color: "#4f46e5",
+    bg: "#eef2ff",
+  },
+  {
+    id: 2,
+    title: "Mid-term Exams",
+    date: "Mon, 22 July",
+    time: "9:00 AM",
+    location: "Exam Hall",
+    icon: "edit-note",
+    color: "#0891b2",
+    bg: "#ecfeff",
+  },
+  {
+    id: 3,
+    title: "Mid-term Exams",
+    date: "Mon, 22 July",
+    time: "9:00 AM",
+    location: "Exam Hall",
+    icon: "edit-note",
+    color: "#0891b2",
+    bg: "#ecfeff",
+  },
+];
+const ATTENDANCE_DATA = [
+  { name: "Data Structures", attended: 14, total: 20 },
+  { name: "Database Systems", attended: 16, total: 20 },
+  { name: "Web Development", attended: 18, total: 20 },
+];
 
 
 const ClassesBanner = ({ navigation }) => (
@@ -139,15 +188,6 @@ const ClassesBanner = ({ navigation }) => (
     </LinearGradient>
   </Pressable>
 );
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 4. ATTENDANCE ALERT
-// ─────────────────────────────────────────────────────────────────────────────
-const ATTENDANCE_DATA = [
-  { name: "Data Structures", attended: 14, total: 20 },
-  { name: "Database Systems", attended: 16, total: 20 },
-  { name: "Web Development", attended: 18, total: 20 },
-];
 
 const getAttendanceStatus = (pct) => {
   if (pct < 75)
@@ -247,26 +287,6 @@ const AttendanceAlert = ({ navigation }) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 5. TASKS
-// ─────────────────────────────────────────────────────────────────────────────
-const TASKS = [
-  {
-    id: 1,
-    title: "Submit DB Assignment",
-    due: "Today, 5:00 PM",
-    subject: "Database Systems",
-    urgent: true,
-  },
-  {
-    id: 2,
-    title: "Read Web Dev chapter 7",
-    due: "Tomorrow",
-    subject: "Web Development",
-    urgent: false,
-  },
-];
-
 const TasksSection = ({ navigation }) => (
   <View style={taskStyles.wrap}>
     <View style={taskStyles.titleRow}>
@@ -299,42 +319,6 @@ const TasksSection = ({ navigation }) => (
     ))}
   </View>
 );
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 6. UPCOMING EVENTS
-// ─────────────────────────────────────────────────────────────────────────────
-const EVENTS = [
-  {
-    id: 1,
-    title: "React Workshop",
-    date: "Tomorrow",
-    time: "2:00 PM",
-    location: "Lab 3",
-    icon: "celebration",
-    color: "#4f46e5",
-    bg: "#eef2ff",
-  },
-  {
-    id: 2,
-    title: "Mid-term Exams",
-    date: "Mon, 22 July",
-    time: "9:00 AM",
-    location: "Exam Hall",
-    icon: "edit-note",
-    color: "#0891b2",
-    bg: "#ecfeff",
-  },
-  {
-    id: 3,
-    title: "Mid-term Exams",
-    date: "Mon, 22 July",
-    time: "9:00 AM",
-    location: "Exam Hall",
-    icon: "edit-note",
-    color: "#0891b2",
-    bg: "#ecfeff",
-  },
-];
 
 const UpcomingSection = ({ navigation }) => (
   <View style={eventStyles.wrap}>
@@ -378,9 +362,6 @@ const UpcomingSection = ({ navigation }) => (
   </View>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN SCREEN
-// ─────────────────────────────────────────────────────────────────────────────
 export default function HomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
 
@@ -436,9 +417,7 @@ export default function HomeScreen({ navigation }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// STYLES
-// ─────────────────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: COLORS.bg },
 
@@ -593,7 +572,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// Attendance Alert styles
 const alertStyles = StyleSheet.create({
   container: {
     marginHorizontal: 16,
@@ -679,7 +657,6 @@ const alertStyles = StyleSheet.create({
   footnote: { fontSize: 10, color: "#ef4444", marginTop: 4, opacity: 0.75 },
 });
 
-// Tasks styles
 const taskStyles = StyleSheet.create({
   wrap: { marginTop: 20, paddingHorizontal: 16 },
   titleRow: {
@@ -727,7 +704,6 @@ const taskStyles = StyleSheet.create({
   urgentText: { fontSize: 10, color: "#dc2626", fontWeight: "600" },
 });
 
-// Events styles
 const eventStyles = StyleSheet.create({
   wrap: { marginTop: 15, paddingBottom: 8 },
   titleRow: {

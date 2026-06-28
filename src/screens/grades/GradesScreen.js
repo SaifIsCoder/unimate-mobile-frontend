@@ -232,7 +232,7 @@ export default function GradesScreen({ navigation }) {
         style={styles.scroll}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingBottom: 80 + insets.bottom },
+          { paddingBottom: 30 + insets.bottom },
         ]}
         showsVerticalScrollIndicator={false}
       >

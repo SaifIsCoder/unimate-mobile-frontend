@@ -238,7 +238,7 @@ export default function TasksScreen() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 48 }}
+        contentContainerStyle={{ paddingBottom: 25 }}
       >
         <FilterPills active={activeFilter} setActive={setActiveFilter} />
 
