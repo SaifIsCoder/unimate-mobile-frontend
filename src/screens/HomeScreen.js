@@ -223,7 +223,7 @@ const AttendanceAlert = ({ navigation }) => {
           onPress={() => navigation.navigate("Attendance")}
           style={alertStyles.hdrLink}
         >
-          <Text style={alertStyles.hdrLinkText}>See all →</Text>
+          <Text style={alertStyles.hdrLinkText}  >See all →</Text>
         </TouchableOpacity>
       </View>
 

@@ -567,6 +567,111 @@ export const COMMUNITY_POSTS = [
   },
 ];
 
+// ── Events ────────────────────────────────────────────────────────────────
+// `datetime` is used only to compute Past/Current status and sort order.
+// `date`/`time` are the pre-formatted display strings shown on cards.
+export const EVENT_CATEGORIES = {
+  workshop: { label: 'Workshop', icon: 'celebration', accent: 'purple' },
+  exam: { label: 'Exam', icon: 'edit-note', accent: 'red' },
+  seminar: { label: 'Seminar', icon: 'school', accent: 'blue' },
+  sports: { label: 'Sports', icon: 'sports-soccer', accent: 'green' },
+  social: { label: 'Social', icon: 'groups', accent: 'orange' },
+};
+
+export const EVENTS = [
+  {
+    id: 'ev1',
+    title: 'Guest Seminar: AI in Healthcare',
+    category: 'seminar',
+    datetime: '2026-07-10T14:00:00',
+    date: 'Fri, 10 July',
+    time: '2:00 PM',
+    location: 'Room 20',
+  },
+  {
+    id: 'ev2',
+    title: 'Cultural Week Opening',
+    category: 'social',
+    datetime: '2026-07-15T17:00:00',
+    date: 'Wed, 15 July',
+    time: '5:00 PM',
+    location: 'Main Auditorium',
+  },
+  {
+    id: 'ev3',
+    title: 'Mid-term Exams',
+    category: 'exam',
+    datetime: '2026-07-18T09:00:00',
+    date: 'Sat, 18 July',
+    time: '9:00 AM',
+    location: 'Exam Hall',
+  },
+  {
+    id: 'ev4',
+    title: 'React Workshop',
+    category: 'workshop',
+    datetime: '2026-07-22T14:00:00',
+    date: 'Wed, 22 July',
+    time: '2:00 PM',
+    location: 'Lab 3',
+  },
+  {
+    id: 'ev5',
+    title: 'Inter-Department Cricket Trials',
+    category: 'sports',
+    datetime: '2026-07-24T16:00:00',
+    date: 'Fri, 24 July',
+    time: '4:00 PM',
+    location: 'Sports Ground',
+  },
+  {
+    id: 'ev6',
+    title: 'UI/UX Design Sprint',
+    category: 'workshop',
+    datetime: '2026-07-26T11:00:00',
+    date: 'Sun, 26 July',
+    time: '11:00 AM',
+    location: 'Lab 3',
+  },
+  {
+    id: 'ev7',
+    title: 'Career Fair 2026',
+    category: 'seminar',
+    datetime: '2026-07-29T10:00:00',
+    date: 'Wed, 29 July',
+    time: '10:00 AM',
+    location: 'Main Hall',
+  },
+  {
+    id: 'ev8',
+    title: 'Final Exams Begin',
+    category: 'exam',
+    datetime: '2026-08-05T09:00:00',
+    date: 'Wed, 5 August',
+    time: '9:00 AM',
+    location: 'Exam Hall',
+  },
+  {
+    id: 'ev9',
+    title: "Freshers' Social Night",
+    category: 'social',
+    datetime: '2026-08-12T18:00:00',
+    date: 'Wed, 12 August',
+    time: '6:00 PM',
+    location: 'Student Center',
+  },
+];
+
+// ── Attendance ───────────────────────────────────────────────────────────
+export const ATTENDANCE_SUBJECTS = [
+  { id: 'at1', name: 'Data Structures', code: 'CS-103', attended: 14, total: 20 },
+  { id: 'at2', name: 'Computer Networks', code: 'CS-304', attended: 13, total: 20 },
+  { id: 'at3', name: 'Database Systems', code: 'IT-305', attended: 16, total: 20 },
+  { id: 'at4', name: 'Operating Systems', code: 'CS-302', attended: 17, total: 20 },
+  { id: 'at5', name: 'Web Development', code: 'IT-201', attended: 18, total: 20 },
+  { id: 'at6', name: 'Software Engineering', code: 'SE-210', attended: 19, total: 20 },
+];
+
 export const MOCK_COMMENTS = [
   { id: "c1", author: "Usman Ali",  initial: "U", text: "Congratulations! Well deserved.", time: "1h ago" },
   { id: "c2", author: "Sara Noor",  initial: "S", text: "Mashallah, very inspiring!",       time: "2h ago" },

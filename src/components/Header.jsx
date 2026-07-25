@@ -11,16 +11,19 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import { MaterialIcons } from "@expo/vector-icons";
 import { COLORS, RADIUS, FONT } from "../theme/theme";
 import { Avatar } from "./SharedComponents";
 import NotificationBell from "./NotificationBell";
 
 const { height } = Dimensions.get("window");
 
-export default function Header({ title }) {
+export default function Header({ title, showBack = false, onBack }) {
   const navigation = useNavigation();
   const [aiModalVisible, setAiModalVisible] = useState(false);
   const [selectedChip, setSelectedChip] = useState("general");
+
+  const handleBack = () => (onBack ? onBack() : navigation.goBack());
 
   const AI_INSIGHTS = {
     general: {
@@ -49,14 +52,24 @@ export default function Header({ title }) {
 
   return (
     <View style={styles.header}>
-      {/* LEFT SIDE: Avatar + Page Title */}
+      {/* LEFT SIDE: Back button or Avatar + Page Title */}
       <View style={styles.headerLeft}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Profile")}
-          activeOpacity={0.8}
-        >
-          <Avatar label="S" size={38} />
-        </TouchableOpacity>
+        {showBack ? (
+          <TouchableOpacity
+            onPress={handleBack}
+            activeOpacity={0.7}
+            style={styles.backBtn}
+          >
+            <MaterialIcons name="arrow-back" size={20} color={COLORS.textPrimary} />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Profile")}
+            activeOpacity={0.8}
+          >
+            <Avatar label="S" size={38} />
+          </TouchableOpacity>
+        )}
         <Text
           style={styles.pageTitle}
           numberOfLines={1}
@@ -225,6 +238,16 @@ const styles = StyleSheet.create({
     gap: 12,
     flex: 1,
     marginRight: 16,
+  },
+  backBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: COLORS.card,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: "center",
+    justifyContent: "center",
   },
   pageTitle: {
     fontSize: 24,

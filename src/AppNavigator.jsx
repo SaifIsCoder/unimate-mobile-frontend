@@ -16,6 +16,8 @@ import Login from "./screens/auth/Login";
 import AllSemestersScreen from "./screens/grades/AllSemesters";
 import CreateCommunityPost from "./screens/updates/CreateCommunityPost";
 import SetPasswordScreen from "./screens/auth/SetPasswordScreen";
+import EventsScreen from "./screens/EventsScreen";
+import AttendanceScreen from "./screens/AttendanceScreen";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const MainStack = createNativeStackNavigator();
@@ -73,6 +75,8 @@ function MainTabs() {
         component={AllSemestersScreen}
       />
       <MainStack.Screen name="SetPassword" component={SetPasswordScreen} />
+      <MainStack.Screen name="Events" component={EventsScreen} />
+      <MainStack.Screen name="Attendance" component={AttendanceScreen} />
     </MainStack.Navigator>
   );
 }
