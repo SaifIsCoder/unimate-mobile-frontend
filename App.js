@@ -6,7 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { UserProvider } from './src/context/UserContext';
 import { NotificationProvider } from './src/context/NotificationContext';
-import AppNavigator from './src/AppNavigator';
+import RootNavigator from './src/navigation';
 import SplashScreen from './src/screens/SplashScreen';
 
 export default function App() {
@@ -21,7 +21,7 @@ export default function App() {
         <UserProvider>
           <NotificationProvider>
             <NavigationContainer>
-              <AppNavigator />
+              <RootNavigator />
             </NavigationContainer>
           </NotificationProvider>
         </UserProvider>

@@ -11,11 +11,13 @@ import {
   TouchableWithoutFeedback,
   Alert,
 } from "react-native";
-import { useUser } from "../context/UserContext";
+import { useUser } from "../../context/UserContext";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 const { width } = Dimensions.get("window");
-const defaultAvatar = require("../../assets/avatar.jpg");
+// TODO: replace with a dedicated avatar asset (assets/avatar.jpg) when this
+// drawer is wired in; using the app icon as a safe placeholder for now.
+const defaultAvatar = require("../../../assets/images/icon.png");
 export default function UserDrawer({ visible, onClose }) {
   const slideAnim = useRef(new Animated.Value(width)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;

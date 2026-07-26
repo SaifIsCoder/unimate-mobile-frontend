@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Modal,
   Dimensions,
   ScrollView,
@@ -12,9 +11,10 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
-import { COLORS, RADIUS, FONT } from "../theme/theme";
-import { Avatar } from "./SharedComponents";
-import NotificationBell from "./NotificationBell";
+import { COLORS, RADIUS, FONT } from "../../theme";
+import { Avatar } from "../ui/Avatar";
+import NotificationBell from "../common/NotificationBell";
+import { styles } from "./Header.styles";
 
 const { height } = Dimensions.get("window");
 
@@ -29,22 +29,22 @@ export default function Header({ title, showBack = false, onBack }) {
     general: {
       title: "Today's Cognitive Overview",
       content: "Hello Saif! I'm your Unimate AI assistant. Based on your current calendar, you have a high cognitive load today with 3 classes and a database assignment. Let's optimize your day!",
-      emoji: "🧠",
+      icon: "psychology",
     },
     workload: {
       title: "Cognitive Load Forecast",
       content: "You have 3 classes today (Web Dev, Data Structures, Database Systems) and 1 urgent task due at 5:00 PM. I've calculated a high mental burden between 11 AM - 3 PM. Take a 15-minute break after your second class to stay sharp!",
-      emoji: "📊",
+      icon: "bar-chart",
     },
     gpa: {
       title: "GPA & Academic Analysis",
       content: "Outstanding job! Your current CGPA is 3.85. You have completed 100% of your tasks this week. If you maintain this submission streak, you are on track to graduate with first-class honors!",
-      emoji: "📈",
+      icon: "trending-up",
     },
     attendance: {
       title: "Attendance & Class Safety",
       content: "Your attendance in Data Structures is currently at 70% (Critical). You need to attend today's session to raise it above the 75% safe threshold. I highly recommend not skipping any classes today!",
-      emoji: "⏱",
+      icon: "timer",
     },
   };
 
@@ -87,7 +87,7 @@ export default function Header({ title, showBack = false, onBack }) {
           onPress={() => setAiModalVisible(true)}
           activeOpacity={0.7}
         >
-          <Text style={styles.aiBtnIcon}>✨</Text>
+          <MaterialIcons name="auto-awesome" size={15} color="#7c3aed" />
         </TouchableOpacity>
       </View>
 
@@ -114,7 +114,7 @@ export default function Header({ title, showBack = false, onBack }) {
                       end={{ x: 1, y: 1 }}
                       style={styles.aiIconBadge}
                     >
-                      <Text style={styles.aiIconBadgeText}>✨</Text>
+                      <MaterialIcons name="auto-awesome" size={20} color="#fff" />
                     </LinearGradient>
                     <View>
                       <Text style={styles.modalTitle}>Unimate AI</Text>
@@ -125,7 +125,7 @@ export default function Header({ title, showBack = false, onBack }) {
                     style={styles.closeBtn}
                     onPress={() => setAiModalVisible(false)}
                   >
-                    <Text style={styles.closeBtnText}>✕</Text>
+                    <MaterialIcons name="close" size={14} color={COLORS.textSecondary} />
                   </TouchableOpacity>
                 </View>
 
@@ -137,9 +137,14 @@ export default function Header({ title, showBack = false, onBack }) {
                     end={{ x: 1, y: 1 }}
                     style={styles.aiBubble}
                   >
-                    <Text style={styles.aiBubbleWatermark}>🧠</Text>
+                    <MaterialIcons
+                      name="psychology"
+                      size={100}
+                      color="#7c3aed"
+                      style={styles.aiBubbleWatermark}
+                    />
                     <View style={styles.aiBubbleHeader}>
-                      <Text style={styles.aiBubbleEmoji}>{currentInsight.emoji}</Text>
+                      <MaterialIcons name={currentInsight.icon} size={18} color="#7c3aed" />
                       <Text style={styles.aiBubbleTitle}>{currentInsight.title}</Text>
                     </View>
                     <Text style={styles.aiBubbleText}>{currentInsight.content}</Text>
@@ -163,9 +168,16 @@ export default function Header({ title, showBack = false, onBack }) {
                     onPress={() => setSelectedChip("general")}
                     activeOpacity={0.8}
                   >
-                    <Text style={[styles.chipText, selectedChip === "general" && styles.chipTextActive]}>
-                      🧠 Overview
-                    </Text>
+                    <View style={styles.chipContent}>
+                      <MaterialIcons
+                        name="psychology"
+                        size={14}
+                        color={selectedChip === "general" ? "#fff" : COLORS.textSecondary}
+                      />
+                      <Text style={[styles.chipText, selectedChip === "general" && styles.chipTextActive]}>
+                        Overview
+                      </Text>
+                    </View>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -176,9 +188,16 @@ export default function Header({ title, showBack = false, onBack }) {
                     onPress={() => setSelectedChip("workload")}
                     activeOpacity={0.8}
                   >
-                    <Text style={[styles.chipText, selectedChip === "workload" && styles.chipTextActive]}>
-                      📊 Workload
-                    </Text>
+                    <View style={styles.chipContent}>
+                      <MaterialIcons
+                        name="bar-chart"
+                        size={14}
+                        color={selectedChip === "workload" ? "#fff" : COLORS.textSecondary}
+                      />
+                      <Text style={[styles.chipText, selectedChip === "workload" && styles.chipTextActive]}>
+                        Workload
+                      </Text>
+                    </View>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -189,9 +208,16 @@ export default function Header({ title, showBack = false, onBack }) {
                     onPress={() => setSelectedChip("gpa")}
                     activeOpacity={0.8}
                   >
-                    <Text style={[styles.chipText, selectedChip === "gpa" && styles.chipTextActive]}>
-                      📈 GPA Forecast
-                    </Text>
+                    <View style={styles.chipContent}>
+                      <MaterialIcons
+                        name="trending-up"
+                        size={14}
+                        color={selectedChip === "gpa" ? "#fff" : COLORS.textSecondary}
+                      />
+                      <Text style={[styles.chipText, selectedChip === "gpa" && styles.chipTextActive]}>
+                        GPA Forecast
+                      </Text>
+                    </View>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -202,16 +228,24 @@ export default function Header({ title, showBack = false, onBack }) {
                     onPress={() => setSelectedChip("attendance")}
                     activeOpacity={0.8}
                   >
-                    <Text style={[styles.chipText, selectedChip === "attendance" && styles.chipTextActive]}>
-                      ⏱ Attendance Alert
-                    </Text>
+                    <View style={styles.chipContent}>
+                      <MaterialIcons
+                        name="timer"
+                        size={14}
+                        color={selectedChip === "attendance" ? "#fff" : COLORS.textSecondary}
+                      />
+                      <Text style={[styles.chipText, selectedChip === "attendance" && styles.chipTextActive]}>
+                        Attendance Alert
+                      </Text>
+                    </View>
                   </TouchableOpacity>
                 </ScrollView>
 
                 {/* Modal Footer */}
-                <View style={styles.modalFooter}>
+                <View style={[styles.modalFooter, styles.footerRow]}>
+                  <MaterialIcons name="lightbulb" size={14} color={COLORS.textTertiary} />
                   <Text style={styles.footerText}>
-                    💡 AI recommendations update automatically based on your real-time course grades and attendance.
+                    AI recommendations update automatically based on your real-time course grades and attendance.
                   </Text>
                 </View>
               </View>
@@ -223,241 +257,3 @@ export default function Header({ title, showBack = false, onBack }) {
   );
 }
 
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 12,
-  },
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    flex: 1,
-    marginRight: 16,
-  },
-  backBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  pageTitle: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: COLORS.primary,
-    letterSpacing: -0.5,
-    flex: 1,
-  },
-  headerRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  aiBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: "#ede9fe",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "#c4b5fd",
-    // soft shadow
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  aiBtnIcon: {
-    fontSize: 15,
-  },
-
-  // Modal Styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(15, 15, 26, 0.45)",
-    justifyContent: "flex-end",
-  },
-  modalContent: {
-    backgroundColor: COLORS.card,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 32,
-    maxHeight: height * 0.7,
-    // strong shadow for depth
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -10 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    elevation: 10,
-  },
-  dragIndicator: {
-    width: 40,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: "#e5e7eb",
-    alignSelf: "center",
-    marginBottom: 16,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  modalHeaderLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  aiIconBadge: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  aiIconBadgeText: {
-    fontSize: 20,
-    color: "#fff",
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: COLORS.textPrimary,
-  },
-  modalSubtitle: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    fontWeight: "500",
-    marginTop: 1,
-  },
-  closeBtn: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: "#f3f4f6",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  closeBtnText: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    fontWeight: "700",
-  },
-
-  // AI Bubble
-  aiBubbleContainer: {
-    marginBottom: 20,
-  },
-  aiBubble: {
-    borderRadius: 22,
-    borderWidth: 1.5,
-    borderColor: "#e9e5ff",
-    padding: 18,
-    overflow: "hidden",
-    position: "relative",
-  },
-  aiBubbleWatermark: {
-    position: "absolute",
-    right: -10,
-    top: -10,
-    fontSize: 100,
-    opacity: 0.04,
-  },
-  aiBubbleHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 10,
-  },
-  aiBubbleEmoji: {
-    fontSize: 18,
-  },
-  aiBubbleTitle: {
-    fontSize: 13,
-    fontWeight: "800",
-    color: "#7c3aed",
-    letterSpacing: 0.8,
-    textTransform: "uppercase",
-  },
-  aiBubbleText: {
-    fontSize: 14,
-    color: "#1e1b4b",
-    lineHeight: 22,
-    fontWeight: "500",
-  },
-
-  // Suggestion Chips
-  sectionLabel: {
-    fontSize: 10,
-    fontWeight: "800",
-    color: COLORS.textTertiary,
-    letterSpacing: 1.2,
-    marginBottom: 10,
-    marginLeft: 4,
-  },
-  chipsRow: {
-    paddingBottom: 16,
-    gap: 8,
-    paddingLeft: 2,
-  },
-  chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 14,
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    marginRight: 6,
-    // subtle shadow
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  chipActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  chipText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: COLORS.textSecondary,
-  },
-  chipTextActive: {
-    color: "#fff",
-  },
-
-  // Footer
-  modalFooter: {
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    paddingTop: 14,
-    marginTop: 6,
-  },
-  footerText: {
-    fontSize: 11,
-    color: COLORS.textTertiary,
-    lineHeight: 16,
-    textAlign: "center",
-    fontWeight: "500",
-  },
-});

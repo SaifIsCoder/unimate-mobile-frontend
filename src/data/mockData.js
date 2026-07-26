@@ -1,6 +1,6 @@
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
 
-import { COLORS } from '../theme/theme';
+import { COLORS } from '../theme';
 
 export const STUDENT = {
   name: 'Saif ur Rehman',
@@ -346,7 +346,7 @@ export const MOCK_NOTIFICATIONS = [
   // HIGH — Important announcement
   {
     id: 'notif-3',
-    title: '⚠️ Important Announcement',
+    title: 'Important Announcement',
     body: 'New Attendance Policy: Minimum 75% attendance required to appear in final exams.',
     type: 'important',
     scope: 'department',
@@ -376,7 +376,7 @@ export const MOCK_NOTIFICATIONS = [
   // MEDIUM — Event announcement
   {
     id: 'notif-5',
-    title: '📅 Upcoming Event',
+    title: 'Upcoming Event',
     body: 'React Workshop — Friday at 2 PM in Lab 3. Don\'t miss it!',
     type: 'event',
     scope: 'class',
@@ -406,7 +406,7 @@ export const MOCK_NOTIFICATIONS = [
   // LOW — General notice
   {
     id: 'notif-7',
-    title: '📢 Notice',
+    title: 'Notice',
     body: 'Library timing has been updated. Now open till 10 PM on weekdays.',
     type: 'general',
     scope: 'department',
@@ -421,7 +421,7 @@ export const MOCK_NOTIFICATIONS = [
   // MEDIUM — Event announcement
   {
     id: 'notif-8',
-    title: '📅 Upcoming Event',
+    title: 'Upcoming Event',
     body: 'CS Department Annual Tech Fest on May 5. Registrations open now!',
     type: 'event',
     scope: 'department',
@@ -439,9 +439,9 @@ export const NOTIFICATIONS = MOCK_NOTIFICATIONS;
 
 
 export const TYPE_CONFIG = {
-  important: { label: "Important", emoji: "⚠️", color: COLORS.red || "#DC2626" },
-  event:     { label: "Event",     emoji: "🎉", color: COLORS.primary },
-  general:   { label: "Notice",    emoji: "📢", color: COLORS.textSecondary },
+  important: { label: "Important", icon: "warning", color: COLORS.red || "#DC2626" },
+  event:     { label: "Event",     icon: "celebration", color: COLORS.primary },
+  general:   { label: "Notice",    icon: "campaign", color: COLORS.textSecondary },
 };
 
   export const SCOPE_CONFIG = {
@@ -485,12 +485,12 @@ export const ANNOUNCEMENTS = [
 ];
 
 export const POST_TYPE_CONFIG = {
-  internship:         { label: "Internship",    emoji: "💼", color: "#7C3AED" },
-  competition:        { label: "Competition",   emoji: "🏆", color: "#D97706" },
-  gpa_milestone:      { label: "GPA Milestone", emoji: "⭐", color: "#059669" },
-  project_completion: { label: "Project",       emoji: "🚀", color: "#2563EB" },
-  certification:      { label: "Certified",     emoji: "📜", color: "#DC2626" },
-  custom:             { label: "Achievement",   emoji: "🎯", color: "#6B7280" },
+  internship:         { label: "Internship",    icon: "work", color: "#7C3AED" },
+  competition:        { label: "Competition",   icon: "emoji-events", color: "#D97706" },
+  gpa_milestone:      { label: "GPA Milestone", icon: "star", color: "#059669" },
+  project_completion: { label: "Project",       icon: "rocket-launch", color: "#2563EB" },
+  certification:      { label: "Certified",     icon: "workspace-premium", color: "#DC2626" },
+  custom:             { label: "Achievement",   icon: "track-changes", color: "#6B7280" },
 };
 
 

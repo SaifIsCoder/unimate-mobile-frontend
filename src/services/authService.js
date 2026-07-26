@@ -7,20 +7,25 @@ import {
   clearTokens,
   setUserProfile,
   getUserProfile,
+  getAccessToken,
 } from "./apiClient";
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const STRONG_PASSWORD_REGEX =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+import {
+  EMAIL_REGEX,
+  STRONG_PASSWORD_REGEX,
+  normalizeEmail,
+} from "../utils/validation";
 
 const LOGIN_ATTEMPT_KEY = "login_attempt_meta";
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOGIN_LOCK_WINDOW_MS = 15 * 60 * 1000;
 
+// Temporary fixed mock credentials, used until the real API is wired up.
+const DEFAULT_MOCK_EMAIL = "student@university.edu";
+const DEFAULT_MOCK_PASSWORD = "Passw0rd!";
+
 const isPlainObject = (value) =>
   Boolean(value) && typeof value === "object" && !Array.isArray(value);
 
-const normalizeEmail = (email) => String(email || "").trim().toLowerCase();
 const normalizeTenantCode = (tenantCode) => String(tenantCode || "").trim().toUpperCase();
 
 const assertEmail = (email) => {
@@ -172,7 +177,15 @@ export const loginUser = async (email, password, tenantCode) => {
       throw new Error("Invalid password. Please use the new password you configured.");
     }
   } else {
-    // First login: store the email they used to log in
+    // First login: must match the fixed mock seed credentials
+    if (
+      normalizedEmail !== normalizeEmail(DEFAULT_MOCK_EMAIL) ||
+      password !== DEFAULT_MOCK_PASSWORD
+    ) {
+      throw new Error(
+        `Invalid credentials. Use ${DEFAULT_MOCK_EMAIL} / ${DEFAULT_MOCK_PASSWORD} to sign in for the first time.`
+      );
+    }
     await AsyncStorage.setItem("mock_user_email", normalizedEmail);
   }
 

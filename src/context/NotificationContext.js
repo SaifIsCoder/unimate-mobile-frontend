@@ -57,7 +57,7 @@ export function NotificationProvider({ children }) {
 
     setNotifications((prev) => [notification, ...prev]);
 
-    // 🔥 FCM HOOK — uncomment when backend is ready
+    // FCM HOOK — uncomment when backend is ready
     // sendPushNotification({
     //   token: userFCMToken,
     //   title: notification.title,

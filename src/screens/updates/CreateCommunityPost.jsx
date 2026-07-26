@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   Pressable,
-  StyleSheet,
   ScrollView,
   ActivityIndicator,
   Image,
@@ -13,7 +12,8 @@ import { Ionicons } from "@expo/vector-icons";
 import AchievementSelector from "../../components/community/AchievementSelector";
 import PostPreview from "../../components/community/PostPreview";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Background from "../../components/Background";
+import Background from "../../components/layout/Background";
+import { styles } from "./CreateCommunityPost.styles";
 
 const MAX_TITLE = 100;
 const MAX_BODY = 500;
@@ -48,7 +48,7 @@ export default function CreateCommunityPost({ navigation }) {
       // success
       navigation.goBack();
     } catch (e) {
-      console.log(e);
+      // TODO: surface a user-facing error once the create-post API is wired
     } finally {
       setLoading(false);
     }
@@ -154,93 +154,3 @@ export default function CreateCommunityPost({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "#F5F6FA",
-  },
-  header: {
-    fontSize: 22,
-    fontWeight: "600",
-    marginBottom: 12,
-  },
-  label: {
-    marginTop: 16,
-    marginBottom: 6,
-    fontWeight: "500",
-  },
-  input: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-  },
-  textarea: {
-    height: 120,
-    textAlignVertical: "top",
-  },
-  counter: {
-    textAlign: "right",
-    fontSize: 12,
-    color: "#6B7280",
-    marginTop: 4,
-  },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 24,
-  },
-  cancel: {
-    padding: 14,
-  },
-  cancelText: {
-    color: "#6B7280",
-  },
-  post: {
-    backgroundColor: "#1A56DB",
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 10,
-  },
-  postText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-  imageBtn: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderStyle: "dashed",
-    overflow: "hidden",
-    marginTop: 4,
-  },
-  imagePlaceholder: {
-    height: 120,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  imagePlaceholderText: {
-    color: "#9CA3AF",
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  imagePreviewContainer: {
-    height: 200,
-    width: "100%",
-  },
-  imagePreview: {
-    width: "100%",
-    height: "100%",
-  },
-  removeImage: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-  },
-});

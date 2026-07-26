@@ -4,23 +4,24 @@ import {
   View,
   Text,
   FlatList,
-  StyleSheet,
   TouchableOpacity,
   TextInput,
   ScrollView,
   Image,
 } from "react-native";
-import { COLORS, RADIUS, FONT } from "../../theme/theme";
-import { FilterPill } from "../../components/SharedComponents";
+import { MaterialIcons } from "@expo/vector-icons";
+import { COLORS, RADIUS, FONT } from "../../theme";
+import { FilterPill } from "../../components/ui";
+import { s, pc, cs } from "./CommunityTab.styles";
 
 // ── CONFIG ───────────────────────────────────────────────────
 const TYPE_CFG = {
-  internship: { label: "Internship", emoji: "💼", color: "#7C3AED" },
-  competition: { label: "Competition", emoji: "🏆", color: "#D97706" },
-  gpa_milestone: { label: "GPA Milestone", emoji: "⭐", color: "#059669" },
-  project_completion: { label: "Project", emoji: "🚀", color: "#2563EB" },
-  certification: { label: "Certified", emoji: "📜", color: "#DC2626" },
-  custom: { label: "Achievement", emoji: "🎯", color: "#6B7280" },
+  internship: { label: "Internship", icon: "work", color: "#7C3AED" },
+  competition: { label: "Competition", icon: "emoji-events", color: "#D97706" },
+  gpa_milestone: { label: "GPA Milestone", icon: "star", color: "#059669" },
+  project_completion: { label: "Project", icon: "rocket-launch", color: "#2563EB" },
+  certification: { label: "Certified", icon: "workspace-premium", color: "#DC2626" },
+  custom: { label: "Achievement", icon: "track-changes", color: "#6B7280" },
 };
 const FILTERS = [
   "All",
@@ -181,7 +182,7 @@ const CommentSheet = ({ onClose, onSubmit }) => {
 };
 
 // ── POST CARD ────────────────────────────────────────────────
-const PostCard = ({ item, onLike, onComment }) => {
+const PostCard = React.memo(({ item, onLike, onComment }) => {
   const cfg = TYPE_CFG[item.type] || TYPE_CFG.custom;
   const isTeacher = item.authorRole === "teacher";
   return (
@@ -201,7 +202,7 @@ const PostCard = ({ item, onLike, onComment }) => {
           </Text>
         </View>
         <View style={[pc.typePill, { backgroundColor: cfg.color + "18" }]}>
-          <Text style={pc.typeEmoji}>{cfg.emoji}</Text>
+          <MaterialIcons name={cfg.icon} size={11} color={cfg.color} />
           <Text style={[pc.typeLabel, { color: cfg.color }]}>{cfg.label}</Text>
         </View>
       </View>
@@ -213,19 +214,23 @@ const PostCard = ({ item, onLike, onComment }) => {
       <View style={pc.divider} />
       <View style={pc.actions}>
         <TouchableOpacity style={pc.actionBtn} onPress={() => onLike(item.id)}>
-          <Text style={pc.actionIcon}>{item.liked ? "❤️" : "🤍"}</Text>
+          <MaterialIcons
+            name={item.liked ? "favorite" : "favorite-border"}
+            size={16}
+            color={item.liked ? "#E11D48" : COLORS.textSecondary}
+          />
           <Text style={[pc.actionCount, item.liked && pc.actionCountLiked]}>
             {item.likesCount}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity style={pc.actionBtn} onPress={() => onComment(item)}>
-          <Text style={pc.actionIcon}>💬</Text>
+          <MaterialIcons name="chat-bubble-outline" size={16} color={COLORS.textSecondary} />
           <Text style={pc.actionCount}>{item.commentsCount}</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
-};
+});
 
 // ── MAIN ─────────────────────────────────────────────────────
 export default function CommunityTab({ navigation }) {
@@ -286,7 +291,11 @@ export default function CommunityTab({ navigation }) {
       <FlatList
         style={{ flex: 1 }}
         data={filtered}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
+        initialNumToRender={6}
+        maxToRenderPerBatch={6}
+        windowSize={7}
+        removeClippedSubviews
         renderItem={({ item }) => (
           <PostCard
             item={item}
@@ -302,7 +311,7 @@ export default function CommunityTab({ navigation }) {
         }
         ListEmptyComponent={
           <View style={s.empty}>
-            <Text style={s.emptyIcon}>🏆</Text>
+            <MaterialIcons name="emoji-events" size={36} color={COLORS.textTertiary} style={s.emptyIcon} />
             <Text style={s.emptyTitle}>No achievements yet</Text>
             <Text style={s.emptySub}>
               Be the first to share a win with your department.
@@ -335,196 +344,3 @@ export default function CommunityTab({ navigation }) {
   );
 }
 
-const s = StyleSheet.create({
-  container: { flex: 1 },
-  filterScroll: { flexGrow: 0, flexShrink: 0 },
-  filterBar: { paddingHorizontal: 16, paddingVertical: 6, gap: 6 },
-  empty: { alignItems: "center", paddingHorizontal: 40 },
-  emptyIcon: { fontSize: 36, marginBottom: 10 },
-  emptyTitle: {
-    fontSize: 14,
-    fontWeight: FONT.bold,
-    color: COLORS.textPrimary,
-    marginBottom: 4,
-  },
-  emptySub: { fontSize: 11, color: COLORS.textSecondary, textAlign: "center" },
-  fab: {
-    position: "absolute",
-    bottom: 24,
-    right: 20,
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 24,
-    elevation: 4,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  fabText: { color: "#fff", fontSize: 14, fontWeight: FONT.bold },
-  overlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: "flex-end",
-  },
-  backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.35)" },
-});
-const pc = StyleSheet.create({
-  card: {
-    marginHorizontal: 16,
-    marginBottom: 12,
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 14,
-  },
-  top: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.primary + "22",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 10,
-  },
-  avatarTeacher: { backgroundColor: "#7C3AED22" },
-  avatarText: { fontSize: 16, fontWeight: FONT.bold, color: COLORS.primary },
-  avatarTextTeacher: { color: "#7C3AED" },
-  authorInfo: { flex: 1 },
-  nameRow: { flexDirection: "row", alignItems: "center", gap: 6 },
-  authorName: {
-    fontSize: 14,
-    fontWeight: FONT.semiBold,
-    color: COLORS.textPrimary,
-  },
-  teacherBadge: {
-    backgroundColor: "#7C3AED18",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: RADIUS.sm,
-  },
-  teacherBadgeText: {
-    fontSize: 10,
-    fontWeight: FONT.semiBold,
-    color: "#7C3AED",
-  },
-  meta: { fontSize: 11, color: COLORS.textTertiary, marginTop: 1 },
-  typePill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: RADIUS.sm,
-  },
-  typeEmoji: { fontSize: 11 },
-  typeLabel: { fontSize: 10, fontWeight: FONT.semiBold },
-  title: {
-    fontSize: 15,
-    fontWeight: FONT.bold,
-    color: COLORS.textPrimary,
-    marginBottom: 4,
-  },
-  body: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19 },
-  postImage: {
-    width: "100%",
-    height: 180,
-    borderRadius: RADIUS.md,
-    marginTop: 12,
-    backgroundColor: COLORS.bg,
-  },
-  divider: { height: 1, backgroundColor: COLORS.border, marginVertical: 10 },
-  actions: { flexDirection: "row", gap: 20 },
-  actionBtn: { flexDirection: "row", alignItems: "center", gap: 5 },
-  actionIcon: { fontSize: 16 },
-  actionCount: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
-    fontWeight: FONT.semiBold,
-  },
-  actionCountLiked: { color: "#E11D48" },
-});
-const cs = StyleSheet.create({
-  sheet: {
-    backgroundColor: COLORS.card,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 16,
-    paddingBottom: 32,
-  },
-  handle: {
-    width: 36,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: COLORS.border,
-    alignSelf: "center",
-    marginBottom: 14,
-  },
-  title: {
-    fontSize: 15,
-    fontWeight: FONT.bold,
-    color: COLORS.textPrimary,
-    marginBottom: 14,
-  },
-  row: { flexDirection: "row", marginBottom: 12, gap: 10 },
-  avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: COLORS.primary + "22",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarText: { fontSize: 13, fontWeight: FONT.bold, color: COLORS.primary },
-  body: { flex: 1 },
-  meta: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 2 },
-  author: {
-    fontSize: 12,
-    fontWeight: FONT.semiBold,
-    color: COLORS.textPrimary,
-  },
-  time: { fontSize: 10, color: COLORS.textTertiary },
-  commentText: { fontSize: 12, color: COLORS.textSecondary, lineHeight: 17 },
-  inputRow: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    gap: 8,
-    marginTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    paddingTop: 12,
-  },
-  input: {
-    flex: 1,
-    backgroundColor: COLORS.bg,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 13,
-    color: COLORS.textPrimary,
-    maxHeight: 80,
-  },
-  sendBtn: {
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    borderRadius: RADIUS.md,
-  },
-  sendBtnDisabled: { opacity: 0.4 },
-  sendBtnText: { color: "#fff", fontSize: 13, fontWeight: FONT.bold },
-  closeBtn: {
-    alignSelf: "center",
-    marginTop: 12,
-    paddingVertical: 6,
-    paddingHorizontal: 24,
-  },
-  closeBtnText: { fontSize: 13, color: COLORS.textTertiary },
-});

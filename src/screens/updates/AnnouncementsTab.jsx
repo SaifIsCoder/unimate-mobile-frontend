@@ -1,25 +1,18 @@
 // ─── ANNOUNCEMENTS TAB ───────────────────────────────────────────────────────
 import React, { useState, useMemo } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-} from "react-native";
-import { COLORS, RADIUS, FONT } from "../../theme/theme";
-import { FilterPill } from "../../components/SharedComponents";
-import { AIBriefCard } from "../../components/SharedComponents";
+import { View, Text, FlatList, ScrollView } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { COLORS } from "../../theme";
+import { FilterPill, AIBriefCard } from "../../components/ui";
+import { s } from "./AnnouncementsTab.styles";
 const TYPE_CONFIG = {
   important: {
     label: "Important",
-    emoji: "⚠️",
+    icon: "warning",
     color: COLORS.red || "#DC2626",
   },
-  event: { label: "Event", emoji: "🎉", color: COLORS.primary },
-  general: { label: "Notice", emoji: "📢", color: COLORS.textSecondary },
+  event: { label: "Event", icon: "celebration", color: COLORS.primary },
+  general: { label: "Notice", icon: "campaign", color: COLORS.textSecondary },
 };
 const SCOPE_CONFIG = {
   class: { label: "My Class", color: COLORS.blue || "#2563EB" },
@@ -72,13 +65,13 @@ const ANNOUNCEMENTS = [
   },
 ];
 
-const AnnouncementCard = ({ item }) => {
+const AnnouncementCard = React.memo(({ item }) => {
   const cfg = TYPE_CONFIG[item.type] || TYPE_CONFIG.general;
   const scopeCfg = SCOPE_CONFIG[item.scope] || SCOPE_CONFIG.department;
   return (
     <View style={s.card}>
       <View style={s.cardHeader}>
-        <Text style={s.emoji}>{cfg.emoji}</Text>
+        <MaterialIcons name={cfg.icon} size={26} color={cfg.color} style={s.emoji} />
         <View style={s.headerText}>
           <Text style={s.title}>{item.title}</Text>
           <Text style={s.date}>{item.date}</Text>
@@ -95,15 +88,9 @@ const AnnouncementCard = ({ item }) => {
         </View>
       </View>
       <Text style={s.message}>{item.message}</Text>
-      {/* {item.image && (
-        <Image source={{ uri: item.image }} style={s.cardImage} resizeMode="cover" />
-      )} */}
-      {/* <TouchableOpacity>
-        <Text style={s.viewDetails}>View Details</Text>
-      </TouchableOpacity> */}
     </View>
   );
-};
+});
 
 const AI_BRIEF =
   "Focus on the final exam schedule released 30 mins ago. Your Math exam is scheduled for next Monday. Prepare early!";
@@ -159,8 +146,12 @@ export default function AnnouncementsTab() {
       <FlatList
         style={{ flex: 1 }}
         data={filtered}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => <AnnouncementCard item={item} />}
+        initialNumToRender={6}
+        maxToRenderPerBatch={6}
+        windowSize={7}
+        removeClippedSubviews
         showsVerticalScrollIndicator={false}
         contentContainerStyle={
           filtered.length === 0
@@ -169,7 +160,7 @@ export default function AnnouncementsTab() {
         }
         ListEmptyComponent={
           <View style={s.empty}>
-            <Text style={s.emptyIcon}>📭</Text>
+            <MaterialIcons name="mail-outline" size={36} color={COLORS.textTertiary} style={s.emptyIcon} />
             <Text style={s.emptyTitle}>No Announcements</Text>
             <Text style={s.emptySub}>No announcements match your filters.</Text>
           </View>
@@ -179,85 +170,3 @@ export default function AnnouncementsTab() {
   );
 }
 
-const s = StyleSheet.create({
-  container: { flex: 1 },
-  aiCard: {
-    marginHorizontal: 16,
-    marginTop: 6,
-    marginBottom: 12,
-    backgroundColor: "rgba(255,255,255,0.85)",
-    borderRadius: 16,
-    borderTopWidth: 4,
-    borderTopColor: "#6063ee",
-    borderWidth: 1,
-    borderColor: "#6063ee",
-    padding: 14,
-    gap: 10,
-    shadowColor: "#6366f1",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.07,
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  aiHeaderRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  aiIcon: { fontSize: 16 },
-  aiLabel: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#4648d4",
-    letterSpacing: 1,
-  },
-  aiBody: { fontSize: 14, fontWeight: "500", color: "#1e1b4b", lineHeight: 21 },
-  filterScroll: { flexGrow: 0, flexShrink: 0 },
-  filterBar: { paddingHorizontal: 16, paddingVertical: 6, gap: 6 },
-  card: {
-    marginHorizontal: 16,
-    marginBottom: 12,
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 14,
-  },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 10,
-    marginBottom: 8,
-  },
-  emoji: { fontSize: 26, marginTop: 2 },
-  headerText: { flex: 1 },
-  title: { fontSize: 15, fontWeight: FONT.bold, color: COLORS.textPrimary },
-  date: { fontSize: 11, color: COLORS.textTertiary, marginTop: 2 },
-  tagRow: { flexDirection: "row", gap: 6, marginBottom: 8 },
-  tag: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: RADIUS.sm },
-  tagText: { fontSize: 10, fontWeight: FONT.semiBold },
-  message: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
-    lineHeight: 19,
-    marginBottom: 10,
-  },
-  cardImage: {
-    width: "100%",
-    height: 160,
-    borderRadius: RADIUS.md,
-    marginBottom: 12,
-    backgroundColor: COLORS.bg,
-  },
-  viewDetails: {
-    fontSize: 13,
-    fontWeight: FONT.semiBold,
-    color: COLORS.primary,
-    textAlign: "right",
-  },
-  empty: { alignItems: "center", paddingHorizontal: 40 },
-  emptyIcon: { fontSize: 36, marginBottom: 10 },
-  emptyTitle: {
-    fontSize: 14,
-    fontWeight: FONT.bold,
-    color: COLORS.textPrimary,
-    marginBottom: 4,
-  },
-  emptySub: { fontSize: 11, color: COLORS.textSecondary, textAlign: "center" },
-});
