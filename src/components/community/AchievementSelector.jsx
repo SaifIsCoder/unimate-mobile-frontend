@@ -1,13 +1,14 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const TYPES = [
-  { id: "internship", label: "Internship", emoji: "💼" },
-  { id: "competition", label: "Competition", emoji: "🏆" },
-  { id: "gpa", label: "GPA", emoji: "⭐" },
-  { id: "project", label: "Project", emoji: "🚀" },
-  { id: "cert", label: "Certification", emoji: "📜" },
-  { id: "custom", label: "Custom", emoji: "🎯" },
+  { id: "internship", label: "Internship", icon: "work" },
+  { id: "competition", label: "Competition", icon: "emoji-events" },
+  { id: "gpa", label: "GPA", icon: "star" },
+  { id: "project", label: "Project", icon: "rocket-launch" },
+  { id: "cert", label: "Certification", icon: "workspace-premium" },
+  { id: "custom", label: "Custom", icon: "track-changes" },
 ];
 
 export default function AchievementSelector({ selected, onSelect }) {
@@ -22,7 +23,11 @@ export default function AchievementSelector({ selected, onSelect }) {
             onPress={() => onSelect(item.id)}
             style={[styles.item, active && styles.active]}
           >
-            <Text style={styles.emoji}>{item.emoji}</Text>
+            <MaterialIcons
+              name={item.icon}
+              size={20}
+              color={active ? "#1A56DB" : "#374151"}
+            />
             <Text style={styles.text}>{item.label}</Text>
           </Pressable>
         );
@@ -49,9 +54,6 @@ const styles = StyleSheet.create({
   active: {
     borderColor: "#1A56DB",
     backgroundColor: "#E8F0FF",
-  },
-  emoji: {
-    fontSize: 20,
   },
   text: {
     marginTop: 4,

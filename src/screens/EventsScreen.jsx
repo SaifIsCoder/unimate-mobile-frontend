@@ -7,15 +7,15 @@ import {
   Text,
   ScrollView,
   FlatList,
-  StyleSheet,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { COLORS, RADIUS, FONT, ACCENT } from "../theme/theme";
-import Header from "../components/Header";
-import Background from "../components/Background";
-import { FilterPill } from "../components/SharedComponents";
+import { COLORS, ACCENT } from "../theme";
+import Header from "../components/layout/Header";
+import Background from "../components/layout/Background";
+import { FilterPill } from "../components/ui";
 import { EVENTS, EVENT_CATEGORIES } from "../data/mockData";
+import { s } from "./EventsScreen.styles";
 
 const STATUS_FILTERS = ["All", "Current", "Past"];
 const CATEGORY_FILTERS = ["All", ...Object.keys(EVENT_CATEGORIES)];
@@ -29,7 +29,7 @@ const getEventStatus = (datetime) => {
   return eventDay >= today ? "Current" : "Past";
 };
 
-const EventCard = ({ event }) => {
+const EventCard = React.memo(({ event }) => {
   const cfg = EVENT_CATEGORIES[event.category];
   const accent = ACCENT[cfg.accent];
   const isPast = getEventStatus(event.datetime) === "Past";
@@ -70,7 +70,7 @@ const EventCard = ({ event }) => {
       </View>
     </View>
   );
-};
+});
 
 const EmptyState = () => (
   <View style={s.emptyWrap}>
@@ -133,8 +133,12 @@ export default function EventsScreen({ navigation }) {
       <FlatList
         style={{ flex: 1 }}
         data={filtered}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => <EventCard event={item} />}
+        initialNumToRender={8}
+        maxToRenderPerBatch={8}
+        windowSize={7}
+        removeClippedSubviews
         showsVerticalScrollIndicator={false}
         contentContainerStyle={
           filtered.length === 0
@@ -147,60 +151,3 @@ export default function EventsScreen({ navigation }) {
   );
 }
 
-const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: COLORS.bg },
-
-  filterScroll: { flexGrow: 0, flexShrink: 0 },
-  filterBar: { paddingHorizontal: 16, paddingVertical: 6, gap: 6 },
-
-  listContent: { paddingHorizontal: 16, paddingTop: 6, paddingBottom: 25 },
-
-  card: {
-    flexDirection: "row",
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 14,
-    marginBottom: 12,
-    gap: 12,
-  },
-  cardPast: { opacity: 0.6 },
-
-  iconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  titleRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  title: { flex: 1, fontSize: 14, fontWeight: FONT.bold, color: COLORS.textPrimary },
-
-  pastBadge: {
-    backgroundColor: COLORS.bg,
-    borderRadius: 99,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  pastBadgeText: { fontSize: 9, fontWeight: FONT.c, color: COLORS.textSecondary },
-
-  metaRow: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 },
-  metaText: { fontSize: 11, color: COLORS.textSecondary },
-
-  categoryTag: {
-    alignSelf: "flex-start",
-    marginTop: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: RADIUS.sm,
-  },
-  categoryTagText: { fontSize: 10, fontWeight: FONT.c },
-
-  emptyWrap: { alignItems: "center", gap: 8 },
-  emptyTitle: { fontSize: 15, fontWeight: FONT.bold, color: COLORS.textPrimary },
-  emptySub: { fontSize: 12, color: COLORS.textSecondary },
-});

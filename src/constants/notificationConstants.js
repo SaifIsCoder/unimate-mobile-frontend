@@ -2,7 +2,7 @@
 // All notification enums, configs, and validators.
 // Single source of truth — no magic strings in screens.
 
-import { COLORS } from '../theme/theme';
+import { COLORS } from '../theme';
 
 // ── Notification Types ───────────────────────────────────────────────────────
 export const NOTIFICATION_TYPES = {
@@ -67,9 +67,9 @@ export const PRIORITY_CONFIG = {
 
 // ── Type → Title Mapping (for announcements) ─────────────────────────────────
 export const ANNOUNCEMENT_TYPE_TITLES = {
-  important: '⚠️ Important Announcement',
-  event: '📅 Upcoming Event',
-  general: '📢 Notice',
+  important: 'Important Announcement',
+  event: 'Upcoming Event',
+  general: 'Notice',
 };
 
 // ── Type → Priority Mapping (for announcements) ─────────────────────────────

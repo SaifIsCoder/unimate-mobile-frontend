@@ -7,15 +7,15 @@ import {
   Text,
   ScrollView,
   FlatList,
-  StyleSheet,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { COLORS, RADIUS, FONT, ACCENT } from "../theme/theme";
-import Header from "../components/Header";
-import Background from "../components/Background";
-import { FilterPill } from "../components/SharedComponents";
+import { COLORS, ACCENT } from "../theme";
+import Header from "../components/layout/Header";
+import Background from "../components/layout/Background";
+import { FilterPill } from "../components/ui";
 import { ATTENDANCE_SUBJECTS } from "../data/mockData";
+import { s } from "./AttendanceScreen.styles";
 
 const STATUS_FILTERS = ["All", "Critical", "Warning", "Safe"];
 
@@ -25,7 +25,7 @@ const getAttendanceStatus = (pct) => {
   return { label: "Safe", ...ACCENT.green };
 };
 
-const SubjectRow = ({ subject }) => {
+const SubjectRow = React.memo(({ subject }) => {
   const pct = Math.round((subject.attended / subject.total) * 100);
   const st = getAttendanceStatus(pct);
   const needed = Math.max(0, Math.ceil(0.75 * subject.total - subject.attended));
@@ -54,7 +54,7 @@ const SubjectRow = ({ subject }) => {
       </View>
     </View>
   );
-};
+});
 
 const EmptyState = () => (
   <View style={s.emptyWrap}>
@@ -119,8 +119,12 @@ export default function AttendanceScreen({ navigation }) {
       <FlatList
         style={{ flex: 1 }}
         data={filtered}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => <SubjectRow subject={item} />}
+        initialNumToRender={8}
+        maxToRenderPerBatch={8}
+        windowSize={7}
+        removeClippedSubviews
         showsVerticalScrollIndicator={false}
         contentContainerStyle={
           filtered.length === 0
@@ -138,65 +142,3 @@ export default function AttendanceScreen({ navigation }) {
   );
 }
 
-const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: COLORS.bg },
-
-  summaryRow: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 2 },
-  summaryText: { fontSize: 12, fontWeight: FONT.medium, color: COLORS.textSecondary },
-
-  filterScroll: { flexGrow: 0, flexShrink: 0 },
-  filterBar: { paddingHorizontal: 16, paddingVertical: 6, gap: 6 },
-
-  listContent: { paddingHorizontal: 16, paddingTop: 6, paddingBottom: 25 },
-
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 12,
-    marginBottom: 10,
-    gap: 10,
-  },
-  bar: { width: 3, alignSelf: "stretch", minHeight: 44, borderRadius: 2 },
-
-  subName: { fontSize: 13, fontWeight: FONT.c, color: COLORS.textPrimary },
-  subMeta: { fontSize: 10.5, color: COLORS.textSecondary, marginTop: 2, marginBottom: 6 },
-
-  track: {
-    height: 5,
-    backgroundColor: COLORS.bg,
-    borderRadius: 3,
-    overflow: "visible",
-    position: "relative",
-  },
-  fill: { height: "100%", borderRadius: 3, position: "absolute", top: 0, left: 0 },
-  marker: {
-    position: "absolute",
-    left: "75%",
-    top: -2,
-    width: 1.5,
-    height: 9,
-    backgroundColor: COLORS.textTertiary,
-    borderRadius: 1,
-  },
-
-  right: { alignItems: "flex-end", gap: 4, minWidth: 62 },
-  pct: { fontSize: 18, fontWeight: FONT.bold },
-  badge: { borderRadius: 99, paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1 },
-  badgeText: { fontSize: 10, fontWeight: FONT.c },
-
-  footnote: {
-    fontSize: 10.5,
-    color: COLORS.textTertiary,
-    textAlign: "center",
-    marginTop: 4,
-    marginBottom: 8,
-  },
-
-  emptyWrap: { alignItems: "center", gap: 8 },
-  emptyTitle: { fontSize: 15, fontWeight: FONT.bold, color: COLORS.textPrimary },
-  emptySub: { fontSize: 12, color: COLORS.textSecondary },
-});

@@ -6,8 +6,8 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { COLORS, FONT } from '../theme/theme';
-import { useNotifications } from '../context/NotificationContext';
+import { COLORS, FONT } from '../../theme';
+import { useNotifications } from '../../context/NotificationContext';
 
 export default function NotificationBell() {
   const navigation = useNavigation();

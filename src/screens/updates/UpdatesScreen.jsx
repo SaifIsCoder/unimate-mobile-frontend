@@ -1,103 +1,30 @@
 // ─── UPDATES SCREEN (PARENT) ─────────────────────────────────────────────────
 // Owns the header + tab switcher.
-// Renders AnnouncementsTab or CommunityTab based on active tab.
+// Renders AnnouncementsTab or CommunityTab based on the active tab.
 
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { COLORS, RADIUS, FONT } from "../../theme/theme";
-import Header from "../../components/Header";
+import { ScreenScaffold } from "../../components/layout";
+import { SegmentedTabs } from "../../components/ui";
 import AnnouncementsTab from "./AnnouncementsTab";
 import CommunityTab from "./CommunityTab";
-import Background from "../../components/Background";
 
-// ── TAB SWITCHER ─────────────────────────────────────────────
-const TabSwitcher = ({ activeTab, onTabChange }) => (
-  <View style={ts.wrap}>
-    <TouchableOpacity
-      style={[ts.tab, activeTab === "announcements" && ts.tabActive]}
-      onPress={() => onTabChange("announcements")}
-      activeOpacity={0.8}
-    >
-      <Text style={[ts.label, activeTab === "announcements" && ts.labelActive]}>
-        Announcements
-      </Text>
-    </TouchableOpacity>
+const TABS = [
+  { key: "announcements", label: "Announcements" },
+  { key: "community", label: "Community" },
+];
 
-    <TouchableOpacity
-      style={[ts.tab, activeTab === "community" && ts.tabActive]}
-      onPress={() => onTabChange("community")}
-      activeOpacity={0.8}
-    >
-      <Text style={[ts.label, activeTab === "community" && ts.labelActive]}>
-        Community
-      </Text>
-    </TouchableOpacity>
-  </View>
-);
-
-const ts = StyleSheet.create({
-  wrap: {
-    flexDirection: "row",
-    marginHorizontal: 16,
-    marginBottom: 14,
-    backgroundColor: COLORS.card + "95",
-    borderRadius: 50,
-    padding: 3,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 9,
-    borderRadius: 50,
-    alignItems: "center",
-  },
-  tabActive: {
-    backgroundColor: COLORS.primary,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: FONT.semiBold,
-    color: COLORS.textTertiary,
-  },
-  labelActive: {
-    color: "#fff",
-  },
-});
-
-// ── MAIN ─────────────────────────────────────────────────────
 export default function UpdatesScreen({ navigation }) {
-  const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState("announcements");
 
   return (
-    <View style={[s.screen, { paddingTop: insets.top }]}>
-      <Background />
-      {/* HEADER */}
-      <Header title="Updates" />
+    <ScreenScaffold headerTitle="Updates">
+      <SegmentedTabs tabs={TABS} active={activeTab} onChange={setActiveTab} />
 
-      {/* TAB SWITCHER */}
-      <TabSwitcher activeTab={activeTab} onTabChange={setActiveTab} />
-
-      {/* TAB CONTENT */}
-      {activeTab === "announcements"
-        ? <AnnouncementsTab />
-        : <CommunityTab navigation={navigation} />
-      }
-    </View>
+      {activeTab === "announcements" ? (
+        <AnnouncementsTab />
+      ) : (
+        <CommunityTab navigation={navigation} />
+      )}
+    </ScreenScaffold>
   );
 }
-
-const s = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: COLORS.bg,
-  },
-  // Unified Header styling is managed inside components/Header
-});
