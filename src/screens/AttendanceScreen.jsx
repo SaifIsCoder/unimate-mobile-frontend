@@ -90,7 +90,7 @@ export default function AttendanceScreen({ navigation }) {
   return (
     <View style={[s.screen, { paddingTop: insets.top }]}>
       <Background />
-      <Header title="Attendance" showBack onBack={() => navigation.goBack()} />
+      <Header title="Attendance" showBack />
 
       <View style={s.summaryRow}>
         <Text style={s.summaryText}>

@@ -14,6 +14,7 @@ import { STUDENT } from "../data/mockData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useUser } from "../context/UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BackButton } from "../components/common";
 import { styles } from "./ProfileScreen.styles";
 
 // ── Info Row ──────────────────────────────────────────────────────────────────
@@ -64,7 +65,15 @@ export default function ProfileScreen() {
     ]);
 
   return (
-    <ScrollView
+    <View style={styles.root}>
+      {/* Floating back button — the hero gradient is the first thing in the
+          ScrollView, so this sits above it rather than inside it. */}
+      <BackButton
+        variant="light"
+        style={[styles.backBtn, { top: insets.top + 8 }]}
+      />
+
+      <ScrollView
       style={styles.screen}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: 40, flexGrow: 1 }}
@@ -166,7 +175,8 @@ export default function ProfileScreen() {
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       </LinearGradient>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 

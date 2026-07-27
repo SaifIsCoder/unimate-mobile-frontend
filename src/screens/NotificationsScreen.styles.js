@@ -12,6 +12,8 @@ export const styles = StyleSheet.create({
     paddingVertical: 8,
   },
 
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
+
   pageTitle: {
     fontSize: 22,
     fontWeight: FONT.bold,

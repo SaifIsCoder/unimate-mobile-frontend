@@ -14,10 +14,8 @@ import { useNotifications } from "../context/NotificationContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Background from "../components/layout/Background";
 import { AIBriefCard } from "../components/ui";
+import { useAIBrief } from "../hooks/useAIBrief";
 import { styles } from "./TasksScreen.styles";
-
-const AI_BRIEF =
-  "Focus Mode: Your Database assignment is due in 2 days, and you usually struggle with this subject. Start now to avoid a late-night crunch.";
 
 const PRIORITY_TASKS = [
   {
@@ -223,6 +221,7 @@ export default function TasksScreen() {
   const [activeFilter, setActiveFilter] = useState("All");
   const { hasUnreadForEntity } = useNotifications();
   const insets = useSafeAreaInsets();
+  const aiBrief = useAIBrief("tasks");
 
   const filtered = TASKS.filter((task) => {
     if (activeFilter === "All") return true;
@@ -244,7 +243,12 @@ export default function TasksScreen() {
 
         {activeFilter === "All" && (
           <View style={styles.briefWrap}>
-            <AIBriefCard data={AI_BRIEF} />
+            <AIBriefCard
+              data={aiBrief.data}
+              loading={aiBrief.loading}
+              error={aiBrief.error}
+              onRetry={aiBrief.refresh}
+            />
           </View>
         )}
 

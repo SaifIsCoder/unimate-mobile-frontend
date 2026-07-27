@@ -1,15 +1,80 @@
 // ─── AI BRIEF CARD ────────────────────────────────────────────────────────────
 // Gradient "AI insight" card. Accepts either a string or { summary, tags }.
 
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../../theme';
 
-export const AIBriefCard = ({ data }) => {
+// Required for LayoutAnimation on the old Android architecture; a no-op elsewhere.
+if (Platform.OS === 'android') {
+  UIManager.setLayoutAnimationEnabledExperimental?.(true);
+}
+
+// ── Loading skeleton ──────────────────────────────────────────────────────────
+const Skeleton = () => {
+  const pulse = useRef(new Animated.Value(0.35)).current;
+
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, {
+          toValue: 0.8,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulse, {
+          toValue: 0.35,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [pulse]);
+
+  return (
+    <View style={styles.skeletonWrap}>
+      <Animated.View style={[styles.skeletonBar, { opacity: pulse }]} />
+      <Animated.View
+        style={[styles.skeletonBar, styles.skeletonBarShort, { opacity: pulse }]}
+      />
+    </View>
+  );
+};
+
+export const AIBriefCard = ({
+  data,
+  loading = false,
+  error = null,
+  onRetry,
+  collapsible = true,
+  defaultExpanded = false,
+}) => {
+  const [expanded, setExpanded] = useState(defaultExpanded);
+
   const summary = typeof data === 'string' ? data : data?.summary;
   const tags = Array.isArray(data?.tags) ? data.tags : [];
+
+  // Collapsing is only meaningful once there is content to hide
+  const canCollapse = collapsible && !loading && !error && !!summary;
+  const showBody = !canCollapse || expanded;
+
+  const toggle = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpanded((v) => !v);
+  };
 
   return (
     <View style={styles.wrapper}>
@@ -21,26 +86,66 @@ export const AIBriefCard = ({ data }) => {
       >
         <View style={styles.glowCircle} />
 
-        <View style={styles.headerRow}>
+        <TouchableOpacity
+          activeOpacity={canCollapse ? 0.8 : 1}
+          onPress={canCollapse ? toggle : undefined}
+          disabled={!canCollapse}
+          accessibilityRole={canCollapse ? 'button' : undefined}
+          accessibilityLabel={
+            canCollapse
+              ? `AI insight, ${expanded ? 'expanded' : 'collapsed'}`
+              : undefined
+          }
+          style={styles.headerRow}
+        >
           <View style={styles.iconWrap}>
             <MaterialIcons name="psychology" size={14} color="#FFFFFF" />
           </View>
           <Text style={styles.label}>AI INSIGHT · TODAY</Text>
-        </View>
+          {canCollapse && (
+            <MaterialIcons
+              name={expanded ? 'expand-less' : 'expand-more'}
+              size={20}
+              color="#FFFFFF"
+            />
+          )}
+        </TouchableOpacity>
 
-        <Text style={styles.body}>{summary}</Text>
-
-        {tags.length > 0 && (
-          <View style={styles.tagsRow}>
-            {tags.map((tag) => (
-              <View key={tag} style={styles.tag}>
-                <View style={styles.tagContent}>
-                  <MaterialIcons name="auto-awesome" size={10} color="#FFFFFF" />
-                  <Text style={styles.tagText}>{tag}</Text>
-                </View>
-              </View>
-            ))}
+        {loading ? (
+          <Skeleton />
+        ) : error ? (
+          <View style={styles.errorRow}>
+            <MaterialIcons name="error-outline" size={16} color="#FFFFFF" />
+            <Text style={styles.errorText}>Couldn't load AI insight</Text>
+            {onRetry && (
+              <TouchableOpacity onPress={onRetry} activeOpacity={0.8}>
+                <Text style={styles.retryText}>Retry</Text>
+              </TouchableOpacity>
+            )}
           </View>
+        ) : (
+          <>
+            <Text style={styles.body} numberOfLines={showBody ? undefined : 1}>
+              {summary}
+            </Text>
+
+            {showBody && tags.length > 0 && (
+              <View style={styles.tagsRow}>
+                {tags.map((tag) => (
+                  <View key={tag} style={styles.tag}>
+                    <View style={styles.tagContent}>
+                      <MaterialIcons
+                        name="auto-awesome"
+                        size={10}
+                        color="#FFFFFF"
+                      />
+                      <Text style={styles.tagText}>{tag}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </>
         )}
       </LinearGradient>
     </View>
@@ -88,10 +193,37 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.35)',
   },
   label: {
+    flex: 1,
     fontSize: 13,
     fontWeight: '700',
     color: '#FFFFFF',
     letterSpacing: 1,
+  },
+
+  skeletonWrap: { gap: 8 },
+  skeletonBar: {
+    height: 11,
+    borderRadius: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.35)',
+  },
+  skeletonBarShort: { width: '65%' },
+
+  errorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  errorText: {
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#FFFFFF',
+  },
+  retryText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    textDecorationLine: 'underline',
   },
   body: {
     fontSize: 13,

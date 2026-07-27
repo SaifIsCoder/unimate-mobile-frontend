@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { COLORS, FONT } from '../theme';
 import { Avatar } from '../components/ui';
+import { BackButton } from '../components/common';
 import { styles } from './NotificationsScreen.styles';
 import { getRelativeTime } from '../utils/format';
 import { useNotifications } from '../context/NotificationContext';
@@ -173,13 +174,16 @@ export default function NotificationsScreen({ navigation }) {
     >
       {/* ── Header ── */}
       <View style={styles.header}>
-        <View>
-          <Text style={styles.pageTitle}>Notifications</Text>
-          {unreadCount > 0 && (
-            <TouchableOpacity onPress={markAllRead} activeOpacity={0.7}>
-              <Text style={styles.markRead}>Mark all read</Text>
-            </TouchableOpacity>
-          )}
+        <View style={styles.headerLeft}>
+          <BackButton />
+          <View>
+            <Text style={styles.pageTitle}>Notifications</Text>
+            {unreadCount > 0 && (
+              <TouchableOpacity onPress={markAllRead} activeOpacity={0.7}>
+                <Text style={styles.markRead}>Mark all read</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
         <View style={styles.headerRight}>
           {unreadCount > 0 && (

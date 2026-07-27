@@ -13,6 +13,7 @@ import AchievementSelector from "../../components/community/AchievementSelector"
 import PostPreview from "../../components/community/PostPreview";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Background from "../../components/layout/Background";
+import { BackButton } from "../../components/common";
 import { styles } from "./CreateCommunityPost.styles";
 
 const MAX_TITLE = 100;
@@ -64,7 +65,10 @@ export default function CreateCommunityPost({ navigation }) {
       <Background />
 
       {/* HEADER */}
-      <Text style={styles.header}>Share Achievement</Text>
+      <View style={styles.headerRow}>
+        <BackButton />
+        <Text style={styles.header}>Share Achievement</Text>
+      </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* TYPE SELECTOR */}

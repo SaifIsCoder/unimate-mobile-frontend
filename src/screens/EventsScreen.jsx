@@ -96,7 +96,7 @@ export default function EventsScreen({ navigation }) {
   return (
     <View style={[s.screen, { paddingTop: insets.top }]}>
       <Background />
-      <Header title="Events" showBack onBack={() => navigation.goBack()} />
+      <Header title="Events" showBack />
 
       <ScrollView
         horizontal

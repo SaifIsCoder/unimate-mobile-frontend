@@ -24,6 +24,7 @@ export const ROUTES = {
   CREATE_COMMUNITY_POST: 'CreateCommunityPost',
   SET_GPA_GOAL: 'SetGPAGoal',
   ALL_SEMESTERS: 'AllSemestersScreen',
+  SEMESTER_DETAIL: 'SemesterDetail',
   EVENTS: 'Events',
   ATTENDANCE: 'Attendance',
 };
