@@ -15,13 +15,15 @@ import Svg, { Circle } from "react-native-svg";
 // ── Import your existing shared components ────────────────
 import Header from "../../components/layout/Header";
 import Background from "../../components/layout/Background";
+import { ACADEMIC_SUMMARY, SEMESTER_HISTORY } from "../../data/mockData";
+import { ROUTES } from "../../navigation/routes";
 import { s, C, R, F } from "./AllSemesters.styles";
 
 // ── SVG PROGRESS RING ─────────────────────────────────────
 // Mirrors: <svg class="w-20 h-20"> with animated stroke-dashoffset
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-const ProgressRing = ({ cgpa = 3.82, maxCgpa = 4.0 }) => {
+const ProgressRing = ({ cgpa = Number(ACADEMIC_SUMMARY.cgpa), maxCgpa = ACADEMIC_SUMMARY.maxCgpa }) => {
   const SIZE = 80;
   const RADIUS = 34;
   const STROKE = 6;
@@ -96,8 +98,10 @@ const CgpaHeroCard = () => (
           <View style={s.cgpaBlock}>
             <Text style={s.cgpaLabel}>CURRENT CGPA</Text>
             <View style={s.cgpaValueRow}>
-              <Text style={s.cgpaNumber}>3.82</Text>
-              <Text style={s.cgpaOutOf}>/ 4.00</Text>
+              <Text style={s.cgpaNumber}>{ACADEMIC_SUMMARY.cgpa}</Text>
+              <Text style={s.cgpaOutOf}>
+                / {ACADEMIC_SUMMARY.maxCgpa.toFixed(2)}
+              </Text>
             </View>
           </View>
 
@@ -108,14 +112,14 @@ const CgpaHeroCard = () => (
               <View style={s.goalTrack}>
                 <View style={s.goalFill} />
               </View>
-              <Text style={s.goalTarget}>3.90 Target</Text>
+              <Text style={s.goalTarget}>{ACADEMIC_SUMMARY.target} Target</Text>
             </View>
           </View>
         </View>
 
         {/* Right — progress ring */}
         <View style={s.heroRight}>
-          <ProgressRing cgpa={3.82} />
+          <ProgressRing />
           <Text style={s.deanLabel}>DEAN'S LIST</Text>
         </View>
       </View>
@@ -131,9 +135,10 @@ const CgpaHeroCard = () => (
     </LinearGradient>
   </View>
 );
-const SemesterRow = ({ item }) => {
+const SemesterRow = ({ item, onPress }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const isCurrent = item.isCurrent;
+  const meta = `${item.term} • ${item.courses.length} Courses`;
 
   const onPressIn = () =>
     Animated.spring(scaleAnim, {
@@ -151,8 +156,11 @@ const SemesterRow = ({ item }) => {
     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
       <Pressable
         style={s.semRow}
+        onPress={onPress}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
+        accessibilityRole="button"
+        accessibilityLabel={`${item.name}, ${meta}, GPA ${item.gpa}`}
       >
         {/* Icon circle */}
         <View
@@ -173,7 +181,7 @@ const SemesterRow = ({ item }) => {
         {/* Text block */}
         <View style={s.semInfo}>
           <Text style={s.semName}>{item.name}</Text>
-          <Text style={s.semMeta}>{item.meta}</Text>
+          <Text style={s.semMeta}>{meta}</Text>
         </View>
 
         {/* GPA block */}
@@ -188,6 +196,12 @@ const SemesterRow = ({ item }) => {
           </Text>
           <Text style={s.semGpaLabel}>GPA</Text>
         </View>
+
+        <MaterialIcons
+          name="chevron-right"
+          size={20}
+          color={C.onSurfaceVariant}
+        />
       </Pressable>
     </Animated.View>
   );
@@ -271,49 +285,22 @@ const TrendCard = () => (
   </View>
 );
 
-const SEMESTERS = [
-  {
-    id: "8",
-    name: "Semester 8",
-    meta: "Winter 2026 • 5 Courses",
-    gpa: "3.92",
-    isCurrent: true,
-  },
-  {
-    id: "7",
-    name: "Semester 7",
-    meta: "Fall 2025 • 6 Courses",
-    gpa: "3.85",
-    isCurrent: false,
-  },
-  {
-    id: "6",
-    name: "Semester 6",
-    meta: "Winter 2025 • 5 Courses",
-    gpa: "3.78",
-    isCurrent: false,
-  },
-  {
-    id: "5",
-    name: "Semester 5",
-    meta: "Fall 2024 • 5 Courses",
-    gpa: "3.75",
-    isCurrent: false,
-  },
-];
+const COLLAPSED_COUNT = 4;
 
 export default function AllSemestersScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const [showAll, setShowAll] = useState(false);
 
-  const displayed = showAll ? SEMESTERS : SEMESTERS;
+  const displayed = showAll
+    ? SEMESTER_HISTORY
+    : SEMESTER_HISTORY.slice(0, COLLAPSED_COUNT);
 
   return (
     <View style={[s.screen, { paddingTop: insets.top }]}>
       <Background />
 
       {/* TOP HEADER — reuse existing component */}
-      <Header title="All Semesters" />
+      <Header title="All Semesters" showBack />
 
       <ScrollView
         style={s.scroll}
@@ -348,7 +335,15 @@ export default function AllSemestersScreen({ navigation }) {
           {/* Semester rows */}
           <View style={s.semList}>
             {displayed.map((item) => (
-              <SemesterRow key={item.id} item={item} />
+              <SemesterRow
+                key={item.id}
+                item={item}
+                onPress={() =>
+                  navigation.navigate(ROUTES.SEMESTER_DETAIL, {
+                    semesterId: item.id,
+                  })
+                }
+              />
             ))}
           </View>
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   Modal,
   Dimensions,
   ScrollView,
+  ActivityIndicator,
   TouchableWithoutFeedback,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -14,6 +15,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { COLORS, RADIUS, FONT } from "../../theme";
 import { Avatar } from "../ui/Avatar";
 import NotificationBell from "../common/NotificationBell";
+import { getAICopilotInsight } from "../../services/aiService";
 import { styles } from "./Header.styles";
 
 const { height } = Dimensions.get("window");
@@ -25,30 +27,29 @@ export default function Header({ title, showBack = false, onBack }) {
 
   const handleBack = () => (onBack ? onBack() : navigation.goBack());
 
-  const AI_INSIGHTS = {
-    general: {
-      title: "Today's Cognitive Overview",
-      content: "Hello Saif! I'm your Unimate AI assistant. Based on your current calendar, you have a high cognitive load today with 3 classes and a database assignment. Let's optimize your day!",
-      icon: "psychology",
-    },
-    workload: {
-      title: "Cognitive Load Forecast",
-      content: "You have 3 classes today (Web Dev, Data Structures, Database Systems) and 1 urgent task due at 5:00 PM. I've calculated a high mental burden between 11 AM - 3 PM. Take a 15-minute break after your second class to stay sharp!",
-      icon: "bar-chart",
-    },
-    gpa: {
-      title: "GPA & Academic Analysis",
-      content: "Outstanding job! Your current CGPA is 3.85. You have completed 100% of your tasks this week. If you maintain this submission streak, you are on track to graduate with first-class honors!",
-      icon: "trending-up",
-    },
-    attendance: {
-      title: "Attendance & Class Safety",
-      content: "Your attendance in Data Structures is currently at 70% (Critical). You need to attend today's session to raise it above the 75% safe threshold. I highly recommend not skipping any classes today!",
-      icon: "timer",
-    },
-  };
+  // Header mounts on every screen, so the copilot only fetches once the sheet is
+  // actually opened — and again when the user switches insight chips.
+  const [currentInsight, setCurrentInsight] = useState(null);
+  const [insightLoading, setInsightLoading] = useState(false);
 
-  const currentInsight = AI_INSIGHTS[selectedChip] || AI_INSIGHTS.general;
+  useEffect(() => {
+    if (!aiModalVisible) return;
+
+    let active = true;
+    setInsightLoading(true);
+
+    getAICopilotInsight(selectedChip)
+      .then((insight) => {
+        if (active) setCurrentInsight(insight);
+      })
+      .finally(() => {
+        if (active) setInsightLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [aiModalVisible, selectedChip]);
 
   return (
     <View style={styles.header}>
@@ -143,11 +144,22 @@ export default function Header({ title, showBack = false, onBack }) {
                       color="#7c3aed"
                       style={styles.aiBubbleWatermark}
                     />
-                    <View style={styles.aiBubbleHeader}>
-                      <MaterialIcons name={currentInsight.icon} size={18} color="#7c3aed" />
-                      <Text style={styles.aiBubbleTitle}>{currentInsight.title}</Text>
-                    </View>
-                    <Text style={styles.aiBubbleText}>{currentInsight.content}</Text>
+                    {insightLoading || !currentInsight ? (
+                      <View style={styles.aiBubbleLoading}>
+                        <ActivityIndicator size="small" color="#7c3aed" />
+                        <Text style={styles.aiBubbleLoadingText}>
+                          Analyzing your academic data…
+                        </Text>
+                      </View>
+                    ) : (
+                      <>
+                        <View style={styles.aiBubbleHeader}>
+                          <MaterialIcons name={currentInsight.icon} size={18} color="#7c3aed" />
+                          <Text style={styles.aiBubbleTitle}>{currentInsight.title}</Text>
+                        </View>
+                        <Text style={styles.aiBubbleText}>{currentInsight.content}</Text>
+                      </>
+                    )}
                   </LinearGradient>
                 </View>
 

@@ -2,7 +2,11 @@ import { StyleSheet } from "react-native";
 import { COLORS, RADIUS, FONT } from "../theme";
 
 export const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: COLORS.bg },
   screen: { flex: 1, backgroundColor: COLORS.bg },
+
+  // Floating over the hero gradient; `top` is applied inline from safe-area insets
+  backBtn: { position: "absolute", left: 16, zIndex: 10 },
 
   heroGradient: { paddingVertical: 50, position: "relative", overflow: "hidden" },
   heroCircle: {

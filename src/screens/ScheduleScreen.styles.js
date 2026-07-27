@@ -164,14 +164,34 @@ export const cardStyles = StyleSheet.create({
     marginBottom: 10,
   },
 
+  // Muted treatments for classes that won't happen / already happened
+  cardCancelled: { opacity: 0.65 },
+  cardDone: { opacity: 0.8 },
+  strikeText: { textDecorationLine: "line-through" },
+
   statusPill: {
     alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
     borderRadius: 99,
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 3,
     marginBottom: 5,
   },
   statusText: { fontSize: 9, fontWeight: "800", letterSpacing: 0.8 },
+
+  // Cancellation reason / new slot for a rescheduled class
+  noteRow: {
+    marginTop: 10,
+    borderRadius: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+  },
+  noteText: { flex: 1, fontSize: 11.5, fontWeight: "600", lineHeight: 16 },
 
   className: {
     fontSize: 16,

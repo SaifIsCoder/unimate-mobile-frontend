@@ -200,11 +200,7 @@ export default function CgpaGoalScreen({ navigation }) {
       <Background />
 
       {/* TOP HEADER — reuse existing component with back arrow */}
-      <Header
-        title="Set Your Goal"
-        showBack
-        onBack={() => navigation?.goBack()}
-      />
+      <Header title="Set Your Goal" showBack />
 
       {/* SCROLLABLE CONTENT */}
       <ScrollView

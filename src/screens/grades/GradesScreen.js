@@ -11,9 +11,9 @@ import { MaterialIcons } from "@expo/vector-icons";
 import Header from "../../components/layout/Header";
 import Background from "../../components/layout/Background";
 import { AIBriefCard } from "../../components/ui";
+import { useAIBrief } from "../../hooks/useAIBrief";
 import { styles, COLORS, RADIUS, FONT } from "./GradesScreen.styles";
 
-const AI_BRIEF = `Focus Mode: Your Database assignment is due in 2 days, and you usually struggle with this subject. Start now to avoid a late-night crunch.`;
 // ── Mock Data ─────────────────────────────────────────────
 const COURSES = [
   {
@@ -175,6 +175,7 @@ const CourseCard = ({ item }) => {
 
 export default function GradesScreen({ navigation }) {
   const insets = useSafeAreaInsets();
+  const aiBrief = useAIBrief("grades");
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
@@ -195,7 +196,12 @@ export default function GradesScreen({ navigation }) {
         {/* 1. GPA Hero */}
         <GpaHero navigation={navigation} />
 
-        <AIBriefCard data={AI_BRIEF} />
+        <AIBriefCard
+          data={aiBrief.data}
+          loading={aiBrief.loading}
+          error={aiBrief.error}
+          onRetry={aiBrief.refresh}
+        />
 
         <TouchableOpacity
           style={{

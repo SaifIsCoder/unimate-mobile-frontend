@@ -8,10 +8,16 @@ export const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#F5F6FA",
   },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 12,
+  },
   header: {
     fontSize: 22,
     fontWeight: "600",
-    marginBottom: 12,
+    flex: 1,
   },
   label: {
     marginTop: 16,

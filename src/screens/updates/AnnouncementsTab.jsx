@@ -4,6 +4,7 @@ import { View, Text, FlatList, ScrollView } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { COLORS } from "../../theme";
 import { FilterPill, AIBriefCard } from "../../components/ui";
+import { useAIBrief } from "../../hooks/useAIBrief";
 import { s } from "./AnnouncementsTab.styles";
 const TYPE_CONFIG = {
   important: {
@@ -92,12 +93,10 @@ const AnnouncementCard = React.memo(({ item }) => {
   );
 });
 
-const AI_BRIEF =
-  "Focus on the final exam schedule released 30 mins ago. Your Math exam is scheduled for next Monday. Prepare early!";
-
 export default function AnnouncementsTab() {
   const [activeType, setActiveType] = useState("All");
   const [activeScope, setActiveScope] = useState("All");
+  const aiBrief = useAIBrief("announcements");
   const filtered = useMemo(
     () =>
       ANNOUNCEMENTS.filter((a) => {
@@ -141,7 +140,12 @@ export default function AnnouncementsTab() {
       </ScrollView>
 
       <View style={{ paddingHorizontal: 16, marginTop: 6 }}>
-        <AIBriefCard data={AI_BRIEF} />
+        <AIBriefCard
+          data={aiBrief.data}
+          loading={aiBrief.loading}
+          error={aiBrief.error}
+          onRetry={aiBrief.refresh}
+        />
       </View>
       <FlatList
         style={{ flex: 1 }}

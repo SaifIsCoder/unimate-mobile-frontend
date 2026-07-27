@@ -8,6 +8,7 @@ import Login from '../screens/auth/Login';
 import CreateCommunityPost from '../screens/updates/CreateCommunityPost';
 import SetGPAGoalScreen from '../screens/grades/SetGPAGoalScreen';
 import AllSemestersScreen from '../screens/grades/AllSemesters';
+import SemesterDetailScreen from '../screens/grades/SemesterDetailScreen';
 import SetPasswordScreen from '../screens/auth/SetPasswordScreen';
 import EventsScreen from '../screens/EventsScreen';
 import AttendanceScreen from '../screens/AttendanceScreen';
@@ -25,6 +26,7 @@ export default function MainStackNavigator() {
       <MainStack.Screen name={ROUTES.CREATE_COMMUNITY_POST} component={CreateCommunityPost} />
       <MainStack.Screen name={ROUTES.SET_GPA_GOAL} component={SetGPAGoalScreen} />
       <MainStack.Screen name={ROUTES.ALL_SEMESTERS} component={AllSemestersScreen} />
+      <MainStack.Screen name={ROUTES.SEMESTER_DETAIL} component={SemesterDetailScreen} />
       <MainStack.Screen name={ROUTES.SET_PASSWORD} component={SetPasswordScreen} />
       <MainStack.Screen name={ROUTES.EVENTS} component={EventsScreen} />
       <MainStack.Screen name={ROUTES.ATTENDANCE} component={AttendanceScreen} />

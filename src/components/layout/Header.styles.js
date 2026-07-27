@@ -137,6 +137,18 @@ export const styles = StyleSheet.create({
     overflow: "hidden",
     position: "relative",
   },
+  // Keeps the bubble roughly its loaded height while the copilot is fetching
+  aiBubbleLoading: {
+    minHeight: 96,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+  },
+  aiBubbleLoadingText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: COLORS.textSecondary,
+  },
   aiBubbleWatermark: {
     position: "absolute",
     right: -10,

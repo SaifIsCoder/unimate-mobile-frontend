@@ -9,19 +9,13 @@ import {
 } from "react-native";
 import { COLORS, RADIUS, FONT, ACCENT } from "../theme";
 import Header from "../components/layout/Header";
-import { CLASSES, WEEK_DAYS } from "../data/mockData";
+import { CLASSES, CLASS_STATUS, WEEK_DAYS } from "../data/mockData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import Background from "../components/layout/Background";
 import { AIBriefCard } from "../components/ui";
+import { useAIBrief } from "../hooks/useAIBrief";
 import { styles, stripStyles, cardStyles } from "./ScheduleScreen.styles";
-// ─────────────────────────────────────────────────────────────────────────────
-// CONSTANTS
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Replace with your real mock data keys or import from mockData
-const AI_BRIEF =
-  "You have three back-to-back classes today. I've blocked 15 mins for a break after your second class to keep your focus high.";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ANIMATED PRESS WRAPPER
@@ -84,7 +78,8 @@ const DateStrip = ({
     >
       {WEEK_DAYS.map((day, i) => {
         const isActive = selectedDay === i;
-        const isWeekend = day.name === "SAT" || day.name === "SUN";
+        const dayName = day.name.toUpperCase();
+        const isWeekend = dayName === "SAT" || dayName === "SUN";
         return (
           <TouchableOpacity
             key={i}
@@ -126,15 +121,18 @@ const DateStrip = ({
 // ─────────────────────────────────────────────────────────────────────────────
 // 4. CLASS CARD
 // ─────────────────────────────────────────────────────────────────────────────
-const PREP_CLASS_INDEX = 1; // Index of the class that gets a prep-time block
-
 const ClassCard = ({ item, index, total }) => {
-  const accentColor =
-    index === 0 ? "#6366f1" : index === 1 ? "#7c3aed" : "#0891b2";
+  const cfg = CLASS_STATUS[item.status] || CLASS_STATUS.next;
+  const accent = ACCENT[item.accent] || ACCENT.purple;
 
-  const isNow = index === 0;
-  const isNext = index === 1;
-  const hasPrep = index === PREP_CLASS_INDEX;
+  const isNow = item.status === "now";
+  const isCancelled = item.status === "cancelled";
+  const isRescheduled = item.status === "rescheduled";
+  const isDone = item.status === "done";
+
+  // Only live/disrupted classes tint the timeline dot
+  const dotColor =
+    isNow || isCancelled || isRescheduled ? cfg.color : "#d1d5db";
 
   return (
     <View style={cardStyles.wrapper}>
@@ -142,60 +140,73 @@ const ClassCard = ({ item, index, total }) => {
       {index < total - 1 && <View style={cardStyles.timelineLine} />}
 
       {/* Timeline dot */}
-      <View
-        style={[
-          cardStyles.timelineDot,
-          { backgroundColor: isNow ? accentColor : "#d1d5db" },
-        ]}
-      />
+      <View style={[cardStyles.timelineDot, { backgroundColor: dotColor }]} />
 
       <Pressable
         style={[
           cardStyles.card,
-          isNow && { borderColor: accentColor, borderWidth: 1.5 },
+          { borderLeftColor: accent.border, borderLeftWidth: 3 },
+          isNow && { borderColor: cfg.color, borderWidth: 1.5 },
+          isCancelled && cardStyles.cardCancelled,
+          isDone && cardStyles.cardDone,
         ]}
       >
         <View style={cardStyles.body}>
           {/* Top row: name + time */}
           <View style={cardStyles.topRow}>
             <View style={{ flex: 1 }}>
-              {(isNow || isNext) && (
-                <View
-                  style={[
-                    cardStyles.statusPill,
-                    { backgroundColor: isNow ? accentColor + "20" : "#f3f4f6" },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      cardStyles.statusText,
-                      { color: isNow ? accentColor : "#6b7280" },
-                    ]}
-                  >
-                    {isNow ? "NOW" : "NEXT"}
-                  </Text>
-                </View>
-              )}
-              <Text style={cardStyles.className}>{item.name}</Text>
+              <View style={[cardStyles.statusPill, { backgroundColor: cfg.bg }]}>
+                <MaterialIcons name={cfg.icon} size={12} color={cfg.color} />
+                <Text style={[cardStyles.statusText, { color: cfg.color }]}>
+                  {cfg.label}
+                </Text>
+              </View>
+              <Text
+                style={[
+                  cardStyles.className,
+                  isCancelled && cardStyles.strikeText,
+                ]}
+              >
+                {item.name}
+              </Text>
               <Text style={cardStyles.classCode}>{item.code}</Text>
             </View>
-            <Text style={cardStyles.time}>{item.time}</Text>
+            <Text
+              style={[
+                cardStyles.time,
+                (isCancelled || isRescheduled) && cardStyles.strikeText,
+              ]}
+            >
+              {item.time}
+            </Text>
           </View>
 
-          {/* Meta row */}
-          <View style={cardStyles.metaRow}>
-            <View style={cardStyles.metaItem}>
-              <MaterialIcons name="meeting-room" size={14} color={COLORS.textSecondary} />
-              <Text style={cardStyles.metaMeta}>{item.room}</Text>
+          {/* Meta row — replaced by the reason line when cancelled */}
+          {!isCancelled && (
+            <View style={cardStyles.metaRow}>
+              <View style={cardStyles.metaItem}>
+                <MaterialIcons name="meeting-room" size={14} color={COLORS.textSecondary} />
+                <Text style={cardStyles.metaMeta}>{item.room}</Text>
+              </View>
+              <View style={cardStyles.metaItem}>
+                <MaterialIcons name="person-outline" size={14} color={COLORS.textSecondary} />
+                <Text style={cardStyles.metaMeta}>{item.teacher}</Text>
+              </View>
             </View>
-            <View style={cardStyles.metaItem}>
-              <MaterialIcons name="person-outline" size={14} color={COLORS.textSecondary} />
-              <Text style={cardStyles.metaMeta}>{item.teacher}</Text>
-            </View>
-          </View>
+          )}
 
-          {/* Prep time block — shown for specific class */}
-          {hasPrep && (
+          {/* Status note — cancellation reason or the new slot */}
+          {(isCancelled || isRescheduled) && item.statusNote && (
+            <View style={[cardStyles.noteRow, { backgroundColor: cfg.bg }]}>
+              <MaterialIcons name={cfg.icon} size={14} color={cfg.color} />
+              <Text style={[cardStyles.noteText, { color: cfg.color }]}>
+                {item.statusNote}
+              </Text>
+            </View>
+          )}
+
+          {/* Prep time block */}
+          {item.hasPrep && (
             <View style={cardStyles.prepBlock}>
               <MaterialIcons name="timer" size={14} color="#5b21b6" />
               <Text style={cardStyles.prepText}>15 min prep-time added</Text>
@@ -225,6 +236,7 @@ export default function ScheduleScreen({ navigation }) {
   const [selectedDay, setSelectedDay] = useState(3);
   const [month, setMonth] = useState("April 2026");
   const insets = useSafeAreaInsets();
+  const aiBrief = useAIBrief("schedule");
 
   const DATE_LABELS = [
     "Monday, April 13",
@@ -238,6 +250,9 @@ export default function ScheduleScreen({ navigation }) {
 
   const handlePrevMonth = () => setMonth("March 2026");
   const handleNextMonth = () => setMonth("May 2026");
+
+  const cancelledCount = CLASSES.filter((c) => c.status === "cancelled").length;
+  const activeCount = CLASSES.length - cancelledCount;
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
@@ -262,12 +277,20 @@ export default function ScheduleScreen({ navigation }) {
      <View style={{ paddingHorizontal: 16, marginTop: 6}}>
 
 
-        <AIBriefCard data={AI_BRIEF} />
+        <AIBriefCard
+          data={aiBrief.data}
+          loading={aiBrief.loading}
+          error={aiBrief.error}
+          onRetry={aiBrief.refresh}
+        />
         </View>
         {/* Section header */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionLabel}>TODAY'S SESSIONS</Text>
-          <Text style={styles.sectionCount}>{CLASSES.length} CLASSES</Text>
+          <Text style={styles.sectionCount}>
+            {activeCount} CLASSES
+            {cancelledCount > 0 ? ` · ${cancelledCount} CANCELLED` : ""}
+          </Text>
         </View>
 
         {/* 4 · Class list or empty state */}

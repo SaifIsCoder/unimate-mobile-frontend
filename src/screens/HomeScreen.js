@@ -13,6 +13,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { COLORS, RADIUS, FONT } from "../theme";
 import { AIBriefCard } from "../components/ui";
+import { useAIBrief } from "../hooks/useAIBrief";
 import Header from "../components/layout/Header";
 import { STUDENT } from "../data/mockData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -46,11 +47,6 @@ const Pressable = ({ onPress, style, children }) => {
   );
 };
 
-const AI_BRIEF = {
-  summary:
-    "Heavy day ahead — 3 back-to-back classes. Prep for your Web Dev quiz during the 11 AM break. Data Structures attendance is at risk; consider attending today's session.",
-  tags: ["Web Dev quiz", "Attendance risk", "3 classes"],
-};
 const TASKS = [
   {
     id: 1,
@@ -365,6 +361,7 @@ const UpcomingSection = ({ navigation }) => (
 
 export default function HomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
+  const aiBrief = useAIBrief("home");
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
@@ -394,7 +391,12 @@ export default function HomeScreen({ navigation }) {
         }}
       >
         <View style={{ paddingHorizontal: 16, marginTop: 6 }}>
-          <AIBriefCard data={AI_BRIEF} />
+          <AIBriefCard
+            data={aiBrief.data}
+            loading={aiBrief.loading}
+            error={aiBrief.error}
+            onRetry={aiBrief.refresh}
+          />
         </View>
         <ClassesBanner navigation={navigation} />
         <AttendanceAlert navigation={navigation} />
