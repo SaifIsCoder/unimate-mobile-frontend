@@ -1,9 +1,18 @@
 {
   "root": true,
   "extends": "expo",
+  "env": {
+    "browser": true
+  },
+  "globals": {
+    "URLSearchParams": "readonly",
+    "setTimeout": "readonly",
+    "clearTimeout": "readonly"
+  },
   "ignorePatterns": ["node_modules/", "dist/", ".expo/", "project_tree.txt"],
   "rules": {
     "no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
-    "no-console": ["warn", { "allow": ["warn", "error", "info"] }]
+    "no-console": ["warn", { "allow": ["warn", "error", "info"] }],
+    "import/no-unresolved": ["error", { "ignore": ["^@expo/vector-icons"] }]
   }
 }
