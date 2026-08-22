@@ -160,85 +160,66 @@ export const loginUser = async (email, password, tenantCode) => {
   assertEmail(normalizedEmail);
   assertTenantCode(normalizedTenantCode);
 
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
-  const hasSetPassword = await AsyncStorage.getItem("has_set_password");
-  
-  if (hasSetPassword === "true") {
-    // Second login: validate credentials against the saved mock credentials
-    const savedEmail = await AsyncStorage.getItem("mock_user_email");
-    const savedPassword = await AsyncStorage.getItem("mock_user_password");
-    
-    if (savedEmail && normalizedEmail !== normalizeEmail(savedEmail)) {
-      throw new Error("Invalid email. Please use the email you logged in with originally.");
-    }
-    if (savedPassword && password !== savedPassword) {
-      throw new Error("Invalid password. Please use the new password you configured.");
-    }
-  } else {
-    // First login: must match the fixed mock seed credentials
-    if (
-      normalizedEmail !== normalizeEmail(DEFAULT_MOCK_EMAIL) ||
-      password !== DEFAULT_MOCK_PASSWORD
-    ) {
-      throw new Error(
-        `Invalid credentials. Use ${DEFAULT_MOCK_EMAIL} / ${DEFAULT_MOCK_PASSWORD} to sign in for the first time.`
-      );
-    }
-    await AsyncStorage.setItem("mock_user_email", normalizedEmail);
-  }
-
-  const mockUser = {
-    id: 1,
-    name: "Scholar Student",
+  const payload = {
     email: normalizedEmail,
-    role: "student",
-    needsPasswordReset: hasSetPassword !== "true",
+    password,
   };
 
-  await setTokens({
-    accessToken: "mock_access_token_12345",
-    refreshToken: "mock_refresh_token_12345",
+  const response = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
   });
-  await setUserProfile(mockUser);
+
+  if (!response.ok) {
+    const errorPayload = await response.json().catch(() => ({}));
+    throw new ApiError(
+      errorPayload?.message || errorPayload?.error || "Invalid credentials.",
+      response.status,
+      errorPayload
+    );
+  }
+
+  const { data } = await response.json();
+  const { user, accessToken, refreshToken } = data;
+
+  await setTokens({ accessToken, refreshToken });
+  await setUserProfile(user);
   await resetLoginAttempts();
 
-  return mockUser;
+  return user;
 };
 
 /**
  * Fetch current user profile (Mocked for local simulation)
  */
 export const getCurrentUser = async () => {
-  const cached = await getUserProfile();
-  if (cached) {
-    return cached;
-  }
-
   const token = await getAccessToken();
-  if (token) {
-    const hasSetPassword = await AsyncStorage.getItem("has_set_password");
-    const mockUser = {
-      id: 1,
-      name: "Scholar Student",
-      email: "student@university.edu",
-      role: "student",
-      needsPasswordReset: hasSetPassword !== "true",
-    };
-    await setUserProfile(mockUser);
-    return mockUser;
+  if (!token) {
+    throw new Error("Failed to load user profile: no active session.");
   }
 
-  throw new Error("Failed to load user profile: no active session.");
+  try {
+    const response = await apiRequest(API_ENDPOINTS.USERS.ME);
+    const user = response.data;
+    await setUserProfile(user);
+    return user;
+  } catch (error) {
+    throw new Error("Failed to load user profile from server.");
+  }
 };
 
 /**
  * Logout
  */
 export const logoutUser = async () => {
-  // Mock mode: clear local tokens and cached user profiles instantly without network timeouts
-  await clearTokens();
+  try {
+    await apiRequest(API_ENDPOINTS.AUTH.LOGOUT, { method: "POST" }).catch(() => {});
+  } finally {
+    await clearTokens();
+  }
 };
 
 /**

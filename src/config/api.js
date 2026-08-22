@@ -13,7 +13,7 @@ import { Platform } from "react-native";
 // Set EXPO_PUBLIC_API_BASE_URL in .env file
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL ||
-  (Platform.OS === "android" ? "http://10.0.2.2:3000" : "http://localhost:3000");
+  (Platform.OS === "android" ? "http://10.0.2.2:5000" : "http://localhost:5000");
 
 const API_VERSION = "v1";
 
@@ -25,36 +25,62 @@ export const API_ENDPOINTS = {
     LOGOUT: `${API_BASE_URL}/api/${API_VERSION}/auth/logout`,
   },
   USERS: {
-    ME: `${API_BASE_URL}/api/${API_VERSION}/auth/me`,
+    ME: `${API_BASE_URL}/api/${API_VERSION}/users/me`,
   },
-  CLASSES: {
-    ALL: `${API_BASE_URL}/api/${API_VERSION}/classes`,
+  COURSES: {
+    ROOT: `${API_BASE_URL}/api/${API_VERSION}/courses`,
+  },
+  OFFERINGS: {
+    ROOT: `${API_BASE_URL}/api/${API_VERSION}/offerings`,
   },
   ENROLLMENTS: {
-    ALL: `${API_BASE_URL}/api/${API_VERSION}/enrollments`,
+    MY: `${API_BASE_URL}/api/${API_VERSION}/enrollments/my`,
+    ROOT: `${API_BASE_URL}/api/${API_VERSION}/enrollments`,
+  },
+  SCHEDULES: {
+    MY: `${API_BASE_URL}/api/${API_VERSION}/schedules`,
+    MY_TODAY: `${API_BASE_URL}/api/${API_VERSION}/schedules/my/today`,
   },
   ASSIGNMENTS: {
-    ALL: `${API_BASE_URL}/api/${API_VERSION}/assignments`,
+    ROOT: `${API_BASE_URL}/api/${API_VERSION}/assignments`,
     MY: `${API_BASE_URL}/api/${API_VERSION}/assignments/my`,
     MY_SUBMISSIONS: `${API_BASE_URL}/api/${API_VERSION}/assignments/my/submissions`,
     BY_ID: (id) => `${API_BASE_URL}/api/${API_VERSION}/assignments/${id}`,
     SUBMIT: (id) => `${API_BASE_URL}/api/${API_VERSION}/assignments/${id}/submit`,
   },
   EVENTS: {
-    ALL: `${API_BASE_URL}/api/${API_VERSION}/events`,
+    ROOT: `${API_BASE_URL}/api/${API_VERSION}/events`,
+    UPCOMING: `${API_BASE_URL}/api/${API_VERSION}/events/upcoming`,
     BY_ID: (id) => `${API_BASE_URL}/api/${API_VERSION}/events/${id}`,
   },
   ANNOUNCEMENTS: {
-    ALL: `${API_BASE_URL}/api/${API_VERSION}/announcements`,
+    ROOT: `${API_BASE_URL}/api/${API_VERSION}/announcements`,
     BY_ID: (id) => `${API_BASE_URL}/api/${API_VERSION}/announcements/${id}`,
-    MARK_READ: (id) => `${API_BASE_URL}/api/${API_VERSION}/announcements/${id}/read`,
+    READ: (id) => `${API_BASE_URL}/api/${API_VERSION}/announcements/${id}/read`,
   },
   ATTENDANCE: {
     MY: `${API_BASE_URL}/api/${API_VERSION}/attendance/my`,
   },
   GRADES: {
     MY: `${API_BASE_URL}/api/${API_VERSION}/grades/my`,
+    MY_SUMMARY: `${API_BASE_URL}/api/${API_VERSION}/grades/my/summary`,
+    MY_ALL_SEMESTERS: `${API_BASE_URL}/api/${API_VERSION}/grades/my/all-semesters`,
   },
+  COMMUNITY: {
+    ROOT: `${API_BASE_URL}/api/${API_VERSION}/community/posts`,
+    LIKE: (id) => `${API_BASE_URL}/api/${API_VERSION}/community/posts/${id}/like`,
+    COMMENTS: (id) => `${API_BASE_URL}/api/${API_VERSION}/community/posts/${id}/comments`,
+  },
+  NOTIFICATIONS: {
+    MY: `${API_BASE_URL}/api/${API_VERSION}/notifications/my`,
+    READ: (id) => `${API_BASE_URL}/api/${API_VERSION}/notifications/${id}/read`,
+  },
+  AI: {
+    BRIEF: (topic) => `${API_BASE_URL}/api/${API_VERSION}/ai/brief?topic=${topic}`,
+  },
+  UPLOADS: {
+    ROOT: `${API_BASE_URL}/api/${API_VERSION}/uploads`,
+  }
 };
 
 export default API_ENDPOINTS;

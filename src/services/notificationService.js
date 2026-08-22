@@ -1,5 +1,27 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
+import API_ENDPOINTS from '../config/api';
+import { apiRequest } from './apiClient';
+
+const buildQuery = (params) => {
+  if (!params) return "";
+  const query = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      query.append(key, String(value));
+    }
+  });
+  const str = query.toString();
+  return str ? `?${str}` : "";
+};
+
+export const getMyNotifications = async (params = { page: 1, limit: 50 }) => {
+  const res = await apiRequest(API_ENDPOINTS.NOTIFICATIONS.MY + buildQuery(params));
+  return Array.isArray(res?.data) ? res.data : [];
+};
+
+export const markNotificationRead = (id) =>
+  apiRequest(API_ENDPOINTS.NOTIFICATIONS.READ(id), { method: "PATCH" });
 
 // Configure how notifications are handled when app is in foreground
 Notifications.setNotificationHandler({
