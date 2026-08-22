@@ -14,85 +14,6 @@ import { AIBriefCard } from "../../components/ui";
 import { useAIBrief } from "../../hooks/useAIBrief";
 import { styles, COLORS, RADIUS, FONT } from "./GradesScreen.styles";
 
-// ── Mock Data ─────────────────────────────────────────────
-const COURSES = [
-  {
-    id: "1",
-    name: "Web Development",
-    code: "CS-402",
-    credits: 4,
-    grade: "A-",
-    progress: 82,
-    midterm: "94/100",
-    labsAvg: "100% Avg.",
-    gradeColor: COLORS.primary,
-    gradeBorderColor: `${COLORS.primary}1A`,
-    progressColors: ["#2c2abc", "#484bd6"],
-    statLabel1: "MIDTERM",
-    statValue1: "94/100",
-    statLabel2: "LABS",
-    statValue2: "100% Avg.",
-  },
-  {
-    id: "2",
-    name: "Data Structures",
-    code: "CS-301",
-    credits: 3,
-    grade: "B+",
-    progress: 65,
-    gradeColor: COLORS.secondary,
-    gradeBorderColor: `${COLORS.secondary}1A`,
-    progressColors: ["#6b38d4", "#9C6CF8"],
-    statLabel1: "QUIZZES",
-    statValue1: "88/100",
-    statLabel2: "PROJECT 1",
-    statValue2: "82/100",
-  },
-];
-
-// ── GPA HERO CARD ─────────────────────────────────────────
-// Mirrors: <section class="relative overflow-hidden bg-primary-container ...">
-const GpaHero = ({ navigation }) => (
-  <View style={styles.gpaHeroWrapper}>
-    {/* Background fill — primary-container color */}
-    <View style={styles.gpaHero}>
-      {/* GPA number block */}
-      <View style={styles.gpaContent}>
-        <Text style={styles.gpaLabel}>CURRENT SEMESTER GPA</Text>
-        <View style={styles.gpaRow}>
-          <Text style={styles.gpaNumber}>3.88</Text>
-          <Text style={styles.gpaOutOf}>/ 4.0</Text>
-        </View>
-      </View>
-
-      {/* Footer strip — mirrors the white/10 backdrop row */}
-      <View style={styles.gpaFooter}>
-        <View style={styles.gpaFooterLeft}>
-          <MaterialIcons
-            name="trending-up"
-            size={18}
-            color={COLORS.primaryFixed}
-          />
-          <Text style={styles.gpaFooterText}>+0.12 since Midterm</Text>
-        </View>
-        <View style={styles.deansBadge}>
-          <Text style={styles.deansBadgeText}>DEAN'S LIST ELIGIBLE</Text>
-        </View>
-      </View>
-
-      {/* Top-right button — Sets CGPA Goal — Rendered last so it sits on top of all sibling layers */}
-      <TouchableOpacity
-        style={styles.goalButton}
-        onPress={() => navigation.navigate("SetGPAGoal")}
-        activeOpacity={0.85}
-      >
-        <MaterialIcons name="emoji-events" size={14} color={COLORS.primary} />
-        <Text style={styles.goalButtonText}>Set CGPA Goal</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-);
-
 // ── PROGRESS BAR ──────────────────────────────────────────
 const ProgressBar = ({ progress, colors }) => (
   <View style={styles.progressTrack}>
@@ -177,14 +98,58 @@ export default function GradesScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const aiBrief = useAIBrief("grades");
 
+  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  React.useEffect(() => {
+    const fetchGrades = async () => {
+      try {
+        const { getMyGradesSummary } = require("../../services/gradeService");
+        const res = await getMyGradesSummary();
+        setSummary(res);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGrades();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={[styles.screen, { paddingTop: insets.top }]}>
+        <Background />
+        <Header title="Grades" />
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text style={{ color: COLORS.textSecondary }}>Loading grades...</Text>
+        </View>
+      </View>
+    );
+  }
+
+  const courses = (summary?.courses || []).map((c) => ({
+    id: String(c.offering_id || c.course_code),
+    name: c.course_title,
+    code: c.course_code,
+    credits: c.credit_hours,
+    grade: c.grade || "N/A",
+    progress: c.marks || 0,
+    gradeColor: COLORS.primary,
+    gradeBorderColor: `${COLORS.primary}1A`,
+    progressColors: ["#6b38d4", "#9C6CF8"],
+    statLabel1: "TOTAL MARKS",
+    statValue1: c.marks ? `${c.marks}/100` : "-",
+    statLabel2: "GPA",
+    statValue2: c.gpa ? c.gpa.toFixed(1) : "-",
+  }));
+
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <Background />
 
-      {/* TOP HEADER — reuse your existing component */}
       <Header title="Grades" />
 
-      {/* SCROLLABLE CONTENT */}
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={[
@@ -193,8 +158,39 @@ export default function GradesScreen({ navigation }) {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* 1. GPA Hero */}
-        <GpaHero navigation={navigation} />
+        {summary && (
+          <View style={styles.gpaHeroWrapper}>
+            <View style={styles.gpaHero}>
+              <View style={styles.gpaContent}>
+                <Text style={styles.gpaLabel}>CURRENT SEMESTER GPA</Text>
+                <View style={styles.gpaRow}>
+                  <Text style={styles.gpaNumber}>{summary.sgpa?.toFixed(2) || "0.00"}</Text>
+                  <Text style={styles.gpaOutOf}>/ 4.0</Text>
+                </View>
+              </View>
+
+              <View style={styles.gpaFooter}>
+                <View style={styles.gpaFooterLeft}>
+                  <MaterialIcons
+                    name="trending-up"
+                    size={18}
+                    color={COLORS.primaryFixed}
+                  />
+                  <Text style={styles.gpaFooterText}>CGPA: {summary.cgpa?.toFixed(2) || "0.00"}</Text>
+                </View>
+              </View>
+
+              <TouchableOpacity
+                style={styles.goalButton}
+                onPress={() => navigation.navigate("SetGPAGoal")}
+                activeOpacity={0.85}
+              >
+                <MaterialIcons name="emoji-events" size={14} color={COLORS.primary} />
+                <Text style={styles.goalButtonText}>Set CGPA Goal</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
 
         <AIBriefCard
           data={aiBrief.data}
@@ -219,7 +215,6 @@ export default function GradesScreen({ navigation }) {
           onPress={() => navigation.navigate("AllSemestersScreen")}
         >
           <MaterialIcons name="history" size={20} color={COLORS.primary} />
-
           <Text
             style={{
               fontSize: 14,
@@ -230,13 +225,12 @@ export default function GradesScreen({ navigation }) {
             View All Semester History
           </Text>
         </TouchableOpacity>
-        {/* 3. Course Performance header */}
+
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Course Performance</Text>
         </View>
 
-        {/* 4. Course cards */}
-        {COURSES.map((course) => (
+        {courses.map((course) => (
           <CourseCard key={course.id} item={course} />
         ))}
       </ScrollView>

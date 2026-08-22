@@ -36,8 +36,34 @@ const buildNotification = (payload) => ({
 
 // ── Provider ─────────────────────────────────────────────────────────────────
 export function NotificationProvider({ children }) {
-  // Seed with mock data for development
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState([]);
+
+  React.useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const { getMyNotifications } = require('../services/notificationService');
+        const res = await getMyNotifications();
+        
+        const mapped = res.map(n => ({
+          id: String(n.id),
+          title: n.title,
+          body: n.content || n.message || '',
+          type: n.type || 'info',
+          priority: n.priority ? n.priority.toUpperCase() : 'MEDIUM',
+          entityType: n.entity_type || 'system',
+          entityId: String(n.entity_id || ''),
+          isRead: Boolean(n.is_read),
+          isNew: !Boolean(n.is_read),
+          createdAt: n.created_at || new Date().toISOString(),
+        }));
+        
+        setNotifications(mapped);
+      } catch (err) {
+        console.error('Failed to fetch notifications:', err);
+      }
+    };
+    fetchNotifications();
+  }, []);
 
   // ── Computed values ────────────────────────────────────────────────────────
   const unreadCount = useMemo(
@@ -73,10 +99,16 @@ export function NotificationProvider({ children }) {
   }, []);
 
   // ── Mark single notification as read ───────────────────────────────────────
-  const markAsRead = useCallback((id) => {
+  const markAsRead = useCallback(async (id) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
     );
+    try {
+      const { markNotificationRead } = require('../services/notificationService');
+      await markNotificationRead(id);
+    } catch (err) {
+      console.error('Failed to mark notification as read:', err);
+    }
   }, []);
 
   // ── Mark all as read ───────────────────────────────────────────────────────

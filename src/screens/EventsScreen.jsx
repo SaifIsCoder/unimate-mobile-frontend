@@ -14,7 +14,7 @@ import { COLORS, ACCENT } from "../theme";
 import Header from "../components/layout/Header";
 import Background from "../components/layout/Background";
 import { FilterPill } from "../components/ui";
-import { EVENTS, EVENT_CATEGORIES } from "../data/mockData";
+import { EVENT_CATEGORIES } from "../data/mockData";
 import { s } from "./EventsScreen.styles";
 
 const STATUS_FILTERS = ["All", "Current", "Past"];
@@ -82,16 +82,55 @@ const EmptyState = () => (
 
 export default function EventsScreen({ navigation }) {
   const insets = useSafeAreaInsets();
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All");
 
+  React.useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const { listEvents } = require("../services/communicationService");
+        const res = await listEvents();
+        
+        // Map backend to UI schema
+        const mapped = res.map(e => ({
+          id: String(e.id),
+          category: e.category || "academic",
+          title: e.title,
+          datetime: e.start_time,
+          date: new Date(e.start_time).toLocaleDateString(),
+          time: new Date(e.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          location: e.location || "TBA",
+        }));
+        
+        setEvents(mapped);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
+
   const filtered = useMemo(() => {
-    return EVENTS.filter((e) => {
+    return events.filter((e) => {
       const st = statusFilter === "All" || getEventStatus(e.datetime) === statusFilter;
       const cat = categoryFilter === "All" || e.category === categoryFilter;
       return st && cat;
     }).sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
-  }, [statusFilter, categoryFilter]);
+  }, [events, statusFilter, categoryFilter]);
+
+  if (loading) {
+    return (
+      <View style={[s.screen, { paddingTop: insets.top, justifyContent: "center", alignItems: "center" }]}>
+        <Background />
+        <Header title="Events" showBack />
+        <Text style={{ color: COLORS.textSecondary }}>Loading events...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={[s.screen, { paddingTop: insets.top }]}>
@@ -123,7 +162,7 @@ export default function EventsScreen({ navigation }) {
         {CATEGORY_FILTERS.map((f) => (
           <FilterPill
             key={"cat" + f}
-            label={f === "All" ? "All Categories" : EVENT_CATEGORIES[f].label}
+            label={f === "All" ? "All Categories" : EVENT_CATEGORIES[f]?.label || f}
             active={categoryFilter === f}
             onPress={() => setCategoryFilter(f)}
           />

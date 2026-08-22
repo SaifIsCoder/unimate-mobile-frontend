@@ -15,7 +15,11 @@ import { COLORS, RADIUS, FONT } from "../theme";
 import { AIBriefCard } from "../components/ui";
 import { useAIBrief } from "../hooks/useAIBrief";
 import Header from "../components/layout/Header";
-import { STUDENT } from "../data/mockData";
+import { getTodaySchedule } from "../services/academicService";
+import { getMyAttendance } from "../services/attendanceService";
+import { listMyAssignments } from "../services/taskService";
+import { listUpcomingEvents } from "../services/communicationService";
+import { format } from "date-fns";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Background from "../components/layout/Background";
 import { styles, alertStyles, taskStyles, eventStyles } from "./HomeScreen.styles";
@@ -47,61 +51,12 @@ const Pressable = ({ onPress, style, children }) => {
   );
 };
 
-const TASKS = [
-  {
-    id: 1,
-    title: "Submit DB Assignment",
-    due: "Today, 5:00 PM",
-    subject: "Database Systems",
-    urgent: true,
-  },
-  {
-    id: 2,
-    title: "Read Web Dev chapter 7",
-    due: "Tomorrow",
-    subject: "Web Development",
-    urgent: false,
-  },
-];
-const EVENTS = [
-  {
-    id: 1,
-    title: "React Workshop",
-    date: "Tomorrow",
-    time: "2:00 PM",
-    location: "Lab 3",
-    icon: "celebration",
-    color: "#4f46e5",
-    bg: "#eef2ff",
-  },
-  {
-    id: 2,
-    title: "Mid-term Exams",
-    date: "Mon, 22 July",
-    time: "9:00 AM",
-    location: "Exam Hall",
-    icon: "edit-note",
-    color: "#0891b2",
-    bg: "#ecfeff",
-  },
-  {
-    id: 3,
-    title: "Mid-term Exams",
-    date: "Mon, 22 July",
-    time: "9:00 AM",
-    location: "Exam Hall",
-    icon: "edit-note",
-    color: "#0891b2",
-    bg: "#ecfeff",
-  },
-];
-const ATTENDANCE_DATA = [
-  { name: "Data Structures", attended: 14, total: 20 },
-  { name: "Database Systems", attended: 16, total: 20 },
-  { name: "Web Development", attended: 18, total: 20 },
-];
+const ClassesBanner = ({ navigation, scheduleData }) => {
+  const { classes = [], classCount = 0 } = scheduleData || {};
+  const activeClasses = classes.filter(c => c.status !== 'cancelled');
+  const nextClass = activeClasses.find(c => c.status === 'next' || c.status === 'upcoming') || activeClasses[0];
 
-const ClassesBanner = ({ navigation }) => (
+  return (
   <Pressable
     onPress={() => navigation.navigate("Schedule")}
     style={styles.bannerWrapper}
@@ -125,20 +80,23 @@ const ClassesBanner = ({ navigation }) => (
               size={12}
               color="rgba(255,255,255,0.9)"
             />
-            <Text style={styles.bannerDateText}>Thursday, 17 July</Text>
+            <Text style={styles.bannerDateText}>{scheduleData?.dayOfWeek || "Today"}</Text>
           </View>
         </View>
         <View style={styles.bannerCountBox}>
-          <Text style={styles.bannerCountNum}>3</Text>
+          <Text style={styles.bannerCountNum}>{classCount}</Text>
           <Text style={styles.bannerCountLabel}>classes</Text>
         </View>
       </View>
 
-      <Text style={styles.bannerTitle}>3 Classes Today</Text>
-      <Text style={styles.bannerSub}>
-        Next: <Text style={styles.bannerSubBold}>Web Dev</Text> · 11:00 AM · Lab
-        2
-      </Text>
+      <Text style={styles.bannerTitle}>{classCount} Classes Today</Text>
+      {nextClass ? (
+        <Text style={styles.bannerSub}>
+          Next: <Text style={styles.bannerSubBold}>{nextClass.courseName}</Text> · {nextClass.startTime.split('T')[1].substring(0,5)} · {nextClass.room}
+        </Text>
+      ) : (
+        <Text style={styles.bannerSub}>No upcoming classes today.</Text>
+      )}
 
       {/* Mini schedule strip */}
       {/* <View style={styles.bannerStrip}>
@@ -181,7 +139,8 @@ const ClassesBanner = ({ navigation }) => (
       <Text style={styles.bannerTap}>View full schedule →</Text>
     </LinearGradient>
   </Pressable>
-);
+  );
+};
 
 const getAttendanceStatus = (pct) => {
   if (pct < 75)
@@ -201,10 +160,11 @@ const getAttendanceStatus = (pct) => {
   return null;
 };
 
-const AttendanceAlert = ({ navigation }) => {
-  const atRisk = ATTENDANCE_DATA.map((s) => ({
+const AttendanceAlert = ({ navigation, attendanceData }) => {
+  const atRisk = (attendanceData || []).map((s) => ({
     ...s,
-    pct: Math.round((s.attended / s.total) * 100),
+    name: s.course?.title || s.name,
+    pct: Math.round((s.attended / (s.total || 1)) * 100),
   })).filter((s) => getAttendanceStatus(s.pct));
 
   if (atRisk.length === 0) return null;
@@ -280,7 +240,7 @@ const AttendanceAlert = ({ navigation }) => {
   );
 };
 
-const TasksSection = ({ navigation }) => (
+const TasksSection = ({ navigation, tasks }) => (
   <View style={taskStyles.wrap}>
     <View style={taskStyles.titleRow}>
       <Text style={taskStyles.sectionTitle}>Pending Tasks</Text>
@@ -289,31 +249,37 @@ const TasksSection = ({ navigation }) => (
       </TouchableOpacity>
     </View>
 
-    {TASKS.map((task) => (
-      <View key={task.id} style={taskStyles.card}>
-        <View
-          style={[
-            taskStyles.urgentDot,
-            { backgroundColor: task.urgent ? "#ef4444" : "#94a3b8" },
-          ]}
-        />
-        <View style={{ flex: 1 }}>
-          <Text style={taskStyles.taskTitle}>{task.title}</Text>
-          <Text style={taskStyles.taskMeta}>
-            {task.subject} · Due: {task.due}
-          </Text>
-        </View>
-        {task.urgent && (
-          <View style={taskStyles.urgentBadge}>
-            <Text style={taskStyles.urgentText}>Urgent</Text>
+    {tasks.length === 0 ? (
+      <Text style={{ textAlign: 'center', color: '#6b7280', paddingVertical: 16 }}>
+        No pending tasks at the moment.
+      </Text>
+    ) : (
+      tasks.slice(0, 3).map((task) => (
+        <View key={task.id} style={taskStyles.card}>
+          <View
+            style={[
+              taskStyles.urgentDot,
+              { backgroundColor: task.urgent ? "#ef4444" : "#94a3b8" },
+            ]}
+          />
+          <View style={{ flex: 1 }}>
+            <Text style={taskStyles.taskTitle}>{task.title}</Text>
+            <Text style={taskStyles.taskMeta}>
+              {task.subject} · Due: {new Date(task.due).toLocaleDateString()}
+            </Text>
           </View>
-        )}
-      </View>
-    ))}
+          {(task.priority === 'high' || task.priority === 'critical') && (
+            <View style={taskStyles.urgentBadge}>
+              <Text style={taskStyles.urgentText}>Urgent</Text>
+            </View>
+          )}
+        </View>
+      ))
+    )}
   </View>
 );
 
-const UpcomingSection = ({ navigation }) => (
+const UpcomingSection = ({ navigation, events }) => (
   <View style={eventStyles.wrap}>
     <View style={eventStyles.titleRow}>
       <Text style={eventStyles.sectionTitle}>Upcoming</Text>
@@ -322,55 +288,94 @@ const UpcomingSection = ({ navigation }) => (
       </TouchableOpacity>
     </View>
 
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ gap: 10 }}
-      style={eventStyles.cardContainer}
-    >
-      {EVENTS.map((ev) => (
-        <TouchableOpacity
-          key={ev.id}
-          onPress={() => navigation.navigate("Events")}
-          activeOpacity={0.85}
-        >
-          <View style={[eventStyles.card, { borderTopColor: ev.color }]}>
-            <View style={[eventStyles.iconCircle, { backgroundColor: ev.bg }]}>
-              <MaterialIcons name={ev.icon} size={18} color={ev.color} />
+    {events.length === 0 ? (
+      <Text style={{ textAlign: 'center', color: '#6b7280', paddingVertical: 16 }}>
+        No upcoming events.
+      </Text>
+    ) : (
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ gap: 10 }}
+        style={eventStyles.cardContainer}
+      >
+        {events.map((ev) => (
+          <TouchableOpacity
+            key={ev.id}
+            onPress={() => navigation.navigate("Events")}
+            activeOpacity={0.85}
+          >
+            <View style={[eventStyles.card, { borderTopColor: ev.color || '#4f46e5' }]}>
+              <View style={[eventStyles.iconCircle, { backgroundColor: ev.bg || '#eef2ff' }]}>
+                <MaterialIcons name={ev.icon || 'event'} size={18} color={ev.color || '#4f46e5'} />
+              </View>
+              <Text style={eventStyles.evTitle} numberOfLines={1}>
+                {ev.title}
+              </Text>
+              <Text style={eventStyles.evDate}>
+                {new Date(ev.date).toLocaleDateString()} · {new Date(ev.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+              </Text>
+              <View style={eventStyles.evLocRow}>
+                <MaterialIcons
+                  name="place"
+                  size={12}
+                  color={COLORS.textTertiary}
+                />
+                <Text style={eventStyles.evLoc}>{ev.location}</Text>
+              </View>
             </View>
-            <Text style={eventStyles.evTitle} numberOfLines={1}>
-              {ev.title}
-            </Text>
-            <Text style={eventStyles.evDate}>
-              {ev.date} · {ev.time}
-            </Text>
-            <View style={eventStyles.evLocRow}>
-              <MaterialIcons
-                name="place"
-                size={12}
-                color={COLORS.textTertiary}
-              />
-              <Text style={eventStyles.evLoc}>{ev.location}</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    )}
   </View>
 );
 
 export default function HomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const aiBrief = useAIBrief("home");
+  const { user } = require("../context/UserContext").useUser();
+
+  const [scheduleData, setScheduleData] = React.useState(null);
+  const [attendanceData, setAttendanceData] = React.useState([]);
+  const [tasks, setTasks] = React.useState([]);
+  const [events, setEvents] = React.useState([]);
+
+  React.useEffect(() => {
+    let mounted = true;
+    const loadHomeData = async () => {
+      try {
+        const [schRes, attRes, tskRes, evRes] = await Promise.all([
+          getTodaySchedule().catch(() => []),
+          getMyAttendance().catch(() => ({ courses: [] })),
+          listMyAssignments().catch(() => []),
+          listUpcomingEvents().catch(() => []),
+        ]);
+        
+        if (!mounted) return;
+        
+        setScheduleData({ classes: schRes, classCount: schRes.length });
+        setAttendanceData(attRes.courses || []);
+        setTasks(tskRes.filter(t => t.status === 'pending'));
+        setEvents(evRes);
+      } catch (err) {
+        console.error("Error loading home data:", err);
+      }
+    };
+    loadHomeData();
+    return () => { mounted = false; };
+  }, []);
+
+  if (!user) return null;
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <Background />
 
-      <Header title={STUDENT.name} />
+      <Header title={user.name || "Student"} />
       <View style={styles.studentMetaRow}>
         <View style={styles.studentMetaPill}>
-          <Text style={styles.studentMetaText}>{STUDENT.department}</Text>
+          <Text style={styles.studentMetaText}>{user.student?.department?.name || "Department"}</Text>
         </View>
         <View
           style={[
@@ -379,7 +384,7 @@ export default function HomeScreen({ navigation }) {
           ]}
         >
           <Text style={[styles.studentMetaText, { color: COLORS.primary }]}>
-            {STUDENT.semester}
+            {user.student?.current_semester || "Semester"}
           </Text>
         </View>
       </View>
@@ -398,10 +403,10 @@ export default function HomeScreen({ navigation }) {
             onRetry={aiBrief.refresh}
           />
         </View>
-        <ClassesBanner navigation={navigation} />
-        <AttendanceAlert navigation={navigation} />
-        <UpcomingSection navigation={navigation} />
-        <TasksSection navigation={navigation} />
+        <ClassesBanner navigation={navigation} scheduleData={scheduleData} />
+        <AttendanceAlert navigation={navigation} attendanceData={attendanceData} />
+        <UpcomingSection navigation={navigation} events={events} />
+        <TasksSection navigation={navigation} tasks={tasks} />
       </ScrollView>
     </View>
   );

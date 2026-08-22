@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { COLORS } from "../theme";
-import { STUDENT } from "../data/mockData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useUser } from "../context/UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -45,7 +44,7 @@ const InfoSection = ({ title, rows }) => (
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
-  const { logout } = useUser();
+  const { user, logout } = useUser();
 
   const handleLogout = () =>
     Alert.alert("Logout", "Are you sure you want to logout?", [
@@ -64,10 +63,10 @@ export default function ProfileScreen() {
       },
     ]);
 
+  if (!user) return null;
+
   return (
     <View style={styles.root}>
-      {/* Floating back button — the hero gradient is the first thing in the
-          ScrollView, so this sits above it rather than inside it. */}
       <BackButton
         variant="light"
         style={[styles.backBtn, { top: insets.top + 8 }]}
@@ -78,15 +77,12 @@ export default function ProfileScreen() {
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: 40, flexGrow: 1 }}
     >
-      {/* ── Status bar with dark/purple bg ── */}
       <LinearGradient
         colors={COLORS.gradientProfile}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.heroGradient, { paddingTop: insets.top + 20 }]}
       >
-
-        {/* Decorative circle (replicates ::before pseudo-element) */}
         <View style={styles.heroCircle} />
 
         <View style={styles.avatarWrap}>
@@ -94,73 +90,59 @@ export default function ProfileScreen() {
             colors={[COLORS.primary, "#9C6CF8"]}
             style={styles.profAvatar}
           >
-            <Text style={styles.profAvatarText}>S</Text>
+            <Text style={styles.profAvatarText}>
+              {user.name ? user.name.charAt(0).toUpperCase() : "?"}
+            </Text>
           </LinearGradient>
         </View>
 
-        <Text style={styles.profName} numberOfLines={1} ellipsizeMode="tail">{STUDENT.name}</Text>
-        <Text style={styles.profEmail}>{STUDENT.email}</Text>
+        <Text style={styles.profName} numberOfLines={1} ellipsizeMode="tail">
+          {user.name || "Student"}
+        </Text>
+        <Text style={styles.profEmail}>{user.personal?.email || ""}</Text>
 
         <View style={styles.profTags}>
           <View style={styles.profTag}>
-            <Text style={styles.profTagText}>Roll #{STUDENT.rollNo}</Text>
-          </View>
-          <View style={styles.profTag}>
-            <Text style={styles.profTagText}>{STUDENT.semester}</Text>
+            <Text style={styles.profTagText}>Reg #{user.registrationNumber || "N/A"}</Text>
           </View>
         </View>
 
-        {/* White curve at bottom of hero — achieved via a tall rounded View */}
         <View style={styles.heroCurve} />
       </LinearGradient>
 
-      {/* ── GPA & Attendance tiles ── */}
       <View style={styles.statGrid}>
         <View style={styles.statCard}>
           <Text style={[styles.statNum, { color: COLORS.primary }]}>
-            {STUDENT.gpa}
+            {user.cgpa?.toFixed(2) || "0.00"}
           </Text>
           <Text style={styles.statLbl}>Current GPA</Text>
         </View>
         <View style={styles.statCard}>
           <Text style={[styles.statNum, { color: COLORS.green }]}>
-            {STUDENT.attendance}
+            {user.averageAttendance ? `${user.averageAttendance}%` : "0%"}
           </Text>
           <Text style={styles.statLbl}>Attendance</Text>
         </View>
       </View>
 
       <InfoSection
-        title="Academic Info"
-        rows={[
-          { label: "Program", value: STUDENT.program },
-          { label: "Department", value: STUDENT.department },
-          { label: "Session", value: STUDENT.session },
-          { label: "Section", value: STUDENT.section },
-          { label: "Semester", value: STUDENT.semester },
-        ]}
-      />
-
-      <InfoSection
         title="Personal Info"
         rows={[
-          { label: "Gender", value: STUDENT.gender },
-          { label: "Date of Birth", value: STUDENT.dob },
-          { label: "Email", value: STUDENT.email, highlight: true },
-          { label: "Phone", value: STUDENT.phone },
+          { label: "Email", value: user.personal?.email || "N/A", highlight: true },
+          { label: "Phone", value: user.personal?.phone || "N/A" },
+          { label: "Address", value: user.personal?.address || "N/A" },
         ]}
       />
 
       <InfoSection
         title="Guardian"
         rows={[
-          { label: "Name", value: STUDENT.guardian.name },
-          { label: "Relation", value: STUDENT.guardian.relation },
-          { label: "Phone", value: STUDENT.guardian.phone },
+          { label: "Father's Name", value: user.guardian?.fatherName || "N/A" },
+          { label: "Phone", value: user.guardian?.phone || "N/A" },
+          { label: "Emergency Phone", value: user.guardian?.emergencyPhone || "N/A" },
         ]}
       />
 
-      {/* ── Logout Button ── */}
       <LinearGradient
         colors={COLORS.gradientRed}
         start={{ x: 0, y: 0 }}

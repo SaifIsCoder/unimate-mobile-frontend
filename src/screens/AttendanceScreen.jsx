@@ -14,7 +14,6 @@ import { COLORS, ACCENT } from "../theme";
 import Header from "../components/layout/Header";
 import Background from "../components/layout/Background";
 import { FilterPill } from "../components/ui";
-import { ATTENDANCE_SUBJECTS } from "../data/mockData";
 import { s } from "./AttendanceScreen.styles";
 
 const STATUS_FILTERS = ["All", "Critical", "Warning", "Safe"];
@@ -68,13 +67,38 @@ export default function AttendanceScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const [statusFilter, setStatusFilter] = useState("All");
 
+  const [attendanceData, setAttendanceData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  React.useEffect(() => {
+    const fetchAttendance = async () => {
+      try {
+        const { getMyAttendance } = require("../services/attendanceService");
+        const res = await getMyAttendance();
+        const mapped = (res.courses || []).map((c) => ({
+          id: c.offering_id,
+          name: c.course_title,
+          code: c.course_code,
+          attended: c.present,
+          total: Math.max(1, c.total_lectures - c.leave),
+          pct: c.attendance_percentage,
+        }));
+        setAttendanceData(mapped);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAttendance();
+  }, []);
+
   const withStatus = useMemo(
     () =>
-      ATTENDANCE_SUBJECTS.map((subj) => {
-        const pct = Math.round((subj.attended / subj.total) * 100);
-        return { ...subj, pct, status: getAttendanceStatus(pct).label };
+      attendanceData.map((subj) => {
+        return { ...subj, status: getAttendanceStatus(subj.pct).label };
       }).sort((a, b) => a.pct - b.pct),
-    []
+    [attendanceData]
   );
 
   const filtered = useMemo(
@@ -86,6 +110,18 @@ export default function AttendanceScreen({ navigation }) {
   );
 
   const atRiskCount = withStatus.filter((s) => s.status !== "Safe").length;
+
+  if (loading) {
+    return (
+      <View style={[s.screen, { paddingTop: insets.top }]}>
+        <Background />
+        <Header title="Attendance" showBack />
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text style={{ color: COLORS.textSecondary }}>Loading attendance...</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={[s.screen, { paddingTop: insets.top }]}>
