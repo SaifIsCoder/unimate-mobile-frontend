@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { COLORS, RADIUS, FONT, ACCENT } from "../theme";
 import Header from "../components/layout/Header";
-import { CLASSES, CLASS_STATUS, WEEK_DAYS } from "../data/mockData";
+import { CLASS_STATUS } from "../data/mockData";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import Background from "../components/layout/Background";
@@ -57,6 +57,7 @@ const DateStrip = ({
   month,
   onPrevMonth,
   onNextMonth,
+  weekDays,
 }) => (
   <View style={stripStyles.container}>
     {/* Month navigation */}
@@ -76,7 +77,7 @@ const DateStrip = ({
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={stripStyles.chipRow}
     >
-      {WEEK_DAYS.map((day, i) => {
+      {weekDays.map((day, i) => {
         const isActive = selectedDay === i;
         const dayName = day.name.toUpperCase();
         const isWeekend = dayName === "SAT" || dayName === "SUN";
@@ -145,7 +146,7 @@ const ClassCard = ({ item, index, total }) => {
       <Pressable
         style={[
           cardStyles.card,
-          { borderLeftColor: accent.border, borderLeftWidth: 3 },
+          // { borderLeftColor: accent.border, borderLeftWidth: 3 },
           isNow && { borderColor: cfg.color, borderWidth: 1.5 },
           isCancelled && cardStyles.cardCancelled,
           isDone && cardStyles.cardDone,
@@ -232,40 +233,96 @@ const EmptyState = () => (
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN SCREEN
 // ─────────────────────────────────────────────────────────────────────────────
+import { getMySchedule } from "../services/academicService";
+import { format, startOfWeek, addDays, isSameDay } from "date-fns";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN SCREEN
+// ─────────────────────────────────────────────────────────────────────────────
 export default function ScheduleScreen({ navigation }) {
-  const [selectedDay, setSelectedDay] = useState(3);
-  const [month, setMonth] = useState("April 2026");
   const insets = useSafeAreaInsets();
   const aiBrief = useAIBrief("schedule");
 
-  const DATE_LABELS = [
-    "Monday, April 13",
-    "Tuesday, April 14",
-    "Wednesday, April 15",
-    "Thursday, April 16",
-    "Friday, April 17",
-    "Saturday, April 18",
-    "Sunday, April 19",
-  ];
+  const [currentWeekStart, setCurrentWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  
+  const [classes, setClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handlePrevMonth = () => setMonth("March 2026");
-  const handleNextMonth = () => setMonth("May 2026");
+  const fetchSchedule = async (date) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const dateString = format(date, "yyyy-MM-dd");
+      const res = await getMySchedule({ date: dateString });
+      
+      const mappedClasses = res.map((sch) => {
+        const start = sch.start_time ? sch.start_time.substring(0, 5) : "";
+        const end = sch.end_time ? sch.end_time.substring(0, 5) : "";
+        
+        let status = "next";
+        if (sch.status === "cancelled") status = "cancelled";
+        else if (sch.status === "rescheduled") status = "rescheduled";
+        else if (sch.status === "completed") status = "done";
 
-  const cancelledCount = CLASSES.filter((c) => c.status === "cancelled").length;
-  const activeCount = CLASSES.length - cancelledCount;
+        return {
+          id: sch.id,
+          time: `${start} - ${end}`,
+          name: sch.offering?.course?.title || "Unknown Course",
+          code: sch.offering?.course?.code || "",
+          room: sch.room || "TBA",
+          teacher: sch.offering?.teacher?.name || "TBA",
+          status,
+          statusNote: sch.status_reason || "",
+          hasPrep: false,
+          accent: "purple" // You can dynamically assign this if needed
+        };
+      });
+      setClasses(mappedClasses);
+    } catch (err) {
+      setError("Failed to load schedule");
+      setClasses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchSchedule(selectedDate);
+  }, [selectedDate]);
+
+  const weekDays = Array.from({ length: 7 }).map((_, i) => {
+    const d = addDays(currentWeekStart, i);
+    return {
+      date: d,
+      name: format(d, "EEE"),
+      num: format(d, "d"),
+    };
+  });
+
+  const selectedDayIndex = weekDays.findIndex((d) => isSameDay(d.date, selectedDate));
+
+  const handlePrevWeek = () => setCurrentWeekStart(addDays(currentWeekStart, -7));
+  const handleNextWeek = () => setCurrentWeekStart(addDays(currentWeekStart, 7));
+
+  const monthLabel = format(currentWeekStart, "MMMM yyyy");
+
+  const cancelledCount = classes.filter((c) => c.status === "cancelled").length;
+  const activeCount = classes.length - cancelledCount;
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <Background />
 
-      {/* 1 · Unified Header */}
       <Header title="Schedule" />
       <DateStrip
-        selectedDay={selectedDay}
-        setSelectedDay={setSelectedDay}
-        month={month}
-        onPrevMonth={handlePrevMonth}
-        onNextMonth={handleNextMonth}
+        selectedDay={selectedDayIndex >= 0 ? selectedDayIndex : -1}
+        setSelectedDay={(i) => setSelectedDate(weekDays[i].date)}
+        month={monthLabel}
+        onPrevMonth={handlePrevWeek}
+        onNextMonth={handleNextWeek}
+        weekDays={weekDays}
       />
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -294,16 +351,16 @@ export default function ScheduleScreen({ navigation }) {
         </View>
 
         {/* 4 · Class list or empty state */}
-        {CLASSES.length === 0 ? (
+        {classes.length === 0 ? (
           <EmptyState />
         ) : (
           <View style={{ paddingHorizontal: 16, marginTop: 4 }}>
-            {CLASSES.map((item, index) => (
+            {classes.map((item, index) => (
               <ClassCard
                 key={item.id}
                 item={item}
                 index={index}
-                total={CLASSES.length}
+                total={classes.length}
               />
             ))}
           </View>

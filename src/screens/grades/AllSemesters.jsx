@@ -15,7 +15,6 @@ import Svg, { Circle } from "react-native-svg";
 // ── Import your existing shared components ────────────────
 import Header from "../../components/layout/Header";
 import Background from "../../components/layout/Background";
-import { ACADEMIC_SUMMARY, SEMESTER_HISTORY } from "../../data/mockData";
 import { ROUTES } from "../../navigation/routes";
 import { s, C, R, F } from "./AllSemesters.styles";
 
@@ -23,7 +22,7 @@ import { s, C, R, F } from "./AllSemesters.styles";
 // Mirrors: <svg class="w-20 h-20"> with animated stroke-dashoffset
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-const ProgressRing = ({ cgpa = Number(ACADEMIC_SUMMARY.cgpa), maxCgpa = ACADEMIC_SUMMARY.maxCgpa }) => {
+const ProgressRing = ({ cgpa = 4.0, maxCgpa = 4.0 }) => {
   const SIZE = 80;
   const RADIUS = 34;
   const STROKE = 6;
@@ -291,15 +290,83 @@ export default function AllSemestersScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const [showAll, setShowAll] = useState(false);
 
+  const [summary, setSummary] = useState(null);
+  const [semesters, setSemesters] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { getMyGradesSummary, getMyAllSemesters } = require("../../services/gradeService");
+        const [sumRes, semRes] = await Promise.all([
+          getMyGradesSummary(),
+          getMyAllSemesters()
+        ]);
+
+        setSummary(sumRes);
+        
+        // Map backend semesters to frontend format
+        const history = Object.entries(semRes).map(([semNum, courses]) => {
+          return {
+            id: semNum,
+            name: `Semester ${semNum}`,
+            term: `Term ${semNum}`, // Adjust if you have term info
+            gpa: (courses.reduce((acc, c) => acc + (c.gpa || 0), 0) / (courses.length || 1)).toFixed(2),
+            isCurrent: false, // You might need to determine this based on active semester
+            finalNumbersUpdated: true,
+            courses: courses.map(c => ({
+              id: c.code,
+              name: c.course,
+              code: c.code,
+              creditHours: c.credit_hours,
+              letter: c.grade,
+              gpaPoints: c.gpa,
+              letterVariant: "green", // Default
+              progress: c.marks,
+              progressVariant: "green",
+              midterm: "-",
+              assignments: "-",
+              total: `${c.marks}%`
+            }))
+          };
+        }).reverse(); // Latest first
+
+        // Set the latest as current just for display purposes
+        if (history.length > 0) {
+          history[0].isCurrent = true;
+          history[0].finalNumbersUpdated = false;
+        }
+
+        setSemesters(history);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   const displayed = showAll
-    ? SEMESTER_HISTORY
-    : SEMESTER_HISTORY.slice(0, COLLAPSED_COUNT);
+    ? semesters
+    : semesters.slice(0, COLLAPSED_COUNT);
+
+  if (loading) {
+    return (
+      <View style={[s.screen, { paddingTop: insets.top }]}>
+        <Background />
+        <Header title="All Semesters" showBack />
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text style={{ color: "#fff" }}>Loading academic record...</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={[s.screen, { paddingTop: insets.top }]}>
       <Background />
 
-      {/* TOP HEADER — reuse existing component */}
       <Header title="All Semesters" showBack />
 
       <ScrollView
@@ -310,7 +377,6 @@ export default function AllSemestersScreen({ navigation }) {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* 1. Page title */}
         <View style={s.pageHeader}>
           <Text style={s.pageTitle}>Academic Performance</Text>
           <Text style={s.pageSubtitle}>
@@ -318,12 +384,55 @@ export default function AllSemestersScreen({ navigation }) {
           </Text>
         </View>
 
-        {/* 2. CGPA Hero */}
-        <CgpaHeroCard />
+        {summary && (
+          <View style={s.heroWrapper}>
+            <LinearGradient
+              colors={[C.primary, C.secondary]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={s.heroGradient}
+            >
+              <View style={s.orbTopRight} />
+              <View style={s.orbBottomLeft} />
 
-        {/* 3. Semester History */}
+              <View style={s.heroContent}>
+                <View style={s.heroLeft}>
+                  <View style={s.cgpaBlock}>
+                    <Text style={s.cgpaLabel}>CURRENT CGPA</Text>
+                    <View style={s.cgpaValueRow}>
+                      <Text style={s.cgpaNumber}>{summary.cgpa}</Text>
+                      <Text style={s.cgpaOutOf}>/ 4.00</Text>
+                    </View>
+                  </View>
+
+                  <View style={s.goalBox}>
+                    <Text style={s.goalLabel}>GOAL PROGRESS</Text>
+                    <View style={s.goalRow}>
+                      <View style={s.goalTrack}>
+                        <View style={s.goalFill} />
+                      </View>
+                      <Text style={s.goalTarget}>{summary.gpaGoal?.toFixed(2) || "4.00"} Target</Text>
+                    </View>
+                  </View>
+                </View>
+
+                <View style={s.heroRight}>
+                  <ProgressRing cgpa={summary.cgpa} maxCgpa={4.0} />
+                  <Text style={s.deanLabel}>DEAN'S LIST</Text>
+                </View>
+              </View>
+
+              <View style={s.insightBanner}>
+                <MaterialIcons name="psychology" size={16} color="#ffffff" />
+                <Text style={s.insightText}>
+                  Keep it up! Your SGPA for the latest semester is {summary.sgpa}.
+                </Text>
+              </View>
+            </LinearGradient>
+          </View>
+        )}
+
         <View style={s.section}>
-          {/* Section header */}
           <View style={s.sectionHeader}>
             <Text style={s.sectionTitle}>Semester History</Text>
             <TouchableOpacity style={s.downloadBtn} activeOpacity={0.7}>
@@ -332,7 +441,6 @@ export default function AllSemestersScreen({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          {/* Semester rows */}
           <View style={s.semList}>
             {displayed.map((item) => (
               <SemesterRow
@@ -340,36 +448,33 @@ export default function AllSemestersScreen({ navigation }) {
                 item={item}
                 onPress={() =>
                   navigation.navigate(ROUTES.SEMESTER_DETAIL, {
-                    semesterId: item.id,
+                    semesterData: item,
                   })
                 }
               />
             ))}
           </View>
 
-          {/* Show Full History button */}
-          <TouchableOpacity
-            style={s.showMoreBtn}
-            activeOpacity={0.7}
-            onPress={() => setShowAll((v) => !v)}
-          >
-            <Text style={s.showMoreText}>
-              {showAll ? "Show Less" : "Show Full History"}
-            </Text>
-            <MaterialIcons
-              name={showAll ? "expand-less" : "expand-more"}
-              size={20}
-              color={C.primary}
-            />
-          </TouchableOpacity>
+          {semesters.length > COLLAPSED_COUNT && (
+            <TouchableOpacity
+              style={s.showMoreBtn}
+              activeOpacity={0.7}
+              onPress={() => setShowAll((v) => !v)}
+            >
+              <Text style={s.showMoreText}>
+                {showAll ? "Show Less" : "Show Full History"}
+              </Text>
+              <MaterialIcons
+                name={showAll ? "expand-less" : "expand-more"}
+                size={20}
+                color={C.primary}
+              />
+            </TouchableOpacity>
+          )}
         </View>
 
-        {/* 4. Trend Card */}
         <TrendCard />
       </ScrollView>
-
-      {/* FAB — fixed bottom-right above nav */}
-      {/* <Fab /> */}
     </View>
   );
 }

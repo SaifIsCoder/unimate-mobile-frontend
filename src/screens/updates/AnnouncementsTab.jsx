@@ -22,49 +22,6 @@ const SCOPE_CONFIG = {
 const TYPE_FILTERS = ["All", "important", "event", "general"];
 const SCOPE_FILTERS = ["All", "class", "department"];
 
-const ANNOUNCEMENTS = [
-  {
-    id: "a1",
-    type: "important",
-    scope: "department",
-    title: "Final Exam Schedule Released",
-    message: "The final exam schedule has been released. Check Now.",
-    date: "30 mins ago",
-    image:
-      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1470&auto=format&fit=crop",
-  },
-  {
-    id: "a2",
-    type: "event",
-    scope: "department",
-    title: "Course Registration Opens Tomorrow",
-    message:
-      "Course registration for next semester starts tomorrow at 9:00 AM. Make sure to register early.",
-    date: "2 hours ago",
-    image:
-      "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1470&auto=format&fit=crop",
-  },
-  {
-    id: "a3",
-    type: "event",
-    scope: "class",
-    title: "Workshop: Machine Learning with Python",
-    message:
-      "Thursday at 2 PM, Room 20\nJoin us for a workshop on machine learning using Python. All students are welcome!",
-    date: "1 day ago",
-    image:
-      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1470&auto=format&fit=crop",
-  },
-  {
-    id: "a4",
-    type: "general",
-    scope: "department",
-    title: "Library Timings Updated",
-    message:
-      "The library will remain open until 9 PM on weekdays starting this week.",
-    date: "2 days ago",
-  },
-];
 
 const AnnouncementCard = React.memo(({ item }) => {
   const cfg = TYPE_CONFIG[item.type] || TYPE_CONFIG.general;
@@ -97,15 +54,55 @@ export default function AnnouncementsTab() {
   const [activeType, setActiveType] = useState("All");
   const [activeScope, setActiveScope] = useState("All");
   const aiBrief = useAIBrief("announcements");
+
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  React.useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        const { listAnnouncements } = require("../../services/communicationService");
+        const res = await listAnnouncements();
+        
+        // Map backend to UI schema
+        const mapped = res.map(a => ({
+          id: String(a.id),
+          type: a.type || "general", // "important", "event", "general"
+          scope: a.scope || "department", // "class", "department"
+          title: a.title,
+          message: a.message,
+          date: new Date(a.created_at).toLocaleDateString(),
+          image: null,
+        }));
+        
+        setAnnouncements(mapped);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAnnouncements();
+  }, []);
+
   const filtered = useMemo(
     () =>
-      ANNOUNCEMENTS.filter((a) => {
+      announcements.filter((a) => {
         const t = activeType === "All" || a.type === activeType;
         const sc = activeScope === "All" || a.scope === activeScope;
         return t && sc;
       }),
-    [activeType, activeScope],
+    [announcements, activeType, activeScope],
   );
+
+  if (loading) {
+    return (
+      <View style={[s.container, { justifyContent: "center", alignItems: "center" }]}>
+        <Text style={{ color: COLORS.textSecondary }}>Loading announcements...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={s.container}>
       <ScrollView

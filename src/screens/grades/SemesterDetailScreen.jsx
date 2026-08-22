@@ -12,7 +12,6 @@ import Header from "../../components/layout/Header";
 import Background from "../../components/layout/Background";
 import { EmptyState } from "../../components/common";
 import { COLORS, ACCENT } from "../../theme";
-import { SEMESTER_HISTORY } from "../../data/mockData";
 import { styles } from "./SemesterDetailScreen.styles";
 
 // ── Summary card ─────────────────────────────────────────────────────────────
@@ -127,8 +126,7 @@ const CourseCard = ({ course }) => {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function SemesterDetailScreen({ route }) {
   const insets = useSafeAreaInsets();
-  const semesterId = route?.params?.semesterId;
-  const semester = SEMESTER_HISTORY.find((s) => s.id === semesterId);
+  const semester = route?.params?.semesterData;
 
   if (!semester) {
     return (

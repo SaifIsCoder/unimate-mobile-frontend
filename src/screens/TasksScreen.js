@@ -9,52 +9,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 import Svg, { Circle } from "react-native-svg";
 import { COLORS } from "../theme";
 import Header from "../components/layout/Header";
-import { TASKS } from "../data/mockData";
+
 import { useNotifications } from "../context/NotificationContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Background from "../components/layout/Background";
 import { AIBriefCard } from "../components/ui";
 import { useAIBrief } from "../hooks/useAIBrief";
 import { styles } from "./TasksScreen.styles";
-
-const PRIORITY_TASKS = [
-  {
-    id: "p1",
-    priority: "Critical",
-    difficulty: "High",
-    title: "Database Design - ER Diagram",
-    subject: "Database Systems (IT-305)",
-    due: "Due Jan 16 (2 Days)",
-    progress: 85,
-    accentColor: "#dc2626",
-    badgeBg: "#ffdad6",
-    badgeText: "#93000a",
-    progressColor: "#dc2626",
-  },
-  {
-    id: "p2",
-    priority: "Moderate",
-    difficulty: "Medium",
-    title: "Assignment - Linked Lists",
-    subject: "Data Structures (CS-103)",
-    due: "Due Jan 13",
-    progress: 45,
-    accentColor: "#6063ee",
-    badgeBg: "#e5dcf4",
-    badgeText: "#666073",
-    progressColor: "#4648d4",
-  },
-];
-
-const COMPLETED_TASKS = [
-  {
-    id: "c1",
-    title: "Project - Portfolio Website",
-    meta: "IT-201 - Graded: 92/100",
-  },
-  { id: "c2", title: "Lab 4: Binary Trees", meta: "CS-103 - Graded: 48/50" },
-];
-
 const FILTERS = ["All", "Pending", "Done", "Overdue"];
 
 const STATUS_CFG = {
@@ -136,7 +97,7 @@ const FilterPills = ({ active, setActive }) => (
 );
 
 const PriorityCard = ({ task }) => (
-  <View style={[styles.priorityCard, { borderLeftColor: task.accentColor }]}>
+  <View style={[styles.priorityCard]}>
     <View style={styles.priorityTopRow}>
       <View style={[styles.priorityBadge, { backgroundColor: task.badgeBg }]}>
         <Text style={[styles.priorityBadgeText, { color: task.badgeText }]}>
@@ -223,12 +184,79 @@ export default function TasksScreen() {
   const insets = useSafeAreaInsets();
   const aiBrief = useAIBrief("tasks");
 
-  const filtered = TASKS.filter((task) => {
+  const [assignments, setAssignments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  React.useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const { listMyAssignments } = require("../services/taskService");
+        const res = await listMyAssignments();
+        
+        // Map backend to UI schema
+        const mapped = res.map(a => {
+          let accent = "#3b82f6";
+          let badgeBg = "#eff6ff";
+          let badgeText = "#1d4ed8";
+          
+          if (a.priority === "high" || a.priority === "critical") {
+            accent = "#dc2626";
+            badgeBg = "#ffdad6";
+            badgeText = "#93000a";
+          } else if (a.priority === "medium") {
+            accent = "#6063ee";
+            badgeBg = "#e5dcf4";
+            badgeText = "#666073";
+          }
+          
+          return {
+            id: String(a.id),
+            title: a.title,
+            course: a.subject, // Map to what TaskCard expects
+            subject: a.subject, // Map to what PriorityCard expects
+            due: new Date(a.due).toLocaleDateString(),
+            progress: a.progress || 0,
+            difficulty: a.difficulty,
+            priority: a.priority,
+            status: a.status,
+            isGraded: a.isGraded,
+            marks: a.marks,
+            accentColor: accent,
+            badgeBg,
+            badgeText,
+            progressColor: accent,
+          };
+        });
+        
+        setAssignments(mapped);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTasks();
+  }, []);
+
+  const filtered = assignments.filter((task) => {
     if (activeFilter === "All") return true;
     return task.status === activeFilter.toLowerCase();
   });
 
+  const priorityTasks = assignments.filter(t => t.priority === "high" || t.priority === "critical" || t.priority === "High" || t.priority === "Critical");
   const showStandardList = activeFilter !== "All";
+
+  if (loading) {
+    return (
+      <View style={[styles.screen, { paddingTop: insets.top }]}>
+        <Background />
+        <Header title="Tasks" />
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text style={{ color: COLORS.textSecondary }}>Loading tasks...</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
@@ -252,25 +280,16 @@ export default function TasksScreen() {
           </View>
         )}
 
-        {activeFilter === "All" && (
+        {activeFilter === "All" && priorityTasks.length > 0 && (
           <View style={styles.prioritySection}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>AI Task Prioritization</Text>
             </View>
             <View style={styles.priorityGrid}>
-              {PRIORITY_TASKS.map((task) => (
+              {priorityTasks.map((task) => (
                 <PriorityCard key={task.id} task={task} />
               ))}
             </View>
-          </View>
-        )}
-
-        {activeFilter === "All" && (
-          <View style={styles.completedSection}>
-            <Text style={styles.sectionTitle}>Completed Tasks</Text>
-            {COMPLETED_TASKS.map((item) => (
-              <CompletedCard key={item.id} item={item} />
-            ))}
           </View>
         )}
 
@@ -294,6 +313,19 @@ export default function TasksScreen() {
                 />
               ))
             )}
+          </View>
+        )}
+        
+        {/* If All filter is selected and there are no priority tasks, we should still show the normal tasks list */}
+        {activeFilter === "All" && assignments.length > 0 && priorityTasks.length === 0 && (
+          <View style={{ paddingTop: 8 }}>
+            {assignments.map((item) => (
+              <TaskCard
+                key={item.id}
+                item={item}
+                hasUpdate={hasUnreadForEntity?.("task", item.id)}
+              />
+            ))}
           </View>
         )}
       </ScrollView>
