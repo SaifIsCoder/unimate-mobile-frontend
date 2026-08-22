@@ -35,14 +35,23 @@ const screenOptions = ({ route }) => ({
   ),
 });
 
+import { useUser } from '../context/UserContext';
+
 export default function TabNavigator() {
+  const { user } = useUser();
+  const isStudent = user?.role === 'student';
+
   return (
     <Tab.Navigator screenOptions={screenOptions}>
       <Tab.Screen name={ROUTES.HOME} component={HomeScreen} />
       <Tab.Screen name={ROUTES.SCHEDULE} component={ScheduleScreen} />
       <Tab.Screen name={ROUTES.UPDATES} component={UpdatesScreen} />
-      <Tab.Screen name={ROUTES.TASKS} component={TasksScreen} />
-      <Tab.Screen name={ROUTES.GRADES} component={GradesScreen} />
+      {isStudent && (
+        <>
+          <Tab.Screen name={ROUTES.TASKS} component={TasksScreen} />
+          <Tab.Screen name={ROUTES.GRADES} component={GradesScreen} />
+        </>
+      )}
     </Tab.Navigator>
   );
 }
